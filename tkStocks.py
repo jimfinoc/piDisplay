@@ -68,17 +68,17 @@ def return_positions(type = "all"):
 
 
 
-My_order_details = return_details("My_orders_details")
-My_position_details = return_details("My_position_details")
+# My_order_details = return_details("My_orders_details")
+# My_position_details = return_details("My_position_details")
 # My_stocks = return_details("My_stocks")
 # My_stocks = return_positions("all")
 
-My_involved_stocks = return_positions("stock")
-My_involved_options = return_positions("option")
+# My_involved_stocks = return_positions("stock")
+# My_involved_options = return_positions("option")
 My_involved_all = return_positions("all")
 
-My_open_orders = return_orders("open")
-My_filled_orders = return_orders("filled")
+# My_open_orders = return_orders("open")
+# My_filled_orders = return_orders("filled")
 
 print()
 # print(My_order_details)
