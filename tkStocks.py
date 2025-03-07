@@ -14,8 +14,10 @@ import os
 window = tk.Tk()
 my_geometry = 700
 afterTime = 5 * 60 * 1000 # time is in milliseconds
-x_geometry = my_geometry
-y_geometry = my_geometry
+# x_geometry = my_geometry
+# y_geometry = my_geometry
+x_geometry = 1280
+y_geometry = 720
 pad = 10
 padx = pad
 pady = pad
@@ -75,7 +77,8 @@ def return_positions(type = "all"):
 
 # My_involved_stocks = return_positions("stock")
 # My_involved_options = return_positions("option")
-My_involved_all = return_positions("all")
+My_involved_all = list(return_positions("all"))
+My_involved_all.sort()
 
 # My_open_orders = return_orders("open")
 # My_filled_orders = return_orders("filled")
@@ -83,17 +86,34 @@ My_involved_all = return_positions("all")
 print()
 # print(My_order_details)
 print(My_involved_all)
-print(len(My_involved_all))
+# print(len(My_involved_all))
 print()
 
 tabControl = ttk.Notebook(window)
 tab = {}
+special = "Stocks"
+tab[special] = ttk.Frame(tabControl)
+tabControl.add(tab[special], text=special)
+
+special = "Options"
+tab[special] = ttk.Frame(tabControl)
+tabControl.add(tab[special], text=special)
+
+special = "Open"
+tab[special] = ttk.Frame(tabControl)
+tabControl.add(tab[special], text=special)
+
 # for each in range(len(My_involved_all)):
 for each in My_involved_all:
     tab[each] = ttk.Frame(tabControl)
     tabControl.add(tab[each], text=each)
 
 tabControl.pack(expand=1, fill="both")
+
+ttk.Label(tab["Stocks"], text ="This should contain a table of my owned stocks").grid(column = 0,  row = 0, padx = 30, pady = 30)   
+ttk.Label(tab["Options"], text ="This should contain a table of my options expiring over time").grid(column = 0, row = 0, padx = 30, pady = 30) 
+ttk.Label(tab["Open"], text ="This should contain a list of open orders").grid(column = 0, row = 0, padx = 30, pady = 30) 
+
 
 window.mainloop()
 
