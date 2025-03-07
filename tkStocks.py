@@ -23,18 +23,16 @@ window.geometry(f"{x_geometry}x{y_geometry}+0+0")
 window.title("Stock Details")
 
 def return_details(key):
-    lat = 'n/a'
-    lon = 'n/a'
-    try:
-        load_dotenv(".env")
-        r = redis.Redis(db=0,host=os.getenv("redis_database_name"),port=os.getenv("redis_database_port"),password=os.getenv("redis_database_password"))
-        My_details_string = r.get(key)
-        My_details = json.loads(My_details_string)
-        with open("."+str(key)+".json", "w") as file:
-            json.dump(My_details, file, indent=4)
+    # try:
+    load_dotenv(".env")
+    r = redis.Redis(db=0,host=os.getenv("redis_database_name"),port=os.getenv("redis_database_port"),password=os.getenv("redis_database_password"))
+    My_details_string = r.get(key)
+    My_details = json.loads(My_details_string)
+    with open("."+str(key)+".json", "w") as file:
+        json.dump(My_details, file, indent=4)
 
-    except:
-        pass
+    # except:
+        # pass
     return My_details
 
 def return_orders(status = "open"):
