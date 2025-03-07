@@ -16,8 +16,8 @@ my_geometry = 700
 afterTime = 5 * 60 * 1000 # time is in milliseconds
 # x_geometry = my_geometry
 # y_geometry = my_geometry
-x_geometry = 1280
-y_geometry = 720
+x_geometry = 800
+y_geometry = 480-16
 pad = 10
 padx = pad
 pady = pad
@@ -103,6 +103,10 @@ special = "Open"
 tab[special] = ttk.Frame(tabControl)
 tabControl.add(tab[special], text=special)
 
+ttk.Label(tab["Stocks"], text ="This should contain a table of my owned stocks").grid(column = 0,  row = 0, padx = 30, pady = 30)   
+ttk.Label(tab["Options"], text ="This should contain a table of my options expiring over time").grid(column = 0, row = 0, padx = 30, pady = 30) 
+ttk.Label(tab["Open"], text ="This should contain a list of open orders").grid(column = 0, row = 0, padx = 30, pady = 30) 
+
 # for each in range(len(My_involved_all)):
 for each in My_involved_all:
     tab[each] = ttk.Frame(tabControl)
@@ -110,9 +114,6 @@ for each in My_involved_all:
 
 tabControl.pack(expand=1, fill="both")
 
-ttk.Label(tab["Stocks"], text ="This should contain a table of my owned stocks").grid(column = 0,  row = 0, padx = 30, pady = 30)   
-ttk.Label(tab["Options"], text ="This should contain a table of my options expiring over time").grid(column = 0, row = 0, padx = 30, pady = 30) 
-ttk.Label(tab["Open"], text ="This should contain a list of open orders").grid(column = 0, row = 0, padx = 30, pady = 30) 
 
 
 window.mainloop()
