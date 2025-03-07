@@ -5,3 +5,6 @@
 /gps.py
 /test.py
 /tkWeatherForecast.py
+.My_orders_details.json
+.My_position_details.json
+.My_stocks.json
