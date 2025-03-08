@@ -102,7 +102,7 @@ print()
 
 # My_stocks = return_positions("all")
 
-# My_involved_stocks = return_positions("stock")
+My_owned_stocks = return_positions("stock")
 # My_involved_options = return_positions("option")
 
 # My_open_orders = return_orders("open")
@@ -122,7 +122,30 @@ tab = {}
 special = "Stocks"
 tab[special] = ttk.Frame(tabControl)
 tabControl.add(tab[special], text=special)
-ttk.Label(tab["Stocks"], text ="This should contain a table of my owned stocks").grid(column = 0,  row = 0, padx = 30, pady = 30)   
+# ttk.Label(tab["Stocks"], text ="This should contain a table of my owned stocks").grid(column = 0,  row = 0, padx = 30, pady = 30)   
+stock_row = 0
+ttk.Label(tab[special], text ="Symbol").grid(column = 0,  row = 0, padx = 10, pady = 10)   
+ttk.Label(tab[special], text ="Quantity").grid(column = 1,  row = 0, padx = 10, pady = 10)   
+ttk.Label(tab[special], text ="Price").grid(column = 2,  row = 0, padx = 10, pady = 10)   
+ttk.Label(tab[special], text ="Day Change").grid(column = 3,  row = 0, padx = 10, pady = 10)   
+ttk.Label(tab[special], text ="Day Percent Change").grid(column = 4,  row = 0, padx = 10, pady = 10)   
+ttk.Label(tab[special], text ="Market Value").grid(column = 5,  row = 0, padx = 10, pady = 10)   
+ttk.Label(tab[special], text ="Profit/Loss").grid(column = 6,  row = 0, padx = 10, pady = 10)   
+
+for each in My_position_details["securitiesAccount"]["positions"]:
+    if each["instrument"]["assetType"] == "EQUITY":
+        stock_row = stock_row + 1
+        # print(each)
+        ttk.Label(tab[special], text = each["instrument"]["symbol"]).grid(column = 0,  row = stock_row, padx = 10, pady = 10)   
+        ttk.Label(tab[special], text = each["longQuantity"]).grid(column = 1,  row = stock_row, padx = 10, pady = 10)   
+        # ttk.Label(tab[special], text ="Price").grid(column = 2,  row = stock_row, padx = 10, pady = 10)   
+        ttk.Label(tab[special], text = each["instrument"]["netChange"]).grid(column = 3,  row = stock_row, padx = 10, pady = 10)   
+        ttk.Label(tab[special], text = each["currentDayProfitLossPercentage"]).grid(column = 4,  row = stock_row, padx = 10, pady = 10)   
+        ttk.Label(tab[special], text = each["marketValue"]).grid(column = 5,  row = stock_row, padx = 10, pady = 10)   
+        ttk.Label(tab[special], text = each["longOpenProfitLoss"]).grid(column = 6,  row = stock_row, padx = 10, pady = 10)   
+
+
+
 
 special = "Options"
 tab[special] = ttk.Frame(tabControl)
