@@ -8,3 +8,5 @@
 .My_orders_details.json
 .My_position_details.json
 .My_stocks.json
+.My_stock_option_dates.json
+.My_stock_option_strikes.json

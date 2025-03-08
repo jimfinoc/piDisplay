@@ -70,9 +70,11 @@ def return_positions(type = "all"):
 
 
 
-# My_order_details = return_details("My_orders_details")
-# My_position_details = return_details("My_position_details")
-# My_stocks = return_details("My_stocks")
+My_order_details = return_details("My_orders_details")
+My_position_details = return_details("My_position_details")
+My_stock_option_dates = return_details("My_stock_option_dates")
+My_stock_option_strikes = return_details("My_stock_option_strikes")
+My_stocks = return_details("My_stocks")
 # My_stocks = return_positions("all")
 
 # My_involved_stocks = return_positions("stock")
@@ -108,9 +110,9 @@ ttk.Label(tab["Options"], text ="This should contain a table of my options expir
 ttk.Label(tab["Open"], text ="This should contain a list of open orders").grid(column = 0, row = 0, padx = 30, pady = 30) 
 
 # for each in range(len(My_involved_all)):
-for each in My_involved_all:
-    tab[each] = ttk.Frame(tabControl)
-    tabControl.add(tab[each], text=each)
+# for each in My_involved_all:
+#     tab[each] = ttk.Frame(tabControl)
+#     tabControl.add(tab[each], text=each)
 
 tabControl.pack(expand=1, fill="both")
 
