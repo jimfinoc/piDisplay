@@ -17,7 +17,7 @@ afterTime = 5 * 60 * 1000 # time is in milliseconds
 # x_geometry = my_geometry
 # y_geometry = my_geometry
 x_geometry = 800
-y_geometry = 480-16
+y_geometry = 720-16
 pad = 10
 padx = pad
 pady = pad
@@ -68,27 +68,53 @@ def return_positions(type = "all"):
                 stocks.add(each["instrument"]["symbol"])
     return stocks
 
+def all_dates(stock_option_dates):
+    key = set()
+    for each_stock in stock_option_dates:
+        for each_date in stock_option_dates[each_stock]:
+            key.add(each_date)
+        # with open("."+str(key)+".json", "w") as file:
+            # json.dump(My_details, file, indent=4)
+    return key
 
-
-My_order_details = return_details("My_orders_details")
-My_position_details = return_details("My_position_details")
-My_stock_option_dates = return_details("My_stock_option_dates")
-My_stock_option_strikes = return_details("My_stock_option_strikes")
+print(1)
 My_stocks = return_details("My_stocks")
+print(2)
+My_order_details = return_details("My_orders_details")
+print(3)
+My_position_details = return_details("My_position_details")
+print(4)
+My_stock_option_dates = return_details("My_stock_option_dates")
+# print(5)
+# My_stock_option_strikes = return_details("My_stock_option_strikes")
+
+# All_stock_option_dates = all_dates(My_stock_option_dates)
+all_dates(My_stock_option_dates)
+My_dates = list(all_dates(My_stock_option_dates))
+My_dates.sort()
+
+print()
+print("My_dates")
+print(My_dates)
+print(len(My_dates))
+print()
+
+
 # My_stocks = return_positions("all")
 
 # My_involved_stocks = return_positions("stock")
 # My_involved_options = return_positions("option")
-My_involved_all = list(return_positions("all"))
-My_involved_all.sort()
 
 # My_open_orders = return_orders("open")
 # My_filled_orders = return_orders("filled")
+My_involved_all = list(return_positions("all"))
+My_involved_all.sort()
+
 
 print()
-# print(My_order_details)
+print("My_involved_all")
 print(My_involved_all)
-# print(len(My_involved_all))
+print(len(My_involved_all))
 print()
 
 tabControl = ttk.Notebook(window)
@@ -96,18 +122,55 @@ tab = {}
 special = "Stocks"
 tab[special] = ttk.Frame(tabControl)
 tabControl.add(tab[special], text=special)
+ttk.Label(tab["Stocks"], text ="This should contain a table of my owned stocks").grid(column = 0,  row = 0, padx = 30, pady = 30)   
 
 special = "Options"
 tab[special] = ttk.Frame(tabControl)
 tabControl.add(tab[special], text=special)
+side_left = ttk.Frame(tab[special], width = tab[special].winfo_width()/2)
+side_left.pack(side=tk.LEFT, fill=tk.Y)
+side_right = ttk.Frame(tab[special], width = tab[special].winfo_width()/2)
+side_right.pack(side=tk.RIGHT, fill=tk.Y)
+# option_label = []
+
+date_row = 0
+label = ttk.Label(side_right,text="Expiration Date")
+label.grid(column = 0, row = date_row, pady=5,padx=10)
+label = ttk.Label(side_right,text="Calls")
+label.grid(column = 1, row = date_row, pady=5,padx=10)
+label = ttk.Label(side_right,text="Puts")
+label.grid(column = 2, row = date_row, pady=5,padx=10)
+label = ttk.Label(side_right,text="Days")
+label.grid(column = 3, row = date_row, pady=5,padx=10)
+
+for each in My_dates:
+    date_row = date_row + 1
+    label = ttk.Label(side_right,text=str(each))
+    label.grid(column = 0, row = date_row, pady=1,padx=10)
+    label = ttk.Label(side_right,text="0", foreground="gray")
+    label.grid(column = 1, row = date_row, pady=1,padx=10)
+    label = ttk.Label(side_right,text="0", foreground="gray")
+    label.grid(column = 2, row = date_row, pady=1,padx=10)
+    print(each)
+    now = datetime.datetime.now()
+    date1 = datetime.date(now.year,now.month,now.day)
+    date2 = datetime.date.fromisoformat(each)
+    differece = date2-date1
+
+    print(date1,date2,differece.days)
+    label = ttk.Label(side_right,text=str(differece.days), foreground="gray")
+    label.grid(column = 3, row = date_row, pady=1,padx=10)
+
+    # option_label.append(label)
+# ttk.Label(tab["Options"], text ="This should contain a table of my options expiring over time").grid(column = 0, row = 0, padx = 30, pady = 30) 
 
 special = "Open"
 tab[special] = ttk.Frame(tabControl)
 tabControl.add(tab[special], text=special)
-
-ttk.Label(tab["Stocks"], text ="This should contain a table of my owned stocks").grid(column = 0,  row = 0, padx = 30, pady = 30)   
-ttk.Label(tab["Options"], text ="This should contain a table of my options expiring over time").grid(column = 0, row = 0, padx = 30, pady = 30) 
 ttk.Label(tab["Open"], text ="This should contain a list of open orders").grid(column = 0, row = 0, padx = 30, pady = 30) 
+
+
+
 
 # for each in range(len(My_involved_all)):
 # for each in My_involved_all:
