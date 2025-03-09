@@ -139,7 +139,7 @@ side_right = ttk.Frame(tab[special], width = tab[special].winfo_width()/2)
 
 side_left.grid(column=0, row=0,sticky=tk.E)
 # side_left.grid(sticky=tk.N+tk.E+tk.S+tk.W)
-side_right.grid(column=1, row=0,sticky=tk.W)
+side_right.grid(column=1, row=0,sticky=tk.N)
 # side_right.grid(sticky=tk.E+tk.S+tk.W)
 
 # tab[special] = ttk.Frame(tabControl)
@@ -245,14 +245,14 @@ for each in My_dates:
     label.grid(column = 0, row = date_row, pady=1,padx=10)
     
     if each in total_calls:
-        label = ttk.Label(side_right,text=f'{total_calls[each]:.0f}', foreground="white")
+        label = ttk.Label(side_right,text=f'{total_calls[each]:.0f}')
         label.grid(column = 1, row = date_row, pady=1,padx=10)
     else:
         label = ttk.Label(side_right,text="0", foreground="gray")
         label.grid(column = 1, row = date_row, pady=1,padx=10)
 
     if each in total_puts:
-        label = ttk.Label(side_right,text=f'{total_puts[each]:.0f}', foreground="white")
+        label = ttk.Label(side_right,text=f'{total_puts[each]:.0f}')
         label.grid(column = 2, row = date_row, pady=1,padx=10)
     else:
         label = ttk.Label(side_right,text="0", foreground="gray")
