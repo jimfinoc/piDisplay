@@ -26,6 +26,11 @@ pady = pad
 window.geometry(f"{x_geometry}x{y_geometry}+0+0")
 window.title("Stock Details")
 
+style = ttk.Style()
+style.configure("W.TLabel", foreground="white")
+style.configure("G.TLabel", foreground="green")
+style.configure("R.TLabel", foreground="red")
+
 def return_details(key):
     # try:
     load_dotenv(".env")
@@ -123,6 +128,7 @@ My_involved_all.sort()
 # print()
 
 ########################################################################
+#### Set up of the tabs
 window.columnconfigure(0, weight=1)
 window.rowconfigure(0, weight=1)
 
@@ -212,6 +218,7 @@ ttk.Label(side_left, text =f'{total_profit_loss:.2f}').grid(column = 6,  row = s
 
 
 ########################################################################
+# Not SEPERATE! this is combined with the Stock tab
 # special = "Options"
 # tab[special] = ttk.Frame(tabControl)
 # tabControl.add(tab[special], text=special)
@@ -368,9 +375,139 @@ for each in My_open_orders:
 #this is for each of the individual stocks
 
 # for each in range(len(My_involved_all)):
-for each in My_involved_all:
-    tab[each] = ttk.Frame(tabControl)
-    tabControl.add(tab[each], text=each)
+for each_stock in My_involved_all:
+    tab[each_stock] = ttk.Frame(tabControl,padding=5)
+    tab[each_stock].columnconfigure(0, weight=1) # for centering the left half of the tab
+    tab[each_stock].columnconfigure(1, weight=1) # for centering the right half of the tab
+    tabControl.add(tab[each_stock], text=each_stock)
+    side_left = ttk.Frame(tab[each_stock], width = tab[special].winfo_width()/2)#.grid(column=0, row=0,sticky="new")
+    side_right = ttk.Frame(tab[each_stock], width = tab[special].winfo_width()/2)#.grid(column=1, row=0,sticky="new")
+    side_left.grid(column=0, row=0,padx=30, pady=30,sticky=(tk.W, tk.E, tk.N, tk.S))
+    side_right.grid(column=1, row=0,padx=30, pady=10, sticky=(tk.W, tk.E, tk.N, tk.S))
+
+    lot_row = 0
+    print("Stock:")
+    print(each_stock)
+    ttk.Label(side_left, text = each_stock).grid(column = 0,  row = lot_row, padx = 10, pady = 1,sticky="n")   
+    if each_stock in My_lot_details:
+        as_of = f'As of: {My_lot_details[each_stock]["data_pull_time_date"]}'
+    else:
+        as_of = f"No shares owned"
+    ttk.Label(side_left, text = as_of).grid(column = 1,  row = lot_row, padx = 10, pady = 1,sticky="w",columnspan=3)
+    print(as_of)
+        
+    lot_row += 1
+    ttk.Label(side_left, text ="Open Date").grid(column = 0,  row = lot_row, padx = 10, pady = 0,sticky="n")   
+    ttk.Label(side_left, text ="Quantity").grid(column = 1,  row = lot_row, padx = 10, pady = 0)   
+    ttk.Label(side_left, text ="Cost/Share").grid(column = 2,  row = lot_row, padx = 10, pady = 0)   
+    ttk.Label(side_left, text ="Market Value").grid(column = 3,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+    ttk.Label(side_left, text ="Cost Basis").grid(column = 4,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+    ttk.Label(side_left, text ="Gain/Loss").grid(column = 5,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+    ttk.Label(side_left, text ="Gain/Loss %").grid(column = 6,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+    ttk.Label(side_left, text ="Holding Period").grid(column = 7,  row = lot_row, padx = 10, pady = 0)   
+    
+    if each_stock in My_lot_details:
+
+        lot_row += 1
+        ttk.Label(side_left, text ="-----------").grid(column = 0,  row = lot_row, padx = 10, pady = 0,sticky="n")
+        ttk.Label(side_left, text ="------------").grid(column = 1,  row = lot_row, padx = 10, pady = 0,sticky="n")
+        ttk.Label(side_left, text ="---------").grid(column = 2,  row = lot_row, padx = 10, pady = 0)
+        ttk.Label(side_left, text ="------------").grid(column = 3,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+        ttk.Label(side_left, text ="---------").grid(column = 4,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+        ttk.Label(side_left, text ="---------").grid(column = 5,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+        ttk.Label(side_left, text ="---------").grid(column = 6,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+        ttk.Label(side_left, text ="---------").grid(column = 7,  row = lot_row, padx = 10, pady = 0)   
+
+    total_lot_sum_quantity = 0
+    total_market_value = 0
+    total_cost = 0
+    total_gain_loss = 0
+    if each_stock in My_lot_details:
+        for each_lot in My_lot_details[each_stock]["data"]:
+            lot_row += 1
+            # print("each_lot")
+            # print(each_lot)
+            # print(type(each_lot))
+            open_date = each_lot["Open Date"]
+            quantity = each_lot["Quantity"]
+            total_lot_sum_quantity += float(quantity)
+
+            cost_share = f'${float(each_lot["Cost/Share"].replace("$", "")):.2f}'
+            market_value_float = float(each_lot["Market Value"].replace("$", ""))
+            total_market_value += market_value_float 
+            market_value = f'${market_value_float:.2f}'
+
+            cost_basis_float = float(each_lot["Cost Basis"].replace("$", ""))
+            total_cost += cost_basis_float
+            cost_basis = f'${cost_basis_float:.2f}'
+
+            gain_loss_float = float(each_lot["Gain/Loss ($)"].replace("$", ""))
+            total_gain_loss += gain_loss_float
+            gain_loss = f'{gain_loss_float:.02f}'
+            # gain_loss = each_lot["Gain/Loss ($)"]
+            gain_loss_percent = each_lot["Gain/Loss (%)"]
+            holding_period = each_lot["Holding Period"]
+
+
+            ttk.Label(side_left, text =open_date).grid(column = 0,  row = lot_row, padx = 10, pady = 0,sticky="n")   
+            ttk.Label(side_left, text =quantity).grid(column = 1,  row = lot_row, padx = 10, pady = 0,sticky="e")     
+            ttk.Label(side_left, text =cost_share).grid(column = 2,  row = lot_row, padx = 10, pady = 0,sticky="e")   
+            ttk.Label(side_left, text =market_value).grid(column = 3,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+            ttk.Label(side_left, text =cost_basis).grid(column = 4,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+            ttk.Label(side_left, text =gain_loss).grid(column = 5,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+            ttk.Label(side_left, text =gain_loss_percent).grid(column = 6,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+            ttk.Label(side_left, text =holding_period).grid(column = 7,  row = lot_row, padx = 10, pady = 0)   
+    
+
+    lot_row += 1
+    ttk.Label(side_left, text ="----------").grid(column = 0,  row = lot_row, padx = 10, pady = 0,sticky="n")   
+    ttk.Label(side_left, text ="------------").grid(column = 1,  row = lot_row, padx = 10, pady = 0)   
+    ttk.Label(side_left, text ="---------").grid(column = 2,  row = lot_row, padx = 10, pady = 0)   
+    ttk.Label(side_left, text ="------------").grid(column = 3,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+    ttk.Label(side_left, text ="---------").grid(column = 4,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+    ttk.Label(side_left, text ="---------").grid(column = 5,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+    ttk.Label(side_left, text ="---------").grid(column = 6,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+    ttk.Label(side_left, text ="---------").grid(column = 7,  row = lot_row, padx = 10, pady = 0 )   
+
+    lot_row += 1
+    ttk.Label(side_left, text ='Lot Sum').grid(column = 0,  row = lot_row, padx = 10, pady = 0,sticky="n")   
+    ttk.Label(side_left, text =f'{total_lot_sum_quantity:.0f}').grid(column = 1,  row = lot_row, padx = 10, pady = 0,sticky="e")     
+    if total_lot_sum_quantity != 0:
+        pershare = total_cost/total_lot_sum_quantity
+    else:
+        pershare = 0
+    ttk.Label(side_left, text =f'{(pershare):.2f}').grid(column = 2,  row = lot_row, padx = 10, pady = 0,sticky="e")   
+
+    ttk.Label(side_left, text =f'{total_market_value:.2f}').grid(column = 3,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+    ttk.Label(side_left, text =f'{total_cost:.2f}').grid(column = 4,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+    ttk.Label(side_left, text =f'{total_gain_loss:.2f}').grid(column = 5,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+    # ttk.Label(side_left, text =gain_loss_percent).grid(column = 6,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+    # ttk.Label(side_left, text =holding_period).grid(column = 7,  row = lot_row, padx = 10, pady = 0)   
+
+    lot_row += 1
+    ttk.Label(side_left, text ="=========").grid(column = 0,  row = lot_row, padx = 10, pady = 0,sticky="n")   
+    ttk.Label(side_left, text ="=========").grid(column = 1,  row = lot_row, padx = 10, pady = 0)   
+    ttk.Label(side_left, text ="=========").grid(column = 2,  row = lot_row, padx = 10, pady = 0)   
+    ttk.Label(side_left, text ="============").grid(column = 3,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+    ttk.Label(side_left, text ="=========").grid(column = 4,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+    ttk.Label(side_left, text ="=========").grid(column = 5,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+    ttk.Label(side_left, text ="=========").grid(column = 6,  row = lot_row, padx = 10, pady = 0 ,sticky="e")   
+    ttk.Label(side_left, text ="=========").grid(column = 7,  row = lot_row, padx = 10, pady = 0 )   
+
+    lot_row += 1
+    ttk.Label(side_left, text ='Positions').grid(column = 0,  row = lot_row, padx = 10, pady = 0,sticky="n")   
+
+    for each_positon in My_position_details["securitiesAccount"]["positions"]:
+        if each_positon["instrument"]["assetType"] == "EQUITY":
+            if each_positon["instrument"]["symbol"] == each_stock:
+                long_quantity = each_positon["longQuantity"]
+                ttk.Label(side_left, text =f"{long_quantity:.0f}").grid(column = 1,  row = lot_row, padx = 10, pady = 0,sticky="e")   
+                if int(long_quantity) == int(total_lot_sum_quantity):
+                    ttk.Label(side_left,style="G.TLabel", text ="The Position data matches the sum of lots.").grid(column = 2,  row = lot_row, padx = 10, pady = 0, columnspan=4, sticky="w")
+                else:
+                    print(long_quantity)
+                    print(total_lot_sum_quantity)
+                    ttk.Label(side_left,style="R.TLabel", text ="Counts do not match! Ingest this stock lot again!").grid(column = 2,  row = lot_row, padx = 10, pady = 0, columnspan=4, sticky="w")
 
 tabControl.pack(expand=1, fill="both")
 
