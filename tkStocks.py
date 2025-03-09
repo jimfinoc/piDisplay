@@ -168,14 +168,22 @@ side_right.grid(column=1, row=0,padx=30, pady=10, sticky=(tk.W, tk.E, tk.N, tk.S
 # ttk.Label(tab["Stocks"], text ="This should contain a table of my owned stocks").grid(column = 0,  row = 0, padx = 30, pady = 30)   
 stock_row = 0
 # ttk.Label(side_left, text ="Symbol",anchor=tk.CENTER).grid(column = 0,  row = stock_row, padx = 10, pady = 10)   
-ttk.Label(side_left, text ="Symbol").grid(column = 0,  row = stock_row, padx = 10, pady = 10,sticky="n")   
-ttk.Label(side_left, text ="Quantity").grid(column = 1,  row = stock_row, padx = 10, pady = 10)   
-ttk.Label(side_left, text ="Price").grid(column = 2,  row = stock_row, padx = 10, pady = 10)   
-ttk.Label(side_left, text ="net Change").grid(column = 3,  row = stock_row, padx = 10, pady = 10 ,sticky="e")   
+ttk.Label(side_left, text ="Symbol").grid(column = 0,  row = stock_row, padx = 10, pady = 0,sticky="n")   
+ttk.Label(side_left, text ="Quantity").grid(column = 1,  row = stock_row, padx = 10, pady = 0)   
+ttk.Label(side_left, text ="Price").grid(column = 2,  row = stock_row, padx = 10, pady = 0)   
+ttk.Label(side_left, text ="net Change").grid(column = 3,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
 # ttk.Label(side_left, text ="Day Percent Change").grid(column = 4,  row = stock_row, padx = 10, pady = 10)   
-ttk.Label(side_left, text ="Market Value").grid(column = 5,  row = stock_row, padx = 10, pady = 10 ,sticky="e")   
-ttk.Label(side_left, text ="Profit/Loss").grid(column = 6,  row = stock_row, padx = 10, pady = 10 ,sticky="e")   
+ttk.Label(side_left, text ="Market Value").grid(column = 5,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
+ttk.Label(side_left, text ="Profit/Loss").grid(column = 6,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
 
+stock_row += 1
+ttk.Label(side_left, text ="-----").grid(column = 0,  row = stock_row, padx = 10, pady = 0)   
+ttk.Label(side_left, text ="-----").grid(column = 1,  row = stock_row, padx = 10, pady = 0)   
+ttk.Label(side_left, text ="-----").grid(column = 2,  row = stock_row, padx = 10, pady = 0)   
+ttk.Label(side_left, text ="-------").grid(column = 3,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
+# ttk.Label(side_left, text ="Day Percent Change").grid(column = 4,  row = stock_row, padx = 10, pady = 10)   
+ttk.Label(side_left, text ="----------").grid(column = 5,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
+ttk.Label(side_left, text ="----------").grid(column = 6,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
 
 total_market_value = 0.0
 total_profit_loss = 0.0
@@ -183,29 +191,29 @@ for each in My_position_details["securitiesAccount"]["positions"]:
     if each["instrument"]["assetType"] == "EQUITY":
         stock_row += 1
         # print(each)
-        ttk.Label(side_left, text = each["instrument"]["symbol"] ).grid(column = 0,  row = stock_row, padx = 10, pady = 10)   
-        ttk.Label(side_left, text = f'{each["longQuantity"]:.0f}' ).grid(column = 1,  row = stock_row, padx = 10, pady = 10 ,sticky="e")   
+        ttk.Label(side_left, text = each["instrument"]["symbol"] ).grid(column = 0,  row = stock_row, padx = 10, pady = 0)   
+        ttk.Label(side_left, text = f'{each["longQuantity"]:.0f}' ).grid(column = 1,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
         # ttk.Label(side_left, text ="Price").grid(column = 2,  row = stock_row, padx = 10, pady = 10)
         # ttk.Label(side_left, text = f'{each["instrument"]["netChange"]:.2f}').grid(column = 3,  row = stock_row, padx = 10, pady = 10)
-        ttk.Label(side_left, text = f'{each["instrument"]["netChange"]:.2f}').grid(column = 3,  row = stock_row, padx = 10, pady = 10 ,sticky="e")
+        ttk.Label(side_left, text = f'{each["instrument"]["netChange"]:.2f}').grid(column = 3,  row = stock_row, padx = 0, pady = 0 ,sticky="e")
         # ttk.Label(side_left, text = each["currentDayProfitLossPercentage"]).grid(column = 4,  row = stock_row, padx = 10, pady = 10)
 
         market_value = each["marketValue"]
         total_market_value += market_value
-        ttk.Label(side_left, text = f'{market_value:.2f}').grid(column = 5,  row = stock_row, padx = 10, pady = 10 ,sticky="e")   
+        ttk.Label(side_left, text = f'{market_value:.2f}').grid(column = 5,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
 
         profit_loss = each["longOpenProfitLoss"]
         total_profit_loss += profit_loss
-        ttk.Label(side_left, text = f'{profit_loss:.2f}').grid(column = 6,  row = stock_row, padx = 10, pady = 10 ,sticky="e")   
+        ttk.Label(side_left, text = f'{profit_loss:.2f}').grid(column = 6,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
 
 stock_row += 1
-ttk.Label(side_left, text ="-----").grid(column = 0,  row = stock_row, padx = 10, pady = 10)   
-ttk.Label(side_left, text ="-----").grid(column = 1,  row = stock_row, padx = 10, pady = 10)   
-ttk.Label(side_left, text ="-----").grid(column = 2,  row = stock_row, padx = 10, pady = 10)   
-ttk.Label(side_left, text ="-------").grid(column = 3,  row = stock_row, padx = 10, pady = 10 ,sticky="e")   
+ttk.Label(side_left, text ="-----").grid(column = 0,  row = stock_row, padx = 10, pady = 0)   
+ttk.Label(side_left, text ="-----").grid(column = 1,  row = stock_row, padx = 10, pady = 0)   
+ttk.Label(side_left, text ="-----").grid(column = 2,  row = stock_row, padx = 10, pady = 0)   
+ttk.Label(side_left, text ="-------").grid(column = 3,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
 # ttk.Label(side_left, text ="Day Percent Change").grid(column = 4,  row = stock_row, padx = 10, pady = 10)   
-ttk.Label(side_left, text ="----------").grid(column = 5,  row = stock_row, padx = 10, pady = 10 ,sticky="e")   
-ttk.Label(side_left, text ="----------").grid(column = 6,  row = stock_row, padx = 10, pady = 10 ,sticky="e")   
+ttk.Label(side_left, text ="----------").grid(column = 5,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
+ttk.Label(side_left, text ="----------").grid(column = 6,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
 
 stock_row += 1
 # ttk.Label(side_left, text ="").grid(column = 0,  row = stock_row, padx = 10, pady = 10)   
@@ -213,8 +221,8 @@ stock_row += 1
 # ttk.Label(side_left, text ="").grid(column = 2,  row = stock_row, padx = 10, pady = 10)   
 # ttk.Label(side_left, text ="net Change").grid(column = 3,  row = stock_row, padx = 10, pady = 10 ,sticky="e")   
 # ttk.Label(side_left, text ="Day Percent Change").grid(column = 4,  row = stock_row, padx = 10, pady = 10)   
-ttk.Label(side_left, text =f'{total_market_value}').grid(column = 5,  row = stock_row, padx = 10, pady = 10 ,sticky="e")   
-ttk.Label(side_left, text =f'{total_profit_loss:.2f}').grid(column = 6,  row = stock_row, padx = 10, pady = 10, sticky="e")
+ttk.Label(side_left, text =f'{total_market_value}').grid(column = 5,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
+ttk.Label(side_left, text =f'{total_profit_loss:.2f}').grid(column = 6,  row = stock_row, padx = 10, pady = 0, sticky="e")
 
 
 ########################################################################
@@ -231,13 +239,13 @@ ttk.Label(side_left, text =f'{total_profit_loss:.2f}').grid(column = 6,  row = s
 
 date_row = 0
 label = ttk.Label(side_right,text="Expiration Date")
-label.grid(column = 0, row = date_row, pady=5,padx=10,sticky='E')
+label.grid(column = 0, row = date_row, pady=0,padx=10,sticky='E')
 label = ttk.Label(side_right,text="Calls")
-label.grid(column = 1, row = date_row, pady=5,padx=10)
+label.grid(column = 1, row = date_row, pady=0,padx=10)
 label = ttk.Label(side_right,text="Puts")
-label.grid(column = 2, row = date_row, pady=5,padx=10)
+label.grid(column = 2, row = date_row, pady=0,padx=10)
 label = ttk.Label(side_right,text="Days")
-label.grid(column = 3, row = date_row, pady=5,padx=10)
+label.grid(column = 3, row = date_row, pady=0,padx=10)
 
 total_calls = {}
 total_puts = {}
@@ -268,17 +276,17 @@ for each in My_dates:
     
     if each in total_calls:
         label = ttk.Label(side_right,text=f'{total_calls[each]:.0f}')
-        label.grid(column = 1, row = date_row, pady=1,padx=10)
+        label.grid(column = 1, row = date_row, pady=0,padx=10)
     else:
         label = ttk.Label(side_right,text="0", foreground="gray")
-        label.grid(column = 1, row = date_row, pady=1,padx=10)
+        label.grid(column = 1, row = date_row, pady=0,padx=10)
 
     if each in total_puts:
         label = ttk.Label(side_right,text=f'{total_puts[each]:.0f}')
-        label.grid(column = 2, row = date_row, pady=1,padx=10)
+        label.grid(column = 2, row = date_row, pady=0,padx=10)
     else:
         label = ttk.Label(side_right,text="0", foreground="gray")
-        label.grid(column = 2, row = date_row, pady=1,padx=10)
+        label.grid(column = 2, row = date_row, pady=0,padx=10)
     # print(each)
     now = datetime.datetime.now()
     date1 = datetime.date(now.year,now.month,now.day)
@@ -286,33 +294,33 @@ for each in My_dates:
     differece = date2-date1
     # print(date1,date2,differece.days)
     label = ttk.Label(side_right,text=str(differece.days), foreground="gray")
-    label.grid(column = 3, row = date_row, pady=1,padx=10)
+    label.grid(column = 3, row = date_row, pady=0,padx=10)
 
     # option_label.append(label)
 # ttk.Label(tab["Options"], text ="This should contain a table of my options expiring over time").grid(column = 0, row = 0, padx = 30, pady = 30) 
 
 date_row += 1
 label = ttk.Label(side_right,text="-------------")
-label.grid(column = 0, row = date_row, pady=5,padx=10)
+label.grid(column = 0, row = date_row, pady=0,padx=10)
 label = ttk.Label(side_right,text="----")
-label.grid(column = 1, row = date_row, pady=5,padx=10)
+label.grid(column = 1, row = date_row, pady=0,padx=10)
 label = ttk.Label(side_right,text="----")
-label.grid(column = 2, row = date_row, pady=5,padx=10)
+label.grid(column = 2, row = date_row, pady=0,padx=10)
 label = ttk.Label(side_right,text="----")
-label.grid(column = 3, row = date_row, pady=5,padx=10)
+label.grid(column = 3, row = date_row, pady=0,padx=10)
 
 date_row += 1
 number_calls = 0
 for each in total_calls:
     number_calls += total_calls[each]
 label = ttk.Label(side_right,text=f'{number_calls:.0f}')
-label.grid(column = 1, row = date_row, pady=5,padx=10)
+label.grid(column = 1, row = date_row, pady=0,padx=10)
 
 number_puts = 0
 for each in total_puts:
     number_puts += total_puts[each]
 label = ttk.Label(side_right,text=f'{number_puts:.0f}')
-label.grid(column = 2, row = date_row, pady=5,padx=10)
+label.grid(column = 2, row = date_row, pady=0,padx=10)
 
 
 
