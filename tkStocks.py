@@ -87,7 +87,9 @@ print(3)
 My_position_details = return_details("My_position_details")
 print(4)
 My_stock_option_dates = return_details("My_stock_option_dates")
-# print(5)
+print(5)
+My_lot_details = return_details("My_lot_details")
+# print(6)
 # My_stock_option_strikes = return_details("My_stock_option_strikes")
 
 # All_stock_option_dates = all_dates(My_stock_option_dates)
@@ -362,7 +364,8 @@ for each in My_open_orders:
 # print(len(My_open_orders))
 # print()
 
-
+########################################################################
+#this is for each of the individual stocks
 
 # for each in range(len(My_involved_all)):
 for each in My_involved_all:
