@@ -121,33 +121,46 @@ My_involved_all.sort()
 # print()
 
 ########################################################################
+window.columnconfigure(0, weight=1)
+window.rowconfigure(0, weight=1)
+
 tabControl = ttk.Notebook(window)
+tabControl.columnconfigure(0, weight=1)
+
 tab = {}
 ########################################################################
 special = "Stocks and Options"
 
 # special = "Options"
-tab[special] = ttk.Frame(tabControl)
+tab[special] = ttk.Frame(tabControl,padding=5)
+tab[special].columnconfigure(0, weight=1)
+tab[special].columnconfigure(1, weight=1)
 tabControl.add(tab[special], text=special)
-side_left = ttk.Frame(tab[special], width = tab[special].winfo_width()/2)
-side_right = ttk.Frame(tab[special], width = tab[special].winfo_width()/2)
+side_left = ttk.Frame(tab[special], width = tab[special].winfo_width()/2)#.grid(column=0, row=0,sticky="new")
+side_right = ttk.Frame(tab[special], width = tab[special].winfo_width()/2)#.grid(column=1, row=0,sticky="new")
+# side_left.columnconfigure(1, weight=1)
+# side_right.columnconfigure(1, weight=1)
 
-# side_left.pack(side=tk.LEFT, fill=tk.Y)
+# side_left.pack(side=tk.LEFT, fill=tk.X)
 # side_left.pack(fill=tk.Y)
+# side_left.pack(side=tk.LEFT, fill="both")
 # side_right.pack(side=tk.TOP, fill=tk.Y)
-# side_right.pack(fill=tk.Y)
+# side_right.pack(side=tk.TOP, fill="both")
+# side_right.pack(side=tk.RIGHT, fill="both")
 
-side_left.grid(column=0, row=0,sticky=tk.E)
+side_left.grid(column=0, row=0,padx=30, pady=30,sticky=(tk.W, tk.E, tk.N, tk.S))
 # side_left.grid(sticky=tk.N+tk.E+tk.S+tk.W)
-side_right.grid(column=1, row=0,sticky=tk.N)
+side_right.grid(column=1, row=0,padx=30, pady=10, sticky=(tk.W, tk.E, tk.N, tk.S))
 # side_right.grid(sticky=tk.E+tk.S+tk.W)
+# side_left.columnconfigure(0, weight=1)
+# side_right.columnconfigure(1, weight=1)
 
 # tab[special] = ttk.Frame(tabControl)
 # tabControl.add(tab[special], text=special)
 # ttk.Label(tab["Stocks"], text ="This should contain a table of my owned stocks").grid(column = 0,  row = 0, padx = 30, pady = 30)   
 stock_row = 0
 # ttk.Label(side_left, text ="Symbol",anchor=tk.CENTER).grid(column = 0,  row = stock_row, padx = 10, pady = 10)   
-ttk.Label(side_left, text ="Symbol").grid(column = 0,  row = stock_row, padx = 10, pady = 10)   
+ttk.Label(side_left, text ="Symbol").grid(column = 0,  row = stock_row, padx = 10, pady = 10,sticky="n")   
 ttk.Label(side_left, text ="Quantity").grid(column = 1,  row = stock_row, padx = 10, pady = 10)   
 ttk.Label(side_left, text ="Price").grid(column = 2,  row = stock_row, padx = 10, pady = 10)   
 ttk.Label(side_left, text ="net Change").grid(column = 3,  row = stock_row, padx = 10, pady = 10 ,sticky="e")   
@@ -297,6 +310,14 @@ label.grid(column = 2, row = date_row, pady=5,padx=10)
 ########################################################################
 special = "Open"
 tab[special] = ttk.Frame(tabControl)
+tab[special].grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+tab[special].columnconfigure(0, weight=4)
+tab[special].columnconfigure(1, weight=1)
+tab[special].columnconfigure(2, weight=1)
+tab[special].columnconfigure(3, weight=1)
+tab[special].columnconfigure(4, weight=1)
+# tab[special].rowconfigure(0, weight=1)
+
 tabControl.add(tab[special], text=special)
 # ttk.Label(tab["Open"], text ="This should contain a list of open orders").grid(column = 0, row = 0, padx = 30, pady = 30) 
 
