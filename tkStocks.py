@@ -130,16 +130,23 @@ special = "Stocks and Options"
 tab[special] = ttk.Frame(tabControl)
 tabControl.add(tab[special], text=special)
 side_left = ttk.Frame(tab[special], width = tab[special].winfo_width()/2)
-side_left.pack(side=tk.LEFT, fill=tk.Y)
 side_right = ttk.Frame(tab[special], width = tab[special].winfo_width()/2)
-# side_right.pack(side=tk.RIGHT, fill=tk.Y)
-side_right.pack(fill=tk.Y)
 
+# side_left.pack(side=tk.LEFT, fill=tk.Y)
+# side_left.pack(fill=tk.Y)
+# side_right.pack(side=tk.TOP, fill=tk.Y)
+# side_right.pack(fill=tk.Y)
+
+side_left.grid(column=0, row=0,sticky=tk.E)
+# side_left.grid(sticky=tk.N+tk.E+tk.S+tk.W)
+side_right.grid(column=1, row=0,sticky=tk.W)
+# side_right.grid(sticky=tk.E+tk.S+tk.W)
 
 # tab[special] = ttk.Frame(tabControl)
 # tabControl.add(tab[special], text=special)
 # ttk.Label(tab["Stocks"], text ="This should contain a table of my owned stocks").grid(column = 0,  row = 0, padx = 30, pady = 30)   
 stock_row = 0
+# ttk.Label(side_left, text ="Symbol",anchor=tk.CENTER).grid(column = 0,  row = stock_row, padx = 10, pady = 10)   
 ttk.Label(side_left, text ="Symbol").grid(column = 0,  row = stock_row, padx = 10, pady = 10)   
 ttk.Label(side_left, text ="Quantity").grid(column = 1,  row = stock_row, padx = 10, pady = 10)   
 ttk.Label(side_left, text ="Price").grid(column = 2,  row = stock_row, padx = 10, pady = 10)   
@@ -202,7 +209,7 @@ ttk.Label(side_left, text =f'{total_profit_loss:.2f}').grid(column = 6,  row = s
 
 date_row = 0
 label = ttk.Label(side_right,text="Expiration Date")
-label.grid(column = 0, row = date_row, pady=5,padx=10)
+label.grid(column = 0, row = date_row, pady=5,padx=10,sticky='E')
 label = ttk.Label(side_right,text="Calls")
 label.grid(column = 1, row = date_row, pady=5,padx=10)
 label = ttk.Label(side_right,text="Puts")
