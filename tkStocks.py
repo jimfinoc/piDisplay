@@ -53,6 +53,8 @@ def return_orders(status = "open"):
         elif status == "open":
             if each['status'] == 'PENDING_ACTIVATION':
                 returnData.append(each)
+            if each['status'] == 'WORKING':
+                returnData.append(each)
         elif status == "filled":
             if each['status'] == 'FILLED':
                 returnData.append(each)
