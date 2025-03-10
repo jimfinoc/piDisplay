@@ -9,8 +9,6 @@ import redis
 from dotenv import load_dotenv
 import os
 
-
-
 window = tk.Tk()
 my_geometry = 700
 afterTime = 5 * 60 * 1000 # time is in milliseconds
@@ -272,7 +270,7 @@ for each in My_position_details["securitiesAccount"]["positions"]:
 for each in My_dates:
     date_row += 1
     label = ttk.Label(side_right,text=str(each))
-    label.grid(column = 0, row = date_row, pady=1,padx=10)
+    label.grid(column = 0, row = date_row, pady=0,padx=10)
     
     if each in total_calls:
         label = ttk.Label(side_right,text=f'{total_calls[each]:.0f}')
@@ -516,6 +514,38 @@ for each_stock in My_involved_all:
                     print(long_quantity)
                     print(total_lot_sum_quantity)
                     ttk.Label(side_left,style="R.TLabel", text ="Counts do not match! Ingest this stock lot again!").grid(column = 2,  row = lot_row, padx = 10, pady = 0, columnspan=4, sticky="w")
+
+    date_row = 3
+    ttk.Label(side_right, text = "Expiration").grid(column = 0,  row = date_row, padx = 10, pady = 0,sticky="n")   
+    ttk.Label(side_right, text = "Calls").grid(column = 1,  row = date_row, padx = 10, pady = 0,sticky="w")
+    ttk.Label(side_right, text = "Puts").grid(column = 2,  row = date_row, padx = 10, pady = 0,sticky="w")
+    ttk.Label(side_right, text = "Days").grid(column = 3,  row = date_row, padx = 10, pady = 0,sticky="w")
+    
+    date_row += 1
+    ttk.Label(side_right, text = "----------").grid(column = 0,  row = date_row, padx = 10, pady = 0,sticky="n")   
+    ttk.Label(side_right, text = "-----").grid(column = 1,  row = date_row, padx = 10, pady = 0,sticky="w")
+    ttk.Label(side_right, text = "-----").grid(column = 2,  row = date_row, padx = 10, pady = 0,sticky="w")
+    ttk.Label(side_right, text = "-----").grid(column = 3,  row = date_row, padx = 10, pady = 0,sticky="w")
+    
+    for each_date in My_stock_option_dates[each_stock]:
+        date_row += 1
+        print("each_date")
+        print(each_date)
+        ttk.Label(side_right, text = each_date).grid(column = 0,  row = date_row, padx = 10, pady = 0,sticky="n")   
+        ttk.Label(side_right, text = "C*").grid(column = 1,  row = date_row, padx = 10, pady = 0,sticky="w")
+        ttk.Label(side_right, text = "P*").grid(column = 2,  row = date_row, padx = 10, pady = 0,sticky="w")
+        
+        now = datetime.datetime.now()
+        date1 = datetime.date(now.year,now.month,now.day)
+        date2 = datetime.date.fromisoformat(each_date)
+        differece = date2-date1
+
+        ttk.Label(side_right, text = str(differece.days) ).grid(column = 3,  row = date_row, padx = 10, pady = 0,sticky="w")
+        print("days_until")
+        print(differece)
+        
+
+
 
 tabControl.pack(expand=1, fill="both")
 
