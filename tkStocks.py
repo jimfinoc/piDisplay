@@ -550,7 +550,7 @@ for each_stock in My_involved_all:
                             total_calls += each_position["shortQuantity"]
                             total_calls += each_position["longQuantity"]
         if total_calls != 0:
-            ttk.Label(side_right, text = f'{total_calls:.0f}',foreground="white").grid(column = 1,  row = date_row, padx = 10, pady = 0,sticky="w")
+            ttk.Label(side_right, text = f'{total_calls:.0f}').grid(column = 1,  row = date_row, padx = 10, pady = 0,sticky="w")
         else:
             ttk.Label(side_right, text = f'{total_calls:.0f}',foreground="gray").grid(column = 1,  row = date_row, padx = 10, pady = 0,sticky="w")
 
@@ -568,7 +568,7 @@ for each_stock in My_involved_all:
                             total_puts += each_position["shortQuantity"]
                             total_puts += each_position["longQuantity"]
         if total_puts != 0:
-            ttk.Label(side_right, text = f'{total_puts:.0f}',foreground="white").grid(column = 2,  row = date_row, padx = 10, pady = 0,sticky="w")
+            ttk.Label(side_right, text = f'{total_puts:.0f}').grid(column = 2,  row = date_row, padx = 10, pady = 0,sticky="w")
         else:
             ttk.Label(side_right, text = f'{total_puts:.0f}',foreground="gray").grid(column = 2,  row = date_row, padx = 10, pady = 0,sticky="w")
 
