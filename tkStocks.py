@@ -274,17 +274,15 @@ for each in My_dates:
     
     if each in total_calls:
         label = ttk.Label(side_right,text=f'{total_calls[each]:.0f}')
-        label.grid(column = 1, row = date_row, pady=0,padx=10)
     else:
         label = ttk.Label(side_right,text="0", foreground="gray")
-        label.grid(column = 1, row = date_row, pady=0,padx=10)
+    label.grid(column = 1, row = date_row, pady=0,padx=10)
 
     if each in total_puts:
         label = ttk.Label(side_right,text=f'{total_puts[each]:.0f}')
-        label.grid(column = 2, row = date_row, pady=0,padx=10)
     else:
         label = ttk.Label(side_right,text="0", foreground="gray")
-        label.grid(column = 2, row = date_row, pady=0,padx=10)
+    label.grid(column = 2, row = date_row, pady=0,padx=10)
     # print(each)
     now = datetime.datetime.now()
     date1 = datetime.date(now.year,now.month,now.day)
@@ -515,7 +513,13 @@ for each_stock in My_involved_all:
                     print(total_lot_sum_quantity)
                     ttk.Label(side_left,style="R.TLabel", text ="Counts do not match! Ingest this stock lot again!").grid(column = 2,  row = lot_row, padx = 10, pady = 0, columnspan=4, sticky="w")
 
-    date_row = 3
+    date_row = 0
+    ttk.Label(side_right, text = "").grid(column = 0,  row = date_row, padx = 10, pady = 0,sticky="n")   
+    date_row += 1
+    ttk.Label(side_right, text = "").grid(column = 0,  row = date_row, padx = 10, pady = 0,sticky="n")   
+    date_row += 1
+    ttk.Label(side_right, text = "").grid(column = 0,  row = date_row, padx = 10, pady = 0,sticky="n")   
+
     ttk.Label(side_right, text = "Expiration").grid(column = 0,  row = date_row, padx = 10, pady = 0,sticky="n")   
     ttk.Label(side_right, text = "Calls").grid(column = 1,  row = date_row, padx = 10, pady = 0,sticky="w")
     ttk.Label(side_right, text = "Puts").grid(column = 2,  row = date_row, padx = 10, pady = 0,sticky="w")
@@ -532,15 +536,48 @@ for each_stock in My_involved_all:
         print("each_date")
         print(each_date)
         ttk.Label(side_right, text = each_date).grid(column = 0,  row = date_row, padx = 10, pady = 0,sticky="n")   
-        ttk.Label(side_right, text = "C*").grid(column = 1,  row = date_row, padx = 10, pady = 0,sticky="w")
-        ttk.Label(side_right, text = "P*").grid(column = 2,  row = date_row, padx = 10, pady = 0,sticky="w")
         
+        total_calls = 0
+        for each_position in My_position_details["securitiesAccount"]["positions"]:
+            if each_position["instrument"]["assetType"] == "OPTION":
+                if each_position["instrument"]["underlyingSymbol"] == each_stock:
+                    year = f'20{each_position["instrument"]["symbol"][6:8]}'
+                    month = f'{each_position["instrument"]["symbol"][8:10]}'
+                    day = f'{each_position["instrument"]["symbol"][10:12]}'
+                    special_date = f'{year}-{month}-{day}'
+                    if special_date == each_date:
+                        if each_position["instrument"]["putCall"] == "CALL":
+                            total_calls += each_position["shortQuantity"]
+                            total_calls += each_position["longQuantity"]
+        if total_calls != 0:
+            ttk.Label(side_right, text = f'{total_calls:.0f}',foreground="white").grid(column = 1,  row = date_row, padx = 10, pady = 0,sticky="w")
+        else:
+            ttk.Label(side_right, text = f'{total_calls:.0f}',foreground="gray").grid(column = 1,  row = date_row, padx = 10, pady = 0,sticky="w")
+
+        
+        total_puts = 0
+        for each_position in My_position_details["securitiesAccount"]["positions"]:
+            if each_position["instrument"]["assetType"] == "OPTION":
+                if each_position["instrument"]["underlyingSymbol"] == each_stock:
+                    year = f'20{each_position["instrument"]["symbol"][6:8]}'
+                    month = f'{each_position["instrument"]["symbol"][8:10]}'
+                    day = f'{each_position["instrument"]["symbol"][10:12]}'
+                    special_date = f'{year}-{month}-{day}'
+                    if special_date == each_date:
+                        if each_position["instrument"]["putCall"] == "PUT":
+                            total_puts += each_position["shortQuantity"]
+                            total_puts += each_position["longQuantity"]
+        if total_puts != 0:
+            ttk.Label(side_right, text = f'{total_puts:.0f}',foreground="white").grid(column = 2,  row = date_row, padx = 10, pady = 0,sticky="w")
+        else:
+            ttk.Label(side_right, text = f'{total_puts:.0f}',foreground="gray").grid(column = 2,  row = date_row, padx = 10, pady = 0,sticky="w")
+
         now = datetime.datetime.now()
         date1 = datetime.date(now.year,now.month,now.day)
         date2 = datetime.date.fromisoformat(each_date)
         differece = date2-date1
 
-        ttk.Label(side_right, text = str(differece.days) ).grid(column = 3,  row = date_row, padx = 10, pady = 0,sticky="w")
+        ttk.Label(side_right, text = str(differece.days),foreground="gray" ).grid(column = 3,  row = date_row, padx = 10, pady = 0,sticky="w")
         print("days_until")
         print(differece)
         
