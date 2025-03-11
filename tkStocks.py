@@ -514,6 +514,8 @@ for each_stock in My_involved_all:
                     print(long_quantity)
                     print(total_lot_sum_quantity)
                     ttk.Label(side_left,style="R.TLabel", text ="Counts do not match! Ingest this stock lot again!").grid(column = 2,  row = lot_row, padx = 10, pady = 0, columnspan=4, sticky="w")
+    grand_total_calls = 0
+    grand_total_puts = 0
 
     date_row = 0
     ttk.Label(side_right, text = "").grid(column = 0,  row = date_row, padx = 10, pady = 0,sticky="n")   
@@ -582,8 +584,25 @@ for each_stock in My_involved_all:
         ttk.Label(side_right, text = str(differece.days),foreground="gray" ).grid(column = 3,  row = date_row, padx = 10, pady = 0,sticky="w")
         print("days_until")
         print(differece)
+        grand_total_calls += total_calls
+        grand_total_puts += total_puts
         
+    date_row += 1
+    ttk.Label(side_right, text = "----------").grid(column = 0,  row = date_row, padx = 10, pady = 0,sticky="n")   
+    ttk.Label(side_right, text = "-----").grid(column = 1,  row = date_row, padx = 10, pady = 0,sticky="w")
+    ttk.Label(side_right, text = "-----").grid(column = 2,  row = date_row, padx = 10, pady = 0,sticky="w")
+    ttk.Label(side_right, text = "-----").grid(column = 3,  row = date_row, padx = 10, pady = 0,sticky="w")
 
+    date_row += 1
+    if grand_total_puts != 0:
+        ttk.Label(side_right, text = f'{grand_total_puts:.0f}').grid(column = 2,  row = date_row, padx = 10, pady = 0,sticky="w")
+    else:
+        ttk.Label(side_right, text = f'{grand_total_puts:.0f}',foreground="gray").grid(column = 2,  row = date_row, padx = 10, pady = 0,sticky="w")
+
+    if grand_total_calls != 0:
+        ttk.Label(side_right, text = f'{grand_total_calls:.0f}').grid(column = 1,  row = date_row, padx = 10, pady = 0,sticky="w")
+    else:
+        ttk.Label(side_right, text = f'{grand_total_calls:.0f}',foreground="gray").grid(column = 1,  row = date_row, padx = 10, pady = 0,sticky="w")
 
 
 tabControl.pack(expand=1, fill="both")
