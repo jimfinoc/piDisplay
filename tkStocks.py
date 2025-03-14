@@ -11,7 +11,7 @@ import os
 
 window = tk.Tk()
 my_geometry = 700
-afterTime = 5 * 60 * 1000 # time is in milliseconds
+afterTime = 5 * 60 * 1000 # time is in milliseconds, this waits 5 minutes
 # x_geometry = my_geometry
 # y_geometry = my_geometry
 x_geometry = 1280
