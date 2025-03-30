@@ -24,6 +24,8 @@ afterTime = 5 * 60 * 1000 # time is in milliseconds, this waits 5 minutes
 My_position_details = return_details("My_position_details")
 My_orders_details = return_details("My_orders_details")
 
+My_quotes = return_details("My_quotes")
+
 My_stocks = return_details("My_stocks")
 My_owned_stocks = return_positions("stock")
 My_open_orders = return_orders("open")
@@ -64,67 +66,10 @@ headers = [
 ]
 
 myNotebook.create_overview_labels(special, headers,My_position_details)
-# myNotebook.update_overview_labels(special, My_position_details)
 
+# myNotebook.update_prices(10)
+window.after(0, myNotebook.update_prices)
 
-# ttk.Label(side_left, text ="Symbol").grid(column = 0,  row = stock_row, padx = 10, pady = 0,sticky="n")   
-# ttk.Label(side_left, text ="Quantity").grid(column = 1,  row = stock_row, padx = 10, pady = 0)   
-# ttk.Label(side_left, text ="Price").grid(column = 2,  row = stock_row, padx = 10, pady = 0)   
-# ttk.Label(side_left, text ="net Change").grid(column = 3,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
-# # ttk.Label(side_left, text ="Day Percent Change").grid(column = 4,  row = stock_row, padx = 10, pady = 10)   
-# ttk.Label(side_left, text ="Market Value").grid(column = 5,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
-# ttk.Label(side_left, text ="Profit/Loss").grid(column = 6,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
-
-# stock_row += 1
-# ttk.Label(side_left, text ="-----").grid(column = 0,  row = stock_row, padx = 10, pady = 0)   
-# ttk.Label(side_left, text ="-----").grid(column = 1,  row = stock_row, padx = 10, pady = 0)   
-# ttk.Label(side_left, text ="-----").grid(column = 2,  row = stock_row, padx = 10, pady = 0)   
-# ttk.Label(side_left, text ="-------").grid(column = 3,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
-# # ttk.Label(side_left, text ="Day Percent Change").grid(column = 4,  row = stock_row, padx = 10, pady = 10)   
-# ttk.Label(side_left, text ="----------").grid(column = 5,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
-# ttk.Label(side_left, text ="----------").grid(column = 6,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
-
-# total_market_value = 0.0
-# total_profit_loss = 0.0
-# for each in My_position_details["securitiesAccount"]["positions"]:
-#     if each["instrument"]["assetType"] == "EQUITY":
-#         stock_row += 1
-#         # print(each)
-#         ttk.Label(side_left, text = each["instrument"]["symbol"] ).grid(column = 0,  row = stock_row, padx = 10, pady = 0)   
-#         ttk.Label(side_left, text = f'{each["longQuantity"]:.0f}' ).grid(column = 1,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
-#         # ttk.Label(side_left, text ="Price").grid(column = 2,  row = stock_row, padx = 10, pady = 10)
-#         # ttk.Label(side_left, text = f'{each["instrument"]["netChange"]:.2f}').grid(column = 3,  row = stock_row, padx = 10, pady = 10)
-#         ttk.Label(side_left, text = f'{each["instrument"]["netChange"]:.2f}').grid(column = 3,  row = stock_row, padx = 0, pady = 0 ,sticky="e")
-#         # ttk.Label(side_left, text = each["currentDayProfitLossPercentage"]).grid(column = 4,  row = stock_row, padx = 10, pady = 10)
-
-#         market_value = each["marketValue"]
-#         total_market_value += market_value
-#         ttk.Label(side_left, text = f'{market_value:.2f}').grid(column = 5,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
-
-#         profit_loss = each["longOpenProfitLoss"]
-#         total_profit_loss += profit_loss
-#         ttk.Label(side_left, text = f'{profit_loss:.2f}').grid(column = 6,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
-
-# stock_row += 1
-# ttk.Label(side_left, text ="-----").grid(column = 0,  row = stock_row, padx = 10, pady = 0)   
-# ttk.Label(side_left, text ="-----").grid(column = 1,  row = stock_row, padx = 10, pady = 0)   
-# ttk.Label(side_left, text ="-----").grid(column = 2,  row = stock_row, padx = 10, pady = 0)   
-# ttk.Label(side_left, text ="-------").grid(column = 3,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
-# # ttk.Label(side_left, text ="Day Percent Change").grid(column = 4,  row = stock_row, padx = 10, pady = 10)   
-# ttk.Label(side_left, text ="----------").grid(column = 5,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
-# ttk.Label(side_left, text ="----------").grid(column = 6,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
-
-# stock_row += 1
-# # ttk.Label(side_left, text ="").grid(column = 0,  row = stock_row, padx = 10, pady = 10)   
-# # ttk.Label(side_left, text ="").grid(column = 1,  row = stock_row, padx = 10, pady = 10)   
-# # ttk.Label(side_left, text ="").grid(column = 2,  row = stock_row, padx = 10, pady = 10)   
-# # ttk.Label(side_left, text ="net Change").grid(column = 3,  row = stock_row, padx = 10, pady = 10 ,sticky="e")   
-# # ttk.Label(side_left, text ="Day Percent Change").grid(column = 4,  row = stock_row, padx = 10, pady = 10)   
-# ttk.Label(side_left, text =f'{total_market_value}').grid(column = 5,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
-# ttk.Label(side_left, text =f'{total_profit_loss:.2f}').grid(column = 6,  row = stock_row, padx = 10, pady = 0, sticky="e")
-
-
-
-
+window.after(60000, window.destroy)
 
 window.mainloop()
