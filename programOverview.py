@@ -20,7 +20,7 @@ from ttkTabs import notebook_with_tab
 # x_geometry = 1280
 # y_geometry = 720-32
 x_geometry = 720
-y_geometry = 1280-64
+y_geometry = 1280-120
 afterTime = 5 * 60 * 1000 # time is in milliseconds, this waits 5 minutes
 
 My_position_details = return_details("My_position_details")
