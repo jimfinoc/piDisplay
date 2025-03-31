@@ -17,8 +17,10 @@ from stockDataFunctions import total_calls_and_puts
 
 from ttkTabs import notebook_with_tab
 
-x_geometry = 1280
-y_geometry = 720-16
+# x_geometry = 1280
+# y_geometry = 720-16
+x_geometry = 720
+y_geometry = 1280-16
 afterTime = 5 * 60 * 1000 # time is in milliseconds, this waits 5 minutes
 
 My_position_details = return_details("My_position_details")
@@ -70,6 +72,6 @@ myNotebook.create_overview_labels(special, headers,My_position_details)
 # myNotebook.update_prices(10)
 window.after(0, myNotebook.update_prices)
 
-window.after(60000, window.destroy)
+# window.after(360000, window.destroy)
 
 window.mainloop()
