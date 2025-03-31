@@ -131,7 +131,7 @@ class notebook_with_tab():
                 # self.stockdict[each["symbol"]]["netChangePercent"].set(f'{each["change_percent"]:.2f}')
                 # print(each)
                 # self.stockdict["F"]["price"].set(11)
-        self.window.after(1000, myNotebook.update_prices)
+        self.window.after(1000, self.myNotebook.update_prices)
 
 
 
