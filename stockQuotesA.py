@@ -7,6 +7,9 @@ from threading import Thread, Event
 from stockDataFunctions import return_details
 
 import argparse
+
+time_between_redis_pulls = .5
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--sort", choices=['Name','Percent'], default=['Name'], help = "Sort stocks by Name")
 args = parser.parse_args()
@@ -15,9 +18,12 @@ args = parser.parse_args()
 print('args.sort')
 print(args.sort)
 
+DataStyle = 0
 if 'Name' in args.sort:
     print("Sorting by Name")
+    DataStyle = 1
 elif 'Percent' in args.sort:
+    DataStyle = 2
     print("Sorting by Percent")
 
 # if args.Output:
@@ -33,21 +39,24 @@ def prYellow(skk): print("\033[93m {}\033[00m" .format(skk))
 def prLightPurple(skk): print("\033[94m {}\033[00m" .format(skk))
 def prPurple(skk): print("\033[95m {}\033[00m" .format(skk))
 def prCyan(skk): print("\033[96m {}\033[00m" .format(skk))
-def prCyan(skk): print("\033[97m {}\033[00m" .format(skk))
+def prBlue(skk): print("\033[94m {}\033[00m" .format(skk))
 def prBlack(skk): print("\033[98m {}\033[00m" .format(skk))
 
 def redisPullDataFunction(var):
     pullcount = 0
     global stop_threads
+    start = time.time()
     while not stop_threads:
-        # var.clear()
-        global redisDataPull
-        redisDataPull = return_details("My_quotes")
-        var = redisDataPull
-        prRed('done loading stock data')
-        print('len(var)')
-        print(len(var))
-        time.sleep(1)
+        if time.time() - start > time_between_redis_pulls:
+            start = time.time()
+            # var.clear()
+            global redisDataPull
+            redisDataPull = return_details("My_quotes")
+            var = redisDataPull
+            # prRed('done loading stock data')
+            # print('len(var)')
+            # print(len(var))
+            # time.sleep(1)
     prRed('Stop printing')
 
 
@@ -59,27 +68,29 @@ pygame.init()
 print()
 size = pygame.display.get_desktop_sizes()
 if size[0] == (3440,1440):
-    my_screen_size = 2
-    my_screen = "Big Monitor"
-elif size[0] == (800,480):
-    my_screen_size = 0
-    my_screen = "Pi Monitor"
+    my_screen_size = 10
+    my_screen = "Widescreen Big Monitor"
 elif size[0] == (1920,1080):
-    my_screen_size = 1
-    my_screen = "Wide Monitor"
+    my_screen_size = 11
+    my_screen = "Standard  Monitor"
+elif size[0] == (800,480) or size[0] == (480,800):
+    my_screen_size = 21
+    my_screen = "Pi Touchscreen 1 Monitor"
+elif size[0] == (1280,720) or size[0] == (720,1280):
+    my_screen_size = 22
+    my_screen = "Pi Touchscreen 2 Monitor"
 else:
-    my_screen_size = 4
+    my_screen_size = 0
     my_screen = "an 'I'm not sure' Monitor"
 
 print("Looks like you are using a", my_screen)
 print("Your screen size is ",size[0])
 time.sleep(1)
 
-if my_screen_size == 0:
+if my_screen_size == 21 or my_screen_size == 22:
     flags = pygame.FULLSCREEN
     screen_width=0
     screen_height=0
-# elif my_screen_size == 2:
 else:
     # flags = pygame.FULLSCREEN
     flags = pygame.SHOWN
@@ -142,11 +153,11 @@ done = False
 clock = pygame.time.Clock()
 
 while not done:
-    clock.tick(1)
+    clock.tick(30)
     today = datetime.date.today()
 
-    print('len(redisDataPull)')
-    print(len(redisDataPull))   
+    # print('len(redisDataPull)')
+    # print(len(redisDataPull))   
     squares = len(redisDataPull)
 
     # squares = squares + 1
@@ -163,18 +174,17 @@ while not done:
     stockList = []
     for each in redisDataPull:
         stockList.append(redisDataPull[each])
-    print ('stockList')
+    # print ('stockList')
     # print (stockList)
 
     # stocksSorted = []
 
-    if 'Name' in args.sort:
+    # if 'Name' in args.sort:
+    if DataStyle == 1:
         stocksSorted = sorted(stockList, key=lambda item: item["symbol"])
-        print("Sorting by Name")
-    elif 'Percent' in args.sort:
-
+    if DataStyle == 2:
+    # elif 'Percent' in args.sort:
         stocksSorted = sorted(stockList, key=lambda item: item["change_percent"])
-        print("Sorting by Percent")
 
 
     # for each in range(len(stocksSortedByName)):
@@ -261,9 +271,28 @@ while not done:
 
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
-        # if event.type == pygame.QUIT:
-            stop_threads = True
-            pygame.display.quit()
-            pygame.quit()
+            if pygame.mouse.get_pressed()[0]:
+                # print("Left mouse button clicked")
+                if DataStyle == 1:
+                    DataStyle = 2
+                    prYellow("Now sorting by Percent")
+                elif DataStyle == 2:
+                    DataStyle = 1
+                    prGreen("Now sorting by Name")
+            if pygame.mouse.get_pressed()[1]:
+                prBlue("Doing nothing")
+                pass
+            if pygame.mouse.get_pressed()[2]:
+                # print("Right mouse button clicked")
+                print("Exiting program")
+                stop_threads = True
+                pygame.display.quit()
+                done = True
+                pygame.quit()
+        if event.type == pygame.QUIT:
+                stop_threads = True
+                pygame.display.quit()
+                done = True
+                pygame.quit()
 
 
