@@ -4,7 +4,7 @@ import time
 import random
 import math
 # from threading import Thread, Event
-from multiprocessing import Process, Value, Manager
+from multiprocessing import Process, Value, Manager, Lock
 from ctypes import c_char_p
 import json
 from stockDataFunctions import return_details
@@ -47,22 +47,22 @@ def prCyan(skk): print("\033[96m {}\033[00m" .format(skk))
 def prBlue(skk): print("\033[94m {}\033[00m" .format(skk))
 def prBlack(skk): print("\033[98m {}\033[00m" .format(skk))
 
-def redisPullDataFunction(var,stop_threads):
+def redisPullDataFunction(lock, shared_dict,stop_threads):
     pullcount = 0
     local_stop = False
     start = time.time()
     while not local_stop:
         if time.time() - start > time_between_redis_pulls:
-            try:
+            with lock:
                 # prRed('stop_threads')
                 # prRed(stop_threads.value)
                 local_stop = stop_threads.value
                 # prRed(pullcount)
                 start = time.time()
-                temp = var.copy()
+                temp = shared_dict.copy()
                 temp = return_details("My_quotes")
-                var.clear()
-                var.update(temp)
+                shared_dict.clear()
+                shared_dict.update(temp)
                 # print('type(redisDataPull)')
                 # print(type(redisDataPull))
                 # print('redisDataPull')
@@ -82,19 +82,18 @@ def redisPullDataFunction(var,stop_threads):
                 # print('len(var)')
                 # print(len(var))
                 # time.sleep(1)
-            except BrokenPipeError:
-                prRed('BrokenPipeError')
     prRed('Stop printing')
 
 if __name__ == '__main__':
     with Manager() as manager:
-        redisDataPull = manager.dict()        
+        redisDataPull = manager.dict()
+        lock = manager.Lock()        
         # t1 = Thread(target=redisPullDataFunction, args=(redisDataPull, ))
         # t1.start()
         stop_threads = Value('b', False)
         # redisDataPull_string = Value(c_char_p, b"")
 
-        p1 = Process(target=redisPullDataFunction, args=(redisDataPull, stop_threads))
+        p1 = Process(target=redisPullDataFunction, args=(lock, redisDataPull, stop_threads))
         p1.start()
 
         pygame.init()
