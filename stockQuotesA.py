@@ -117,7 +117,7 @@ if __name__ == '__main__':
 
         print("Looks like you are using a", my_screen)
         print("Your screen size is ",size[0])
-        time.sleep(1)
+        time.sleep(2)
 
         if my_screen_size == 21 or my_screen_size == 22:
             flags = pygame.FULLSCREEN
@@ -199,14 +199,16 @@ if __name__ == '__main__':
             # prLightPurple('redisDataPull')
             # prLightPurple(redisDataPull)
 
-            redisDataPull = temp_dict.copy()
-            # temp = shared_dict.copy()
-            # temp = return_details("My_quotes")
-            temp_dict.clear()
-
-
-            squares = len(redisDataPull)
-
+            squares = 0
+            while squares == 0:
+                redisDataPull = temp_dict.copy()
+                squares = len(redisDataPull)
+            # prPurple('squares != 0')
+            
+            
+            
+            # if squares == 0:
+                # break
             # squares = squares + 1
             # if size[0][0] > size[0][1] or True==True:
             cols = []
