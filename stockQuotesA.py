@@ -86,14 +86,14 @@ def redisPullDataFunction(lock, shared_dict,stop_threads):
 
 if __name__ == '__main__':
     with Manager() as manager:
-        redisDataPull = manager.dict()
+        temp_dict = manager.dict()
         lock = manager.Lock()        
         # t1 = Thread(target=redisPullDataFunction, args=(redisDataPull, ))
         # t1.start()
-        stop_threads = Value('b', False)
         # redisDataPull_string = Value(c_char_p, b"")
 
-        p1 = Process(target=redisPullDataFunction, args=(lock, redisDataPull, stop_threads))
+        stop_threads = Value('b', False)
+        p1 = Process(target=redisPullDataFunction, args=(lock, temp_dict, stop_threads))
         p1.start()
 
         pygame.init()
@@ -198,6 +198,13 @@ if __name__ == '__main__':
             # var.value = redisDataPull_string
             # prLightPurple('redisDataPull')
             # prLightPurple(redisDataPull)
+
+            redisDataPull = temp_dict.copy()
+            # temp = shared_dict.copy()
+            # temp = return_details("My_quotes")
+            temp_dict.clear()
+
+
             squares = len(redisDataPull)
 
             # squares = squares + 1
