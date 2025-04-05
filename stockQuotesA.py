@@ -247,6 +247,10 @@ while not done:
         # pygame.display.flip()
 
         font = pygame.font.Font('freesansbold.ttf', 60//rows)
+        if size[0][0] < size[0][1]:
+            font = pygame.font.Font('freesansbold.ttf', 80//rows)
+
+
         # backgroundColor = random.choice(stock_color)
 
 
