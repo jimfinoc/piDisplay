@@ -161,13 +161,22 @@ while not done:
     squares = len(redisDataPull)
 
     # squares = squares + 1
-    cols = []
-    rows = int(math.sqrt(squares))
-    for i in range(rows):
-        cols.append(int(squares/rows))
-    for i in range(rows-1,0,-1):
-        if (sum(cols)<squares):
-            cols[i]=cols[1]+1
+    if size[0][0] > size[0][1]:
+        cols = []
+        rows = int(math.sqrt(squares))
+        for i in range(rows):
+            cols.append(int(squares/rows))
+        for i in range(rows-1,0,-1):
+            if (sum(cols)<squares):
+                cols[i]=cols[1]+1
+    elif size[0][0] < size[0][1]:
+        cols = []
+        rows = int(math.sqrt(squares)+1)
+        for i in range(rows):
+            cols.append(int(squares/rows))
+        for i in range(rows-1,0,-1):
+            if (sum(cols)<squares):
+                cols[i]=cols[1]+1
 
     my_rect={}
     count = 0
