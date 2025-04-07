@@ -8,32 +8,56 @@ from multiprocessing import Process, Value, Manager, Lock
 from ctypes import c_char_p
 import json
 from stockDataFunctions import return_details
+from stockDataFunctions import return_positions
 
 import argparse
 
-time_between_redis_pulls = .5
+time_between_redis_pulls = 1
+time_to_show_text = 2
+
+textPortfolioSetTime = time.time()
+textSortSetTime = time.time()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--sort", choices=['Name','Percent'], default=['Name'], help = "Sort stocks by Name")
+parser.add_argument("-p", "--portfolio", choices=['All','Stocks','Options','Both','Speculation','Others'], default=['All'], help = "Who's portfolio to show")
 args = parser.parse_args()
 
 # print("args")
-print('args.sort')
-print(args.sort)
+print('args.sort', args.sort)
+# print('args.portfolio', args.portfolio)
 
-DataStyle = 0
 if 'Name' in args.sort:
     print("Sorting by Name")
-    DataStyle = 1
 elif 'Percent' in args.sort:
-    DataStyle = 2
     print("Sorting by Percent")
+
+# DataShown = 0
+print('args.portfolio', args.portfolio)
+if 'All' in args.portfolio:
+    print("All")
+    # DataShown = 0
+if 'Stocks' in args.portfolio:
+    print("Stocks")
+    # DataShown = 1
+elif 'Options' in args.portfolio:
+    # DataShown = 2
+    print("Options")
+elif 'Both' in args.portfolio:
+    # DataShown = 3
+    print("Both")
+elif 'Speculation' in args.portfolio:
+    # DataShown = 4
+    print("Speculation")
+elif 'Others' in args.portfolio:
+    # DataShown = 5
+    print("Others")
 
 # if args.Output:
 #     print("Displaying Output as: % s" % args.Output)
 # manager = Manager()
-# redisDataPull  = manager.dict()
-# print(redisDataPull)
+# redisFilterData  = manager.dict()
+# print(redisFilterData)
 # global stop_threads
 # stop_threads = manager
 # stop_threads = False
@@ -54,43 +78,18 @@ def redisPullDataFunction(lock, shared_dict,stop_threads):
     while not local_stop:
         if time.time() - start > time_between_redis_pulls:
             with lock:
-                # prRed('stop_threads')
-                # prRed(stop_threads.value)
                 local_stop = stop_threads.value
-                # prRed(pullcount)
                 start = time.time()
                 temp = shared_dict.copy()
                 temp = return_details("My_quotes")
                 shared_dict.clear()
                 shared_dict.update(temp)
-                # print('type(redisDataPull)')
-                # print(type(redisDataPull))
-                # print('redisDataPull')
-                # print(redisDataPull)
-                # redisDataPull_string = json.dumps(redisDataPull)
-                # var = temp
-                # prRed('type(var)')
-                # prRed(type(var))
-                # prRed('var')
-                # prRed(var)
-                # var.value = redisDataPull_string.encode('utf-8')
-                # prRed('var.value')
-                # prRed(var.value)
-                # prRed('len(var.value)')
-                # prRed(len(var.value))
-                # prRed('done loading stock data')
-                # print('len(var)')
-                # print(len(var))
-                # time.sleep(1)
     prRed('Stop printing')
 
 if __name__ == '__main__':
     with Manager() as manager:
         temp_dict = manager.dict()
         lock = manager.Lock()        
-        # t1 = Thread(target=redisPullDataFunction, args=(redisDataPull, ))
-        # t1.start()
-        # redisDataPull_string = Value(c_char_p, b"")
 
         stop_threads = Value('b', False)
         p1 = Process(target=redisPullDataFunction, args=(lock, temp_dict, stop_threads))
@@ -138,9 +137,12 @@ if __name__ == '__main__':
         x, y = display_surface.get_size()
         # x = x - 1
         # y = y - 1
+        print('x')
         print(x)
+        print('y')
         print(y)
         white = (255, 255, 255)
+        yellow = (255, 255, 0)
         red = (128, 0, 0)
         green = (0, 128, 0)
         blue = (0, 0, 128)
@@ -188,21 +190,70 @@ if __name__ == '__main__':
             clock.tick(30)
             today = datetime.date.today()
 
-            # print('len(redisDataPull)')
-            # print(len(redisDataPull))
+            # print('len(redisFilterData)')
+            # print(len(redisFilterData))
             # try:
-                # redisDataPull = json.loads(redisDataPull_string.value.decode('utf-8'))
+                # redisFilterData = json.loads(redisFilterData_string.value.decode('utf-8'))
             # except:
-                # prCyan("Error loading redisDataPull")
-                # redisDataPull = {}
-            # var.value = redisDataPull_string
-            # prLightPurple('redisDataPull')
-            # prLightPurple(redisDataPull)
+                # prCyan("Error loading redisFilterData")
+                # redisFilterData = {}
+            # var.value = redisFilterData_string
+            # prLightPurple('redisFilterData')
+            # prLightPurple(redisFilterData)
 
             squares = 0
             while squares == 0:
-                redisDataPull = temp_dict.copy()
-                squares = len(redisDataPull)
+                redisFilterData = {}
+                redisAllDataPull = temp_dict.copy()
+                # if DataShown == 0: #'All'
+                if 'All' in args.portfolio:
+                    redisFilterData = redisAllDataPull.copy()
+                # elif DataShown == 1: #'Stocks'
+                elif 'Stocks' in args.portfolio:
+                    for each in return_positions("stock"):
+                        if each in redisAllDataPull:
+                            redisFilterData[each] = redisAllDataPull[each]
+                elif 'Options' in args.portfolio:
+                    for each in return_positions("option"):
+                        if each in redisAllDataPull:
+                            redisFilterData[each] = redisAllDataPull[each]
+                elif 'Both' in args.portfolio:
+                    for each in return_positions("stock"):
+                        if each in redisAllDataPull:
+                            redisFilterData[each] = redisAllDataPull[each]
+                    for each in return_positions("option"):
+                        if each in redisAllDataPull:
+                            redisFilterData[each] = redisAllDataPull[each]
+                elif 'Speculation' in args.portfolio:
+                    pass
+                elif 'Others' in args.portfolio:
+                    pass
+
+                # elif DataShown == 2: #'Options'
+                #     pass
+                # elif DataShown == 3: #'Both'
+                #     pass
+                # elif DataShown == 4: #'Speculation'
+                #     pass
+                # elif DataShown == 5: #'Others'
+                #     pass
+                # prLightPurple('redisFilterData')
+                # prLightPurple(redisFilterData)
+
+                squares = len(redisFilterData)
+                if squares == 0:
+                    # prRed("No data found")
+                    squares = 1
+                    # redisFilterData = {}
+                    # redisFilterData = redisAllDataPull.copy()
+                    # time.sleep(1)
+                # print('squares')
+                # print(squares)  
+                # print('len(redisFilterData)')
+                # print(len(redisFilterData))
+                # print('redisFilterData')
+                # print(redisFilterData)
+
             # prPurple('squares != 0')
             
             
@@ -233,18 +284,12 @@ if __name__ == '__main__':
             my_rect={}
             count = 0
             stockList = []
-            for each in redisDataPull:
-                stockList.append(redisDataPull[each])
-            # print ('stockList')
-            # print (stockList)
+            for each in redisFilterData:
+                stockList.append(redisFilterData[each])
 
-            # stocksSorted = []
-
-            # if 'Name' in args.sort:
-            if DataStyle == 1:
+            if 'Name' in args.sort:
                 stocksSorted = sorted(stockList, key=lambda item: item["symbol"])
-            if DataStyle == 2:
-            # elif 'Percent' in args.sort:
+            elif 'Percent' in args.sort:
                 stocksSorted = sorted(stockList, key=lambda item: item["change_percent"])
 
 
@@ -265,10 +310,14 @@ if __name__ == '__main__':
                     Y2 = y*(each_row+1)/rows
                     my_rect[count]["Y2"] = Y2
                     my_rect[count]["Rect"] = pygame.Rect( (X1,Y1) , (X2,Y2) )
-                    my_rect[count]["Text1"] = stocksSorted[count]["symbol"]
-                    my_rect[count]["Text2"] = str(stocksSorted[count]["price"])
-                    my_rect[count]["Text3"] = f'{stocksSorted[count]["change"]}    {stocksSorted[count]["change_percent"]:.2f}%'
-
+                    if len(stocksSorted) > 0:
+                        my_rect[count]["Text1"] = stocksSorted[count]["symbol"]
+                        my_rect[count]["Text2"] = str(stocksSorted[count]["price"])
+                        my_rect[count]["Text3"] = f'{stocksSorted[count]["change"]}   {stocksSorted[count]["change_percent"]:.2f}%'
+                    else:
+                        my_rect[count]["Text1"] = "No Data"
+                        my_rect[count]["Text2"] = "No Data"
+                        my_rect[count]["Text3"] = "No Data"
                     try:
                         backgroundNumber = float(stocksSorted[count]["change_percent"])
                     except:
@@ -326,9 +375,39 @@ if __name__ == '__main__':
                 display_surface.blit(text3, textRect3)
 
 
+
             # time.sleep(1)
 
             # pygame.screen.fill((0,0,0))
+            # if DataShown == 0: # 'All'
+            # if 'All' in args.portfolio:
+            if time.time() - textPortfolioSetTime  < time_to_show_text:
+                font2 = pygame.font.Font('freesansbold.ttf', 30)
+                textPortfolio = font2.render(f'Portfolio shown is {args.portfolio[0]}', True, yellow, background)
+                textPortfolioRect = textPortfolio.get_rect()
+                x, y = display_surface.get_size()
+                cx = x * 1/2
+                cy = y * 1/3 
+                # print('cx')
+                # print(cx)
+                # print('cy')
+                # print(cy)
+                textPortfolioRect.center = (cx, cy)
+                display_surface.blit(textPortfolio, textPortfolioRect)
+            if time.time() - textSortSetTime  < time_to_show_text:
+                font2 = pygame.font.Font('freesansbold.ttf', 30)
+                textSort = font2.render(f'Sort by {args.sort[0]}', True, yellow, background)
+                textSortRect = textSort.get_rect()
+                x, y = display_surface.get_size()
+                cx = x * 1/2
+                cy = y * 2/3
+                # print('cx')
+                # print(cx)
+                # print('cy')
+                # print(cy)
+                textSortRect.center = (cx, cy)
+                display_surface.blit(textSort, textSortRect)
+            # elif DataShown == 1: #'Stocks'
 
             pygame.display.update()
 
@@ -338,15 +417,55 @@ if __name__ == '__main__':
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if pygame.mouse.get_pressed()[0]:
                         prYellow("Left mouse button clicked")
-                        if DataStyle == 1:
-                            DataStyle = 2
+                        textSortSetTime = time.time()
+                        if 'Name' in args.sort:
+                            args.sort = ['Percent']
                             prGreen("Now sorting by Percent")
-                        elif DataStyle == 2:
-                            DataStyle = 1
+                        elif 'Percent' in args.sort:
+                            args.sort = ['Name']
                             prGreen("Now sorting by Name")
                     if pygame.mouse.get_pressed()[1]:
                         prYellow("Middle mouse button clicked")
-                        prGreen("Doing nothing")
+                        textPortfolioSetTime = time.time()
+                        if 'All' in args.portfolio:
+                            args.portfolio = ['Stocks']
+                            prGreen("Now showing Stocks")
+                        elif 'Stocks' in args.portfolio:
+                            args.portfolio = ['Options']
+                            prGreen("Now showing Options")
+                        elif 'Options' in args.portfolio:
+                            args.portfolio = ['Both']
+                            prGreen("Now showing Both")
+                        elif 'Both' in args.portfolio:
+                            args.portfolio = ['Speculation']
+                            prGreen("Now showing Speculation")
+                        elif 'Speculation' in args.portfolio:
+                            args.portfolio = ['Others']
+                            prGreen("Now showing Others")
+                        elif 'Others' in args.portfolio:
+                            args.portfolio = ['All']
+                            prGreen("Now showing All")
+
+
+                        # if DataShown == 0:
+                        #     DataShown = 1
+                        #     prGreen("Now showing Stocks")
+                        # elif DataShown == 1:
+                        #     DataShown = 2
+                        #     prGreen("Now showing Options")
+                        # elif DataShown == 2:
+                        #     DataShown = 3
+                        #     prGreen("Now showing Both")
+                        # elif DataShown == 3:
+                        #     DataShown = 4
+                        #     prGreen("Now showing Speculation")
+                        # elif DataShown == 4:
+                        #     DataShown = 5
+                        #     prGreen("Now showing Others")
+                        # elif DataShown == 5:
+                        #     DataShown = 0
+                        #     prGreen("Now showing All")
+
                         pass
                     if pygame.mouse.get_pressed()[2]:
                         prYellow("Right mouse button clicked")
