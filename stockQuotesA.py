@@ -387,7 +387,7 @@ if __name__ == '__main__':
                 textPortfolioRect = textPortfolio.get_rect()
                 x, y = display_surface.get_size()
                 cx = x * 1/2
-                cy = y * 1/3 
+                cy = y * 2/3 
                 # print('cx')
                 # print(cx)
                 # print('cy')
@@ -400,7 +400,7 @@ if __name__ == '__main__':
                 textSortRect = textSort.get_rect()
                 x, y = display_surface.get_size()
                 cx = x * 1/2
-                cy = y * 2/3
+                cy = y * 1/3
                 # print('cx')
                 # print(cx)
                 # print('cy')
@@ -412,85 +412,77 @@ if __name__ == '__main__':
             pygame.display.update()
 
 
-
+            action = 0
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if pygame.mouse.get_pressed()[0]:
+                        action = 1
                         prYellow("Left mouse button clicked")
-                        textSortSetTime = time.time()
-                        if 'Name' in args.sort:
-                            args.sort = ['Percent']
-                            prGreen("Now sorting by Percent")
-                        elif 'Percent' in args.sort:
-                            args.sort = ['Name']
-                            prGreen("Now sorting by Name")
                     if pygame.mouse.get_pressed()[1]:
+                        action = 2
                         prYellow("Middle mouse button clicked")
-                        textPortfolioSetTime = time.time()
-                        if 'All' in args.portfolio:
-                            args.portfolio = ['Stocks']
-                            prGreen("Now showing Stocks")
-                        elif 'Stocks' in args.portfolio:
-                            args.portfolio = ['Options']
-                            prGreen("Now showing Options")
-                        elif 'Options' in args.portfolio:
-                            args.portfolio = ['Both']
-                            prGreen("Now showing Both")
-                        elif 'Both' in args.portfolio:
-                            args.portfolio = ['Speculation']
-                            prGreen("Now showing Speculation")
-                        elif 'Speculation' in args.portfolio:
-                            args.portfolio = ['Others']
-                            prGreen("Now showing Others")
-                        elif 'Others' in args.portfolio:
-                            args.portfolio = ['All']
-                            prGreen("Now showing All")
-
-
-                        # if DataShown == 0:
-                        #     DataShown = 1
-                        #     prGreen("Now showing Stocks")
-                        # elif DataShown == 1:
-                        #     DataShown = 2
-                        #     prGreen("Now showing Options")
-                        # elif DataShown == 2:
-                        #     DataShown = 3
-                        #     prGreen("Now showing Both")
-                        # elif DataShown == 3:
-                        #     DataShown = 4
-                        #     prGreen("Now showing Speculation")
-                        # elif DataShown == 4:
-                        #     DataShown = 5
-                        #     prGreen("Now showing Others")
-                        # elif DataShown == 5:
-                        #     DataShown = 0
-                        #     prGreen("Now showing All")
-
-                        pass
                     if pygame.mouse.get_pressed()[2]:
+                        action = -1
                         prYellow("Right mouse button clicked")
-                        prGreen("Exiting program")
-                        stop_threads.value = True
-                        # stop_threads = True
-                        done = True
-                        print('stop_threads')
-                        print(stop_threads.value)
-                        print('done')
-                        print(done)
-                        p1.join()
-                        pygame.display.quit()
-                        pygame.quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_1:
+                        action = 1
+                        prYellow("1 key pressed")
+                    if event.key == pygame.K_2:
+                        action = 2
+                        prYellow("2 key pressed")
+                    if event.key == pygame.K_3:
+                        action = -1
+                        prYellow("3 key pressed")
+                    if event.key == pygame.K_ESCAPE:
+                        action = -1
+                        prYellow("Escape key pressed")
                 if event.type == pygame.QUIT:
                         prGreen("Quit event detected")
                         prGreen("Exiting program")
-                        stop_threads.value = True
-                        done = True
-                        print('stop_threads')
-                        print(stop_threads.value)
-                        print('done')
-                        print(done)
-                        p1.join()
-                        pygame.display.quit()
-                        pygame.quit()
+                        action = -1
+
+            if action == 1:
+                    textSortSetTime = time.time()
+                    if 'Name' in args.sort:
+                        args.sort = ['Percent']
+                        prGreen("Now sorting by Percent")
+                    elif 'Percent' in args.sort:
+                        args.sort = ['Name']
+                        prGreen("Now sorting by Name")
+
+            if action == 2:
+                textPortfolioSetTime = time.time()
+                if 'All' in args.portfolio:
+                    args.portfolio = ['Stocks']
+                    prGreen("Now showing Stocks")
+                elif 'Stocks' in args.portfolio:
+                    args.portfolio = ['Options']
+                    prGreen("Now showing Options")
+                elif 'Options' in args.portfolio:
+                    args.portfolio = ['Both']
+                    prGreen("Now showing Both")
+                elif 'Both' in args.portfolio:
+                    args.portfolio = ['Speculation']
+                    prGreen("Now showing Speculation")
+                elif 'Speculation' in args.portfolio:
+                    args.portfolio = ['Others']
+                    prGreen("Now showing Others")
+                elif 'Others' in args.portfolio:
+                    args.portfolio = ['All']
+                    prGreen("Now showing All")
+
+            if action == -1:
+                prGreen("Exiting program")
+                stop_threads.value = True
+                # stop_threads = True
+                done = True
+                print('stop_threads')
+                print(stop_threads.value)
+                print('done')
+                print(done)
+                p1.join()
+                pygame.display.quit()
+                pygame.quit()
 
 
