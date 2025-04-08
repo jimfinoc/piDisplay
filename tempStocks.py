@@ -349,7 +349,7 @@ ttk.Label(tab[special], text ="Instruction").grid(column = 4,  row = order_row, 
 for each in My_open_orders:
     for leg in each['orderLegCollection']:
         order_row += 1
-        description = leg['instrument']['description']
+        # description = leg['instrument']['description']
         remainingQuantity = each['quantity']
         price = each['price']
         duration = each['duration']
@@ -366,7 +366,7 @@ for each in My_open_orders:
             instruction = 'STO'
 
 
-        ttk.Label(tab[special], text = f'{description}').grid(column = 0,  row = order_row, padx = 10, pady = 10, sticky="e")   
+        # ttk.Label(tab[special], text = f'{description}').grid(column = 0,  row = order_row, padx = 10, pady = 10, sticky="e")   
         ttk.Label(tab[special], text = f'{remainingQuantity:.0f}').grid(column = 1,  row = order_row, padx = 10, pady = 10)   
         ttk.Label(tab[special], text = f'{price:.02f}').grid(column = 2,  row = order_row, padx = 10, pady = 10, sticky="e")   
         ttk.Label(tab[special], text = f'{duration}').grid(column = 3,  row = order_row, padx = 10, pady = 10)   
