@@ -28,7 +28,8 @@ My_orders_details = return_details("My_orders_details")
 
 My_quotes = return_details("My_quotes")
 
-My_stocks = return_details("My_stocks")
+My_google_stocks = return_details("My_google_stocks")
+My_speculation_stocks = return_details("My_speculation_stocks")
 My_owned_stocks = return_positions("stock")
 My_open_orders = return_orders("open")
 My_involved_all = list(return_positions("all"))

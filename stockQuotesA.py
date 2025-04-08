@@ -225,9 +225,13 @@ if __name__ == '__main__':
                         if each in redisAllDataPull:
                             redisFilterData[each] = redisAllDataPull[each]
                 elif 'Speculation' in args.portfolio:
-                    pass
+                    for each in return_details("My_speculation_stocks"):
+                        if each in redisAllDataPull:
+                            redisFilterData[each] = redisAllDataPull[each]
                 elif 'Others' in args.portfolio:
-                    pass
+                    for each in return_details("My_other_stocks"):
+                        if each in redisAllDataPull:
+                            redisFilterData[each] = redisAllDataPull[each]
 
                 # elif DataShown == 2: #'Options'
                 #     pass
