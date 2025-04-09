@@ -351,7 +351,7 @@ if __name__ == '__main__':
                 # pygame.draw.rect(display_surface, white, my_rect[square],width=1)
                 # pygame.display.flip()
 
-                font = pygame.font.Font('freesansbold.ttf', 90//rows)
+                font = pygame.font.Font('freesansbold.ttf', 75//rows)
                 if size[0][0] < size[0][1]:
                     font = pygame.font.Font('freesansbold.ttf', 110//rows)
 
