@@ -9,7 +9,7 @@ from ctypes import c_char_p
 import json
 from stockDataFunctions import return_details
 from stockDataFunctions import return_positions
-
+import copy
 import argparse
 
 time_between_redis_pulls = 1
@@ -124,9 +124,11 @@ if __name__ == '__main__':
             screen_height=0
         else:
             # flags = pygame.FULLSCREEN
+            # screen_width=3440 #1280
+            # screen_height=1440 #720
             flags = pygame.SHOWN
-            screen_width=800
-            screen_height=480
+            screen_width=1280
+            screen_height=720
             
         display_surface = pygame.display.set_mode([screen_width, screen_height],flags)
 
@@ -204,7 +206,8 @@ if __name__ == '__main__':
             squares = 0
             while squares == 0:
                 redisFilterData = {}
-                redisAllDataPull = temp_dict.copy()
+                # redisAllDataPull = temp_dict.copy()
+                redisAllDataPull = copy.deepcopy(temp_dict)
                 # if DataShown == 0: #'All'
                 if 'All' in args.portfolio:
                     redisFilterData = redisAllDataPull.copy()
@@ -348,7 +351,7 @@ if __name__ == '__main__':
                 # pygame.draw.rect(display_surface, white, my_rect[square],width=1)
                 # pygame.display.flip()
 
-                font = pygame.font.Font('freesansbold.ttf', 60//rows)
+                font = pygame.font.Font('freesansbold.ttf', 90//rows)
                 if size[0][0] < size[0][1]:
                     font = pygame.font.Font('freesansbold.ttf', 110//rows)
 
