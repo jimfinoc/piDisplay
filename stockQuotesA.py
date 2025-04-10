@@ -426,8 +426,12 @@ if __name__ == '__main__':
                         action = 1
                         prYellow("Left mouse button clicked")
                     if pygame.mouse.get_pressed()[1]:
-                        action = 2
+                        # if event.mod & pygame.KMOD_LSHIFT or event.mod & pygame.KMOD_RSHIFT:
+                        action = 21
                         prYellow("Middle mouse button clicked")
+                        # else:
+                            # action = 20
+                        # prYellow("Shift Middle mouse button clicked")
                     if pygame.mouse.get_pressed()[2]:
                         action = -1
                         prYellow("Right mouse button clicked")
@@ -436,8 +440,12 @@ if __name__ == '__main__':
                         action = 1
                         prYellow("1 key pressed")
                     if event.key == pygame.K_2:
-                        action = 2
-                        prYellow("2 key pressed")
+                        if event.mod & pygame.KMOD_LSHIFT or event.mod & pygame.KMOD_RSHIFT:
+                            action = 21
+                            prYellow("shift 2 key pressed")
+                        else:
+                            action = 20
+                            prYellow("2 key pressed")
                     if event.key == pygame.K_3:
                         action = -1
                         prYellow("3 key pressed")
@@ -458,7 +466,7 @@ if __name__ == '__main__':
                         args.sort = ['Name']
                         prGreen("Now sorting by Name")
 
-            if action == 2:
+            if action == 20:
                 textPortfolioSetTime = time.time()
                 if 'All' in args.portfolio:
                     args.portfolio = ['Stocks']
@@ -478,6 +486,27 @@ if __name__ == '__main__':
                 elif 'Others' in args.portfolio:
                     args.portfolio = ['All']
                     prGreen("Now showing All")
+
+            if action == 21:
+                textPortfolioSetTime = time.time()
+                if 'All' in args.portfolio:
+                    args.portfolio = ['Others']
+                    prGreen("Now showing Others")
+                elif 'Stocks' in args.portfolio:
+                    args.portfolio = ['All']
+                    prGreen("Now showing All")
+                elif 'Options' in args.portfolio:
+                    args.portfolio = ['Stocks']
+                    prGreen("Now showing Stocks")
+                elif 'Both' in args.portfolio:
+                    args.portfolio = ['Speculation']
+                    prGreen("Now showing Speculation")
+                elif 'Speculation' in args.portfolio:
+                    args.portfolio = ['Both']
+                    prGreen("Now showing Both")
+                elif 'Others' in args.portfolio:
+                    args.portfolio = ['Options']
+                    prGreen("Now showing Options")
 
             if action == -1:
                 prGreen("Exiting program")
