@@ -320,7 +320,7 @@ if __name__ == '__main__':
                     if len(stocksSorted) > 0:
                         my_rect[count]["Text1"] = stocksSorted[count]["symbol"]
                         my_rect[count]["Text2"] = str(stocksSorted[count]["price"])
-                        my_rect[count]["Text3"] = f'{stocksSorted[count]["change"]}   {stocksSorted[count]["change_percent"]:.2f}%'
+                        my_rect[count]["Text3"] = f'{stocksSorted[count]["change"]:.2f}   {stocksSorted[count]["change_percent"]:.1f}%'
                     else:
                         my_rect[count]["Text1"] = "No Data"
                         my_rect[count]["Text2"] = "No Data"
@@ -427,7 +427,7 @@ if __name__ == '__main__':
                         prYellow("Left mouse button clicked")
                     if pygame.mouse.get_pressed()[1]:
                         # if event.mod & pygame.KMOD_LSHIFT or event.mod & pygame.KMOD_RSHIFT:
-                        action = 21
+                        action = 20
                         prYellow("Middle mouse button clicked")
                         # else:
                             # action = 20
@@ -435,6 +435,16 @@ if __name__ == '__main__':
                     if pygame.mouse.get_pressed()[2]:
                         action = -1
                         prYellow("Right mouse button clicked")
+                if event.type == pygame.MOUSEWHEEL:
+                    # print('event.x')
+                    # print(event.x)
+                    # print('event.y')
+                    if event.y < 0:
+                        action = 21
+                        prYellow("Wheel rolled up")
+                    if event.y > 0:
+                        action = 20
+                        prYellow("Wheel rolled down")
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_1:
                         action = 1
