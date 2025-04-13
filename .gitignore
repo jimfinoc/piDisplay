@@ -11,3 +11,7 @@
 .My_stock_option_strikes.json
 .My_lot_details.json
 .My_quotes.json
+.My_google_stocks.json
+.gitignore
+.My_other_stocks.json
+.My_speculation_stocks.json
