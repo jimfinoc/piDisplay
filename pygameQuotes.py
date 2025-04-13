@@ -27,40 +27,6 @@ args = parser.parse_args()
 print('args.sort', args.sort)
 # print('args.portfolio', args.portfolio)
 
-if 'Name' in args.sort:
-    print("Sorting by Name")
-elif 'Percent' in args.sort:
-    print("Sorting by Percent")
-
-# DataShown = 0
-print('args.portfolio', args.portfolio)
-if 'All' in args.portfolio:
-    print("All")
-    # DataShown = 0
-if 'Stocks' in args.portfolio:
-    print("Stocks")
-    # DataShown = 1
-elif 'Options' in args.portfolio:
-    # DataShown = 2
-    print("Options")
-elif 'Both' in args.portfolio:
-    # DataShown = 3
-    print("Both")
-elif 'Speculation' in args.portfolio:
-    # DataShown = 4
-    print("Speculation")
-elif 'Others' in args.portfolio:
-    # DataShown = 5
-    print("Others")
-
-# if args.Output:
-#     print("Displaying Output as: % s" % args.Output)
-# manager = Manager()
-# redisFilterData  = manager.dict()
-# print(redisFilterData)
-# global stop_threads
-# stop_threads = manager
-# stop_threads = False
 
 def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
 def prGreen(skk): print("\033[92m {}\033[00m" .format(skk))
