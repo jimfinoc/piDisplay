@@ -9,6 +9,7 @@ from ctypes import c_char_p
 import json
 from stockDataFunctions import return_details
 from stockDataFunctions import return_positions
+from stockDataFunctions import return_orders
 import copy
 import argparse
 
@@ -93,8 +94,10 @@ if __name__ == '__main__':
             # screen_width=3440 #1280
             # screen_height=1440 #720
             flags = pygame.SHOWN
-            screen_width=2560
-            screen_height=1024
+            # screen_width=2560
+            # screen_height=1024
+            screen_width=800
+            screen_height=480
             
         display_surface = pygame.display.set_mode([screen_width, screen_height],flags)
 
@@ -166,6 +169,17 @@ if __name__ == '__main__':
                 equity_list = sorted(list(equity_set))
             except:
                 print('Error in equity_list creation')
+
+            list_of_symbol_open_orders = []
+            My_open_orders = return_orders("open")
+            for each in My_open_orders:
+                # print ('each')
+                # print (each)
+                for each_leg in each["orderLegCollection"]:
+                    # print ('each_leg')
+                    # print (each_leg)
+                    if each_leg["orderLegType"] == "OPTION":
+                        list_of_symbol_open_orders.append(each_leg["instrument"]["symbol"])
 
             squares = 0
             while squares == 0:
@@ -319,10 +333,12 @@ if __name__ == '__main__':
                     Y2 = y*(each_row+1)/rows
                     my_rect[count]["Y2"] = Y2
                     my_rect[count]["Rect"] = pygame.Rect( (X1,Y1) , (X2,Y2) )
+                    my_rect[count]["Rect2"] = pygame.Rect( (X1+10,Y1+10) , (X2-10,Y2-10) )
                     if len(optionsSorted) > 0:
                         my_rect[count]["Text1"] = f'{optionsSorted[count]["instrument"]["symbol"][0:6]} {optionsSorted[count]["instrument"]["symbol"][12:13]}'
                         my_rect[count]["Text2"] = optionsSorted[count]['instrument']["symbol"][6:12]
                         my_rect[count]["Text3"] = f'{(float(optionsSorted[count]["instrument"]["symbol"][13:19])/10):.2f}'
+                        my_rect[count]["symbol"] = optionsSorted[count]["instrument"]["symbol"]
 
 
                         # my_rect[count]["Text2"] = str(optionsSorted[count]["price"])
@@ -387,6 +403,22 @@ if __name__ == '__main__':
                 cy = my_rect[square]["Y1"] + 3*(my_rect[square]["Y2"] - my_rect[square]["Y1"])//4
                 textRect3.center = (cx, cy)
                 display_surface.blit(text3, textRect3)
+
+                # if an order exists draw a box around it
+                if my_rect[square]["symbol"] in list_of_symbol_open_orders:
+                    # pygame.draw.rect(display_surface, yellow, my_rect[square]["Rect"],width=5,border_radius=50)
+                    print()
+                    print('my_rect[square]["symbol"]')
+                    print(my_rect[square]["symbol"])
+                    print('my_rect[square]["Rect"]')
+                    print(my_rect[square]["Rect"])
+                    # print('my_rect[square]["Rect2"]')
+                    # print(my_rect[square]["Rect2"])
+
+                    pygame.draw.rect(display_surface, yellow, my_rect[square]["Rect"],width=5,border_radius=20)
+                    # pygame.draw.rect(display_surface, yellow, my_rect[square]["Rect2"],width=5,border_radius=20)
+
+
 
 
 
