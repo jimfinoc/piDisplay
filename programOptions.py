@@ -164,11 +164,13 @@ if __name__ == '__main__':
             clock.tick(30)
             today = datetime.date.today()
 
-
-            for each in temp_dict["securitiesAccount"]["positions"]:
-                if each["instrument"]["assetType"] == "OPTION":
-                    equity_set.add(each["instrument"]["symbol"][0:6])
-            equity_list = sorted(list(equity_set))
+            try:
+                for each in temp_dict["securitiesAccount"]["positions"]:
+                    if each["instrument"]["assetType"] == "OPTION":
+                        equity_set.add(each["instrument"]["symbol"][0:6])
+                equity_list = sorted(list(equity_set))
+            except:
+                print('Error in equity_list creation')
 
             squares = 0
             while squares == 0:
@@ -332,7 +334,6 @@ if __name__ == '__main__':
                         my_rect[count]["Text1"] = "No Data"
                         my_rect[count]["Text2"] = "No Data"
                         my_rect[count]["Text3"] = "No Data"
-                        my_rect[count]["Text4"] = "No Data"
                     try:
                         backgroundNumber = float(optionsSorted[count]["change_percent"])
                     except:
