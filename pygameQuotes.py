@@ -326,6 +326,8 @@ if __name__ == '__main__':
 
 
                 background = my_rect[square]["backgroundColor"]
+                print('background')
+                print(background)
 
                 pygame.draw.rect(display_surface, background, my_rect[square]["Rect"])
                 text1 = font.render(my_rect[square]["Text1"], True, white, background)

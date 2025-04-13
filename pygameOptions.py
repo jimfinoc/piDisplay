@@ -338,7 +338,8 @@ if __name__ == '__main__':
                     if len(optionsSorted) > 0:
                         my_rect[count]["Text1"] = f'{optionsSorted[count]["instrument"]["symbol"][0:6]} {optionsSorted[count]["instrument"]["symbol"][12:13]}'
                         my_rect[count]["Text2"] = optionsSorted[count]['instrument']["symbol"][6:12]
-                        my_rect[count]["Text3"] = f'{(float(optionsSorted[count]["instrument"]["symbol"][13:19])/10):.2f}'
+                        strike_price = f'{(float(optionsSorted[count]["instrument"]["symbol"][13:19])/10):.2f}'
+                        my_rect[count]["Text3"] = strike_price
                         my_rect[count]["symbol"] = optionsSorted[count]["instrument"]["symbol"]
 
 
@@ -350,17 +351,39 @@ if __name__ == '__main__':
                         my_rect[count]["Text2"] = "No Data"
                         my_rect[count]["Text3"] = "No Data"
                     try:
-                        backgroundNumber = float(optionsSorted[count]["change_percent"])
+                        # backgroundNumber = float(optionsSorted[count]["change_percent"])
+                        # I would like to get the difference between the current price and the strike price
+                        
+                        symbol = optionsSorted[count]["instrument"]["symbol"][0:6].replace(" ", "")
+                        current_price = float(temp_dict[symbol]["price"])
+                        # print()
+                        # print('symbol')
+                        # print(symbol)
+                        # print('current_price')
+                        # print(current_price)
+                        # print('strike_price')
+                        # print(strike_price)
+                        if optionsSorted[count]["instrument"]["symbol"][12:13] == 'P':
+                            backgroundNumber = float((float(current_price) - float(strike_price))/float(current_price))
+                        else:
+                            backgroundNumber = float((float(strike_price) - float(current_price))/float(current_price))
+                            # backgroundNumber = float((strike_price - current_price)/current_price)
+                        # print('optionsSorted[count]["instrument"]["symbol"]')
+                        # print(optionsSorted[count]["instrument"]["symbol"])
+                        # print('backgroundNumber')
+                        # print(backgroundNumber)
                     except:
                         backgroundNumber = 0.0
                     if backgroundNumber < 0.0:
-                        backgroundColor = (int(math.sqrt(-backgroundNumber/100.0)*256.0),0,0)
+                        # backgroundColor = (max(0,min(int(-backgroundNumber*256.0),255)),0,0)
+                        backgroundColor = (255,0,0)
                     elif backgroundNumber > 0.0:
-                        backgroundColor = (0,int(math.sqrt(backgroundNumber/100.0)*256.0),0)
+                        backgroundColor = (0,max(0,min(int(backgroundNumber*256.0),255)),0)
                     else:
                         backgroundColor = (0,0,0)
+                    print('backgroundColor')
+                    print(backgroundColor)
                     my_rect[count]["backgroundColor"] = backgroundColor
-
                     count = count + 1
 
             
@@ -384,6 +407,9 @@ if __name__ == '__main__':
 
 
                 background = my_rect[square]["backgroundColor"]
+                print('background')
+                print(background)
+
 
                 pygame.draw.rect(display_surface, background, my_rect[square]["Rect"])
                 text1 = font.render(my_rect[square]["Text1"], True, white, background)
@@ -406,7 +432,11 @@ if __name__ == '__main__':
                 display_surface.blit(text3, textRect3)
 
                 # if an order exists draw a box around it
-                if my_rect[square]["symbol"] in list_of_symbol_open_orders:
+                try:
+                    if my_rect[square]["symbol"] in list_of_symbol_open_orders:
+                        pygame.draw.rect(display_surface, yellow, my_rect[square]["Rect2"],width=3,border_radius=10)
+                except:
+                    print('Error in my_rect[square]["symbol"]')
                     # pygame.draw.rect(display_surface, yellow, my_rect[square]["Rect"],width=5,border_radius=50)
                     # print()
                     # print('my_rect[square]["symbol"]')
@@ -417,8 +447,6 @@ if __name__ == '__main__':
                     # print(my_rect[square]["Rect2"])
 
                     # pygame.draw.rect(display_surface, yellow, my_rect[square]["Rect"],width=3,border_radius=10)
-                    pygame.draw.rect(display_surface, yellow, my_rect[square]["Rect2"],width=3,border_radius=10)
-
 
 
 
