@@ -19,48 +19,14 @@ textPortfolioSetTime = time.time()
 textSortSetTime = time.time()
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-s", "--sort", choices=['Name','Type','Date'], default=['Name'], help = "Sort stocks by Name")
-parser.add_argument("-p", "--filter", choices=['All','Stocks','Options','Both','Speculation','Others'], default=['All'], help = "Who's filter to show")
+parser.add_argument("-s", "--sort", choices=['Name','Date','Type & Name','Type & Date'], default=['Name'], help = "Sort stocks by Name")
+parser.add_argument("-p", "--filter", choices=['All','Calls','Puts'], default=['All'], help = "Who's filter to show")
+parser.add_argument("-e", "--equity", choices=['All'], default=['All'], help = "Who's filter to show")
 args = parser.parse_args()
 
 # print("args")
 print('args.sort', args.sort)
 # print('args.filter', args.filter)
-
-if 'Name' in args.sort:
-    print("Sorting by Name")
-elif 'Percent' in args.sort:
-    print("Sorting by Percent")
-
-# DataShown = 0
-print('args.filter', args.filter)
-if 'All' in args.filter:
-    print("All")
-    # DataShown = 0
-if 'Stocks' in args.filter:
-    print("Stocks")
-    # DataShown = 1
-elif 'Options' in args.filter:
-    # DataShown = 2
-    print("Options")
-elif 'Both' in args.filter:
-    # DataShown = 3
-    print("Both")
-elif 'Speculation' in args.filter:
-    # DataShown = 4
-    print("Speculation")
-elif 'Others' in args.filter:
-    # DataShown = 5
-    print("Others")
-
-# if args.Output:
-#     print("Displaying Output as: % s" % args.Output)
-# manager = Manager()
-# redisFilterData  = manager.dict()
-# print(redisFilterData)
-# global stop_threads
-# stop_threads = manager
-# stop_threads = False
 
 def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
 def prGreen(skk): print("\033[92m {}\033[00m" .format(skk))
@@ -192,43 +158,64 @@ if __name__ == '__main__':
         # squares = 50
         done = False
         clock = pygame.time.Clock()
-
+        
         while not done:
+            equity_set = set()
             clock.tick(30)
             today = datetime.date.today()
 
-            # print('len(redisFilterData)')
-            # print(len(redisFilterData))
-            # try:
-                # redisFilterData = json.loads(redisFilterData_string.value.decode('utf-8'))
-            # except:
-                # prCyan("Error loading redisFilterData")
-                # redisFilterData = {}
-            # var.value = redisFilterData_string
-            # prLightPurple('redisFilterData')
-            # prLightPurple(redisFilterData)
+
+            for each in temp_dict["securitiesAccount"]["positions"]:
+                if each["instrument"]["assetType"] == "OPTION":
+                    equity_set.add(each["instrument"]["symbol"][0:6])
+            equity_list = sorted(list(equity_set))
 
             squares = 0
             while squares == 0:
                 redisFilterData = {}
+                redisAllDataPull = {}
                 # redisAllDataPull = temp_dict.copy()
                 # redisAllDataPull = copy.deepcopy(temp_dict)
                 for each in temp_dict["securitiesAccount"]["positions"]:
                     # if each["instrument"]["assetType"] == "EQUITY":
                         # redisFilterData[each["instrument"]["symbol"]] = each
                     if each["instrument"]["assetType"] == "OPTION":
-                        redisFilterData[each["instrument"]["symbol"]] = each
-                        print ('each')
-                        print (each)
+                        redisAllDataPull[each["instrument"]["symbol"]] = each
+                        # equity_set.add(each["instrument"]["underlyingSymbol"])
+                        # print ('each')
+                        # print (each)
 
 
                 # print('redisAllDataPull')
                 # print(redisAllDataPull)
                 # if DataShown == 0: #'All'
-                # if 'All' in args.filter:
-                #     redisFilterData = redisAllDataPull.copy()
-                # # elif DataShown == 1: #'Stocks'
-                # elif 'Stocks' in args.filter:
+                if 'All' in args.filter:
+                    redisFilterData = redisAllDataPull.copy()
+                # elif DataShown == 1: #'Stocks'
+                elif 'Calls' in args.filter:
+                    for each in redisAllDataPull:
+                        if each[12:13] == 'C':
+                            redisFilterData[each] = redisAllDataPull[each]
+                elif 'Puts' in args.filter:
+                    for each in redisAllDataPull:
+                        if each[12:13] == 'P':
+                            redisFilterData[each] = redisAllDataPull[each]
+
+
+
+                if 'All' in args.equity:
+                    pass
+                else:
+                    temp = copy.deepcopy(redisFilterData)
+                    # print('temp')
+                    # print(temp)
+                    redisFilterData.clear()
+                    for each in temp:
+                        if temp[each]["instrument"]["symbol"][0:6] == args.equity[0]:
+                            redisFilterData[each] = temp[each]
+
+
+
                 #     for each in return_positions("stock"):
                 #         if each in redisAllDataPull:
                 #             redisFilterData[each] = redisAllDataPull[each]
@@ -262,7 +249,8 @@ if __name__ == '__main__':
                 #     pass
                 # prLightPurple('redisFilterData')
                 # prLightPurple(redisFilterData)
-
+                print ('equity_list')
+                print (equity_list)
                 squares = len(redisFilterData)
                 if squares == 0:
                     squares = 1
@@ -298,12 +286,14 @@ if __name__ == '__main__':
 
             if 'Name' in args.sort:
                 optionsSorted = sorted(optionList, key=lambda item: item['instrument']["symbol"])
-            if 'Type' in args.sort:
-                optionsSorted = sorted(optionList, key=lambda item: item['instrument']["symbol"][0:6])
-                optionsSorted = sorted(optionList, key=lambda item: item['instrument']["symbol"][12:13])
             if 'Date' in args.sort:
-                # optionsSorted = sorted(optionList, key=lambda item: item['instrument']["symbol"][12:13])
                 optionsSorted = sorted(optionList, key=lambda item: item['instrument']["symbol"][6:12])
+            if 'Type & Name' in args.sort:
+                optionsSorted = sorted(optionList, key=lambda item: item['instrument']["symbol"][0:6])
+                optionsSorted = sorted(optionsSorted, key=lambda item: item['instrument']["symbol"][12:13])
+            if 'Type & Date' in args.sort:
+                optionsSorted = sorted(optionList, key=lambda item: item['instrument']["symbol"][6:12])
+                optionsSorted = sorted(optionsSorted, key=lambda item: item['instrument']["symbol"][12:13])
 
             # elif 'Percent' in args.sort:
                 # optionsSorted = sorted(optionList, key=lambda item: item["change_percent"])
@@ -458,10 +448,10 @@ if __name__ == '__main__':
                     # print(event.x)
                     # print('event.y')
                     if event.y < 0:
-                        action = 21
+                        action = 31
                         prYellow("Wheel rolled up")
                     if event.y > 0:
-                        action = 20
+                        action = 30
                         prYellow("Wheel rolled down")
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_1:
@@ -475,11 +465,18 @@ if __name__ == '__main__':
                             action = 20
                             prYellow("2 key pressed")
                     if event.key == pygame.K_3:
-                        action = -1
-                        prYellow("3 key pressed")
+                        if event.mod & pygame.KMOD_LSHIFT or event.mod & pygame.KMOD_RSHIFT:
+                            action = 31
+                            prYellow("shift 3 key pressed")
+                        else:
+                            action = 30
+                            prYellow("3 key pressed")
                     if event.key == pygame.K_ESCAPE:
                         action = -1
                         prYellow("Escape key pressed")
+                    if event.key == pygame.K_q:
+                        action = -1
+                        prYellow("q key pressed")
                 if event.type == pygame.QUIT:
                         prGreen("Quit event detected")
                         prGreen("Exiting program")
@@ -488,35 +485,41 @@ if __name__ == '__main__':
             if action == 1:
                     textSortSetTime = time.time()
                     if 'Name' in args.sort:
-                        args.sort = ['Type']
-                        prGreen("Now sorting by Type")
-                    elif 'Type' in args.sort:
                         args.sort = ['Date']
                         prGreen("Now sorting by Date")
                     elif 'Date' in args.sort:
+                        args.sort = ['Type & Name']
+                        prGreen("Now sorting by Type & Name")
+                    elif 'Type & Name' in args.sort:
+                        args.sort = ['Type & Date']
+                        prGreen("Now sorting by Type & Date")
+                    elif 'Type & Date' in args.sort:
                         args.sort = ['Name']
                         prGreen("Now sorting by Name")
 
             if action == 20:
                 textPortfolioSetTime = time.time()
                 if 'All' in args.filter:
-                    args.filter = ['Stocks']
-                    prGreen("Now showing Stocks")
-                elif 'Stocks' in args.filter:
-                    args.filter = ['Options']
-                    prGreen("Now showing Options")
-                elif 'Options' in args.filter:
-                    args.filter = ['Both']
-                    prGreen("Now showing Both")
-                elif 'Both' in args.filter:
-                    args.filter = ['Speculation']
-                    prGreen("Now showing Speculation")
-                elif 'Speculation' in args.filter:
-                    args.filter = ['Others']
-                    prGreen("Now showing Others")
-                elif 'Others' in args.filter:
+                    args.filter = ['Calls']
+                    prGreen("Now showing f{args.filter[0]}")
+                elif 'Calls' in args.filter:
+                    args.filter = ['Puts']
+                    prGreen("Now showing f{args.filter[0]}")
+                elif 'Puts' in args.filter:
                     args.filter = ['All']
-                    prGreen("Now showing All")
+                    prGreen("Now showing f{args.filter[0]}")
+                # elif 'Options' in args.filter:
+                #     args.filter = ['Both']
+                #     prGreen("Now showing Both")
+                # elif 'Both' in args.filter:
+                #     args.filter = ['Speculation']
+                #     prGreen("Now showing Speculation")
+                # elif 'Speculation' in args.filter:
+                #     args.filter = ['Others']
+                #     prGreen("Now showing Others")
+                # elif 'Others' in args.filter:
+                #     args.filter = ['All']
+                #     prGreen("Now showing All")
 
             if action == 21:
                 textPortfolioSetTime = time.time()
@@ -538,6 +541,32 @@ if __name__ == '__main__':
                 elif 'Others' in args.filter:
                     args.filter = ['Options']
                     prGreen("Now showing Options")
+
+            if action == 20 or action == 21:
+                args.equity = ['All']
+            
+            if action == 30:
+                if args.equity == ['All']:
+                    args.equity = [equity_list[0]]
+                else:
+                    for i in range(len(equity_list)):
+                        if args.equity == [equity_list[i]]:
+                            if i < len(equity_list) - 1:
+                                args.equity = [equity_list[i+1]]
+                            else:
+                                args.equity = ['All']
+                            break
+            if action == 31:
+                if args.equity == ['All']:
+                    args.equity = [equity_list[-1]]
+                else:
+                    for i in range(len(equity_list)):
+                        if args.equity == [equity_list[i]]:
+                            if i > 0:
+                                args.equity = [equity_list[i-1]]
+                            else:
+                                args.equity = ['All']
+                            break
 
             if action == -1:
                 prGreen("Exiting program")
