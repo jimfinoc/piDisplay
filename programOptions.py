@@ -178,11 +178,14 @@ if __name__ == '__main__':
                 redisAllDataPull = {}
                 # redisAllDataPull = temp_dict.copy()
                 # redisAllDataPull = copy.deepcopy(temp_dict)
-                for each in temp_dict["securitiesAccount"]["positions"]:
+                try:
+                    for each in temp_dict["securitiesAccount"]["positions"]:
                     # if each["instrument"]["assetType"] == "EQUITY":
                         # redisFilterData[each["instrument"]["symbol"]] = each
-                    if each["instrument"]["assetType"] == "OPTION":
-                        redisAllDataPull[each["instrument"]["symbol"]] = each
+                        if each["instrument"]["assetType"] == "OPTION":
+                            redisAllDataPull[each["instrument"]["symbol"]] = each
+                except:
+                    print('Error in redisAllDataPull creation')
                         # equity_set.add(each["instrument"]["underlyingSymbol"])
                         # print ('each')
                         # print (each)
