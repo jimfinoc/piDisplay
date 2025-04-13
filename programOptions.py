@@ -132,8 +132,8 @@ if __name__ == '__main__':
             # screen_width=3440 #1280
             # screen_height=1440 #720
             flags = pygame.SHOWN
-            screen_width=1280
-            screen_height=720
+            screen_width=2560
+            screen_height=1024
             
         display_surface = pygame.display.set_mode([screen_width, screen_height],flags)
 
@@ -302,8 +302,8 @@ if __name__ == '__main__':
                 optionsSorted = sorted(optionList, key=lambda item: item['instrument']["symbol"][0:6])
                 optionsSorted = sorted(optionList, key=lambda item: item['instrument']["symbol"][12:13])
             if 'Date' in args.sort:
-                optionsSorted = sorted(optionList, key=lambda item: item['instrument']["symbol"][12:13])
-                optionsSorted = sorted(optionList, key=lambda item: item['instrument']["symbol"][13:19])
+                # optionsSorted = sorted(optionList, key=lambda item: item['instrument']["symbol"][12:13])
+                optionsSorted = sorted(optionList, key=lambda item: item['instrument']["symbol"][6:12])
 
             # elif 'Percent' in args.sort:
                 # optionsSorted = sorted(optionList, key=lambda item: item["change_percent"])
@@ -330,8 +330,7 @@ if __name__ == '__main__':
                     my_rect[count]["Y2"] = Y2
                     my_rect[count]["Rect"] = pygame.Rect( (X1,Y1) , (X2,Y2) )
                     if len(optionsSorted) > 0:
-                        mystring = f'{optionsSorted[count]["instrument"]["symbol"][0:6]} {optionsSorted[count]["instrument"]["symbol"][12:13]}'
-                        my_rect[count]["Text1"] = mystring
+                        my_rect[count]["Text1"] = f'{optionsSorted[count]["instrument"]["symbol"][0:6]} {optionsSorted[count]["instrument"]["symbol"][12:13]}'
                         my_rect[count]["Text2"] = optionsSorted[count]['instrument']["symbol"][6:12]
                         my_rect[count]["Text3"] = f'{(float(optionsSorted[count]["instrument"]["symbol"][13:19])/10):.2f}'
 
@@ -370,7 +369,7 @@ if __name__ == '__main__':
                 # pygame.draw.rect(display_surface, white, my_rect[square],width=1)
                 # pygame.display.flip()
 
-                font = pygame.font.Font('freesansbold.ttf', 70//rows)
+                font = pygame.font.Font('freesansbold.ttf', 110//rows)
                 if size[0][0] < size[0][1]:
                     font = pygame.font.Font('freesansbold.ttf', 110//rows)
 
@@ -409,7 +408,7 @@ if __name__ == '__main__':
             # if 'All' in args.filter:
             if time.time() - textPortfolioSetTime  < time_to_show_text:
                 font2 = pygame.font.Font('freesansbold.ttf', 30)
-                textPortfolio = font2.render(f'Portfolio shown is {args.filter[0]}', True, yellow, background)
+                textPortfolio = font2.render(f'Filter shown is {args.filter[0]}', True, yellow, background)
                 textPortfolioRect = textPortfolio.get_rect()
                 x, y = display_surface.get_size()
                 cx = x * 1/2
