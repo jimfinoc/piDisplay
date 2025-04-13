@@ -330,7 +330,7 @@ if __name__ == '__main__':
                     my_rect[count]["Y2"] = Y2
                     my_rect[count]["Rect"] = pygame.Rect( (X1,Y1) , (X2,Y2) )
                     if len(optionsSorted) > 0:
-                        mystring = f'{optionsSorted[count]['instrument']["symbol"][0:6]} {optionsSorted[count]['instrument']["symbol"][12:13]}'
+                        mystring = f'{optionsSorted[count]["instrument"]["symbol"][0:6]} {optionsSorted[count]["instrument"]["symbol"][12:13]}'
                         my_rect[count]["Text1"] = mystring
                         my_rect[count]["Text2"] = optionsSorted[count]['instrument']["symbol"][6:12]
                         my_rect[count]["Text3"] = f'{(float(optionsSorted[count]['instrument']["symbol"][13:19])/10):.2f}'
