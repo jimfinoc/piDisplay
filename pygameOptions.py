@@ -47,12 +47,7 @@ def redisPullDataFunction(lock, shared_dict,stop_threads):
                 local_stop = stop_threads.value
                 start = time.time()
                 temp = shared_dict.copy()
-                # temp = return_positions("option")
-                temp = return_details("My_position_details")
-
-                # print ('temp')
-                # print (temp)
-
+                temp = return_details("My_quotes")
                 shared_dict.clear()
                 shared_dict.update(temp)
     prRed('Stop printing')
@@ -163,9 +158,9 @@ if __name__ == '__main__':
             equity_set = set()
             clock.tick(30)
             today = datetime.date.today()
-
+            position_temp_dict = return_details("My_position_details")
             try:
-                for each in temp_dict["securitiesAccount"]["positions"]:
+                for each in position_temp_dict["securitiesAccount"]["positions"]:
                     if each["instrument"]["assetType"] == "OPTION":
                         equity_set.add(each["instrument"]["symbol"][0:6])
                 equity_list = sorted(list(equity_set))
@@ -176,10 +171,10 @@ if __name__ == '__main__':
             while squares == 0:
                 redisFilterData = {}
                 redisAllDataPull = {}
-                # redisAllDataPull = temp_dict.copy()
-                # redisAllDataPull = copy.deepcopy(temp_dict)
+                # redisAllDataPull = position_temp_dict.copy()
+                # redisAllDataPull = copy.deepcopy(position_temp_dict)
                 try:
-                    for each in temp_dict["securitiesAccount"]["positions"]:
+                    for each in position_temp_dict["securitiesAccount"]["positions"]:
                     # if each["instrument"]["assetType"] == "EQUITY":
                         # redisFilterData[each["instrument"]["symbol"]] = each
                         if each["instrument"]["assetType"] == "OPTION":

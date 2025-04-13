@@ -62,8 +62,8 @@ headers = [
     "Symbol",
     "Quantity",
     "Price",
-    "net Change",
-    "Day Percent Change",
+    "Day Change",
+    "Day Percent",
     "Market Value",
     "Profit/Loss"
 ]
