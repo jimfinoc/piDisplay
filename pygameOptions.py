@@ -263,8 +263,8 @@ if __name__ == '__main__':
                 #     pass
                 # prLightPurple('redisFilterData')
                 # prLightPurple(redisFilterData)
-                print ('equity_list')
-                print (equity_list)
+                # print ('equity_list')
+                # print (equity_list)
                 squares = len(redisFilterData)
                 if squares == 0:
                     squares = 1
@@ -332,8 +332,9 @@ if __name__ == '__main__':
                     my_rect[count]["X2"] = X2 
                     Y2 = y*(each_row+1)/rows
                     my_rect[count]["Y2"] = Y2
-                    my_rect[count]["Rect"] = pygame.Rect( (X1,Y1) , (X2,Y2) )
-                    my_rect[count]["Rect2"] = pygame.Rect( (X1+10,Y1+10) , (X2-10,Y2-10) )
+                    my_rect[count]["Rect"] = pygame.Rect( (X1,Y1) , (X2-X1+2,Y2-Y1+2) )
+                    my_rect[count]["Rect2"] = pygame.Rect( (X1,Y1) , (X2-X1-2,Y2-Y1-2) )
+                    # my_rect[count]["Rect2"] = pygame.Rect( (X1+10,Y1+10) , (X2-10,Y2-10) )
                     if len(optionsSorted) > 0:
                         my_rect[count]["Text1"] = f'{optionsSorted[count]["instrument"]["symbol"][0:6]} {optionsSorted[count]["instrument"]["symbol"][12:13]}'
                         my_rect[count]["Text2"] = optionsSorted[count]['instrument']["symbol"][6:12]
@@ -407,16 +408,16 @@ if __name__ == '__main__':
                 # if an order exists draw a box around it
                 if my_rect[square]["symbol"] in list_of_symbol_open_orders:
                     # pygame.draw.rect(display_surface, yellow, my_rect[square]["Rect"],width=5,border_radius=50)
-                    print()
-                    print('my_rect[square]["symbol"]')
-                    print(my_rect[square]["symbol"])
-                    print('my_rect[square]["Rect"]')
-                    print(my_rect[square]["Rect"])
+                    # print()
+                    # print('my_rect[square]["symbol"]')
+                    # print(my_rect[square]["symbol"])
+                    # print('my_rect[square]["Rect"]')
+                    # print(my_rect[square]["Rect"])
                     # print('my_rect[square]["Rect2"]')
                     # print(my_rect[square]["Rect2"])
 
-                    pygame.draw.rect(display_surface, yellow, my_rect[square]["Rect"],width=5,border_radius=20)
-                    # pygame.draw.rect(display_surface, yellow, my_rect[square]["Rect2"],width=5,border_radius=20)
+                    # pygame.draw.rect(display_surface, yellow, my_rect[square]["Rect"],width=3,border_radius=10)
+                    pygame.draw.rect(display_surface, yellow, my_rect[square]["Rect2"],width=3,border_radius=10)
 
 
 
