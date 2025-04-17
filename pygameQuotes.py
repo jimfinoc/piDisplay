@@ -296,9 +296,12 @@ if __name__ == '__main__':
                     except:
                         backgroundNumber = 0.0
                     if backgroundNumber < 0.0:
-                        backgroundColor = (int(math.sqrt(-backgroundNumber/100.0)*256.0),0,0)
+                        # backgroundColor = (int(math.sqrt(-backgroundNumber/100.0)*255.0),0,0)
+                        backgroundColor = (max(0,min(int(math.sqrt(-backgroundNumber/100)*256.0),255)),0,0)
                     elif backgroundNumber > 0.0:
-                        backgroundColor = (0,int(math.sqrt(backgroundNumber/100.0)*256.0),0)
+                        # backgroundColor = (0,int(math.sqrt(backgroundNumber/100.0)*255.0),0)
+                        backgroundColor = (0,max(0,min(int(math.sqrt(backgroundNumber/100)*256.0),255)),0)
+
                     else:
                         backgroundColor = (0,0,0)
                     my_rect[count]["backgroundColor"] = backgroundColor
@@ -326,9 +329,10 @@ if __name__ == '__main__':
 
 
                 background = my_rect[square]["backgroundColor"]
-                # print('background')
-                # print(background)
-
+                print('background')
+                print(background)
+                # print('my_rect[square]["Rect"]')
+                # print(my_rect[square]["Rect"])
                 pygame.draw.rect(display_surface, background, my_rect[square]["Rect"])
                 text1 = font.render(my_rect[square]["Text1"], True, white, background)
                 cx = my_rect[square]["X1"] + (my_rect[square]["X2"] - my_rect[square]["X1"])//2

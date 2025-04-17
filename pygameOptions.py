@@ -309,6 +309,11 @@ if __name__ == '__main__':
                 optionsSorted = sorted(optionList, key=lambda item: item['instrument']["symbol"][6:12])
                 optionsSorted = sorted(optionsSorted, key=lambda item: item['instrument']["symbol"][12:13])
 
+            if 'Type & Date' in args.sort:
+                optionsSorted = sorted(optionList, key=lambda item: item['instrument']["symbol"])
+                optionsSorted = sorted(optionsSorted, key=lambda item: item['shortQuantity'])
+
+
             # elif 'Percent' in args.sort:
                 # optionsSorted = sorted(optionList, key=lambda item: item["change_percent"])
             # else :
@@ -336,7 +341,7 @@ if __name__ == '__main__':
                     my_rect[count]["Rect2"] = pygame.Rect( (X1,Y1) , (X2-X1,Y2-Y1) )
                     # my_rect[count]["Rect2"] = pygame.Rect( (X1+10,Y1+10) , (X2-10,Y2-10) )
                     if len(optionsSorted) > 0:
-                        my_rect[count]["Text1"] = f'{optionsSorted[count]["instrument"]["symbol"][0:6]} {optionsSorted[count]["instrument"]["symbol"][12:13]}'
+                        my_rect[count]["Text1"] = f'{optionsSorted[count]["instrument"]["symbol"][0:6].replace(" ","")} {optionsSorted[count]['shortQuantity']} {optionsSorted[count]["instrument"]["symbol"][12:13]}'
                         my_rect[count]["Text2"] = optionsSorted[count]['instrument']["symbol"][6:12]
                         strike_price = f'{(float(optionsSorted[count]["instrument"]["symbol"][13:19])/10):.2f}'
                         my_rect[count]["Text3"] = strike_price
