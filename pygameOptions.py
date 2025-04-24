@@ -566,13 +566,13 @@ if __name__ == '__main__':
                 textPortfolioSetTime = time.time()
                 if 'All' in args.filter:
                     args.filter = ['Calls']
-                    prGreen("Now showing f{args.filter[0]}")
+                    prGreen(f'Now showing {args.filter[0]}')
                 elif 'Calls' in args.filter:
                     args.filter = ['Puts']
-                    prGreen("Now showing f{args.filter[0]}")
+                    prGreen(f'Now showing {args.filter[0]}')
                 elif 'Puts' in args.filter:
                     args.filter = ['All']
-                    prGreen("Now showing f{args.filter[0]}")
+                    prGreen(f"Now showing {args.filter[0]}")
                 # elif 'Options' in args.filter:
                 #     args.filter = ['Both']
                 #     prGreen("Now showing Both")

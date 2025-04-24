@@ -329,8 +329,8 @@ if __name__ == '__main__':
 
 
                 background = my_rect[square]["backgroundColor"]
-                print('background')
-                print(background)
+                # print('background')
+                # print(background)
                 # print('my_rect[square]["Rect"]')
                 # print(my_rect[square]["Rect"])
                 pygame.draw.rect(display_surface, background, my_rect[square]["Rect"])
