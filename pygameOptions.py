@@ -13,6 +13,9 @@ from stockDataFunctions import return_orders
 import copy
 import argparse
 
+time.sleep(2)
+pygame.init()
+
 time_between_redis_pulls = 1
 time_to_show_text = 2
 
@@ -26,7 +29,7 @@ parser.add_argument("-e", "--equity", choices=['All'], default=['All'], help = "
 args = parser.parse_args()
 
 # print("args")
-print('args.sort', args.sort)
+# print('args.sort', args.sort)
 # print('args.filter', args.filter)
 
 def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
@@ -58,11 +61,13 @@ if __name__ == '__main__':
         temp_dict = manager.dict()
         lock = manager.Lock()        
 
+
+        time.sleep(2)
+
         stop_threads = Value('b', False)
         p1 = Process(target=redisPullDataFunction, args=(lock, temp_dict, stop_threads))
         p1.start()
 
-        pygame.init()
         print()
         size = pygame.display.get_desktop_sizes()
         if size[0] == (3440,1440):
@@ -101,7 +106,7 @@ if __name__ == '__main__':
             
         display_surface = pygame.display.set_mode([screen_width, screen_height],flags)
 
-        pygame.mouse.set_visible(False)
+        pygame.mouse.set_visible(True)
         # display_surface = pygame.display.set_mode((800, 480), pygame.FULLSCREEN)
         print(pygame.display.Info())
         # print()
@@ -157,6 +162,14 @@ if __name__ == '__main__':
         done = False
         clock = pygame.time.Clock()
         
+        zoomInBox = False
+        BlockText1 = "No Data"
+        BlockText2 = "No Data"
+        BlockText3 = "No Data"
+        BlockSymbol = "No Data"
+        BlockStock = "No Data"
+        BlockStockPrice = "No Data"
+
         while not done:
             equity_set = set()
             clock.tick(30)
@@ -337,7 +350,7 @@ if __name__ == '__main__':
                     my_rect[count]["X2"] = X2 
                     Y2 = y*(each_row+1)/rows
                     my_rect[count]["Y2"] = Y2
-                    my_rect[count]["Rect"] = pygame.Rect( (X1,Y1) , (X2-X1+2,Y2-Y1+2) )
+                    my_rect[count]["Rect"] = pygame.Rect( (X1,Y1) , (X2-X1+1,Y2-Y1+1) )
                     my_rect[count]["Rect2"] = pygame.Rect( (X1,Y1) , (X2-X1,Y2-Y1) )
                     # my_rect[count]["Rect2"] = pygame.Rect( (X1+10,Y1+10) , (X2-10,Y2-10) )
                     if len(optionsSorted) > 0:
@@ -489,6 +502,80 @@ if __name__ == '__main__':
                 display_surface.blit(textSort, textSortRect)
             # elif DataShown == 1: #'Stocks'
 
+            if zoomInBox == True:
+                BlockFont = pygame.font.Font('freesansbold.ttf', 30)
+                Block = pygame.Rect( 0,0 , x, y)
+                pygame.draw.rect(display_surface, black, Block)
+
+                BlockRenderText1 = BlockFont.render(BlockText1, True, white, black)
+                BlockTextX = x * 1/2
+                BlockTextY1 = y * 1/12
+                BlockRectText1 = BlockRenderText1.get_rect()
+                BlockRectText1.center = (BlockTextX , BlockTextY1)
+                display_surface.blit(BlockRenderText1, BlockRectText1)
+
+                BlockRenderText2 = BlockFont.render(BlockText2, True, white, black)
+                BlockTextY2 = y * 2/12
+                BlockRectText2 = BlockRenderText2.get_rect()
+                BlockRectText2.center = (BlockTextX , BlockTextY2)
+                display_surface.blit(BlockRenderText2, BlockRectText2)
+
+                BlockRenderText3 = BlockFont.render(BlockText3, True, white, black)
+                BlockTextY3 = y * 3/12
+                BlockRectText3 = BlockRenderText3.get_rect()
+                BlockRectText3.center = (BlockTextX , BlockTextY3)
+                display_surface.blit(BlockRenderText3, BlockRectText3)
+
+                BlockRenderText5a = BlockFont.render("Price", True, white, black)
+                BlockTextY5 = y * 5/12
+                BlockRectText5a = BlockRenderText5a.get_rect()
+                BlockRectText5a.center = (x*1/4 , BlockTextY5)
+                display_surface.blit(BlockRenderText5a, BlockRectText5a)
+
+                BlockRenderText5b = BlockFont.render("Days Away", True, white, black)
+                BlockRectText5b = BlockRenderText5b.get_rect()
+                BlockRectText5b.center = (x*3/4 , BlockTextY5)
+                display_surface.blit(BlockRenderText5b, BlockRectText5b)
+
+                BlockRenderText6a = BlockFont.render(f"{BlockStockPrice:.2f}", True, white, black)
+                BlockTextY6 = y * 6/12
+                BlockRectText6a = BlockRenderText6a.get_rect()
+                BlockRectText6a.center = (x*1/4 , BlockTextY6)
+                display_surface.blit(BlockRenderText6a, BlockRectText6a)
+
+                BlockRenderText6b = BlockFont.render(f"{difference.days}", True, white, black)
+                BlockRectText6b = BlockRenderText6b.get_rect()
+                BlockRectText6b.center = (x*3/4 , BlockTextY6)
+                display_surface.blit(BlockRenderText6b, BlockRectText6b)
+
+                BlockRenderText8a = BlockFont.render("Option Income", True, white, black)
+                BlockTextY8 = y * 8/12
+                BlockRectText8a = BlockRenderText8a.get_rect()
+                BlockRectText8a.center = (x*1/4 , BlockTextY8)
+                display_surface.blit(BlockRenderText8a, BlockRectText8a)
+
+                BlockRenderText8b = BlockFont.render("Bid Ask (x100)", True, white, black)
+                BlockRectText8b = BlockRenderText5b.get_rect()
+                BlockRectText8b.center = (x*3/4 , BlockTextY8)
+                display_surface.blit(BlockRenderText8b, BlockRectText8b)
+
+                BlockRenderText9a = BlockFont.render("Option income2", True, white, black)
+                BlockTextY9 = y * 9/12
+                BlockRectText9a = BlockRenderText9a.get_rect()
+                BlockRectText9a.center = (x*1/4 , BlockTextY9)
+                display_surface.blit(BlockRenderText9a, BlockRectText9a)
+
+                BlockRenderText9b = BlockFont.render("Bid Ask2", True, white, black)
+                BlockRectText9b = BlockRenderText9b.get_rect()
+                BlockRectText9b.center = (x*3/4 , BlockTextY9)
+                display_surface.blit(BlockRenderText9b, BlockRectText9b)
+
+                BlockRenderTextB = BlockFont.render("Counter order, Placed time, price", True, white, black)
+                BlockTextYB = y * 11/12
+                BlockRectTextB = BlockRenderTextB.get_rect()
+                BlockRectTextB.center = (BlockTextX , BlockTextYB)
+                display_surface.blit(BlockRenderTextB, BlockRectTextB)
+
             pygame.display.update()
 
 
@@ -496,11 +583,43 @@ if __name__ == '__main__':
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if pygame.mouse.get_pressed()[0]:
-                        action = 1
-                        prYellow("Left mouse button clicked")
+                        if zoomInBox == False:
+                            prPurple(f"zoomInBox is {zoomInBox}")
+                            for each in my_rect:
+                                if my_rect[each]["Rect"].collidepoint(event.pos):
+                                    # action = 1
+                                    prYellow("You clicked on a square")
+                                    BlockText1 = my_rect[each]["Text1"]
+                                    BlockText2 = my_rect[each]["Text2"]
+                                    BlockText3 = my_rect[each]["Text3"]
+                                    BlockSymbol = my_rect[each]["symbol"]
+                                    
+                                    prGreen(BlockText1)
+                                    prGreen(BlockText2)
+                                    dateobjectFut = datetime.datetime.strptime("20"+BlockText2, '%Y%m%d')
+                                    dateobjectNow = datetime.datetime.now()
+                                    difference = dateobjectFut - dateobjectNow
+
+                                    prRed(f"{dateobjectFut,dateobjectNow, difference.days}")
+                                    prGreen(BlockText3)
+                                    prGreen(BlockSymbol)
+                                    BlockStock = BlockSymbol[0:6].replace(" ", "")
+                                    BlockStockPrice = temp_dict[BlockStock]["price"]
+                                    prRed(BlockStock)
+                                    prRed(BlockStockPrice)
+
+
+
+                                    # print('my_rect[each]')
+                                    # print(my_rect[each])
+                            prYellow("Left mouse button clicked")
+                            zoomInBox = True
+                        elif zoomInBox == True:
+                            prPurple(f"zoomInBox is {zoomInBox}")
+                            zoomInBox = False
+
                     if pygame.mouse.get_pressed()[1]:
-                        # if event.mod & pygame.KMOD_LSHIFT or event.mod & pygame.KMOD_RSHIFT:
-                        action = 20
+                        # action = 20
                         prYellow("Middle mouse button clicked")
                         # else:
                             # action = 20
