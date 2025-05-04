@@ -256,6 +256,7 @@ if __name__ == '__main__':
                         SelectingEquity = True
                 except:
                     prRed("Error selecting equity")
+                    time.sleep(1)
                     # prPurple('args.equity')
                     # prPurple(args.equity)
                     # prPurple('equities')
