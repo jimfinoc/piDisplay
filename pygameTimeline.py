@@ -386,7 +386,7 @@ if __name__ == '__main__':
             textRect1 = text1.get_rect()
             textRect1.center = (780, 450)
             display_surface.blit(text1, textRect1)
-            print('test_x',test_x,' test_y',test_y)
+            # print('test_x',test_x,' test_y',test_y)
 
             # pygame.draw.rect(display_surface, background, my_rect[square]["Rect"])
             # cx = my_rect[square]["X1"] + (my_rect[square]["X2"] - my_rect[square]["X1"])//2
