@@ -98,9 +98,11 @@ if __name__ == '__main__':
             # screen_width=3440 #1280
             # screen_height=1440 #720
             flags = pygame.SHOWN
-            screen_width=1280
-            screen_height=720
-            
+            # screen_width=1280
+            # screen_height=720
+            screen_width=800
+            screen_height=480
+
         display_surface = pygame.display.set_mode([screen_width, screen_height],flags)
 
         pygame.mouse.set_visible(False)
@@ -158,6 +160,10 @@ if __name__ == '__main__':
         # squares = 50
         done = False
         clock = pygame.time.Clock()
+        moving_x = 0
+        moving_y = 0
+        test_x = 50
+        test_y = 450
 
         while not done:
             clock.tick(30)
@@ -326,53 +332,58 @@ if __name__ == '__main__':
             # my_rect = pygame.Rect((0,0),(x//2,y//2))
             # rect1 = pygame.draw.rect(display_surface, white, my_rect,width=2)
             # pygame.Surface.fill(black, rect1)
-            for square in my_rect:
+            # for square in my_rect:
                 # pygame.draw.rect(display_surface, white, my_rect[square],width=10,border_radius=50)
                 # pygame.draw.rect(display_surface, white, my_rect[square],width=1)
                 # pygame.display.flip()
 
-                font = pygame.font.Font('freesansbold.ttf', 70//rows)
-                if size[0][0] < size[0][1]:
-                    font = pygame.font.Font('freesansbold.ttf', 110//rows)
+            font = pygame.font.Font('freesansbold.ttf', 70//rows)
+            if size[0][0] < size[0][1]:
+                font = pygame.font.Font('freesansbold.ttf', 110//rows)
 
 
-                # backgroundColor = random.choice(stock_color)
+            # backgroundColor = random.choice(stock_color)
 
 
-                background = (0,0,0)
-                # print('background')
-                # print(background)
-                # print('my_rect[square]["Rect"]')
-                # print(my_rect[square]["Rect"])
-                pygame.draw.rect(display_surface, background, (0,0,x,y),width=0)
-                pygame.draw.rect(display_surface, (100,100,0), (50,20,x-50-20,y-20-20),width=2)
-                
-                
-
-                font = pygame.font.Font('freesansbold.ttf', 20)
-                text1 = font.render("5/3", True, white, background)
-                textRect1 = text1.get_rect()
-                textRect1.center = (x/2 , y/2)
-                display_surface.blit(text1, textRect1)
+            background = (0,0,0)
+            # print('background')
+            # print(background)
+            # print('my_rect[square]["Rect"]')
+            # print(my_rect[square]["Rect"])
+            pygame.draw.rect(display_surface, background, (0,0,x,y),width=0)
+            pygame.draw.rect(display_surface, (100,100,0), (50,20,x-50-20,y-20-40),width=2)
+            
+            test_x += moving_x
+            test_y += moving_y
 
 
-                # pygame.draw.rect(display_surface, background, my_rect[square]["Rect"])
-                # cx = my_rect[square]["X1"] + (my_rect[square]["X2"] - my_rect[square]["X1"])//2
-                # cy = my_rect[square]["Y1"] + 1*(my_rect[square]["Y2"] - my_rect[square]["Y1"])//4
-                # textRect1.center = (cx , cy)
-                # display_surface.blit(text1, textRect1)
+            font = pygame.font.Font('freesansbold.ttf', 15)
+            today = datetime.date.today()
+            current_month = today.month
+            current_day = today.day
+            text1 = font.render(f"{current_month}/{current_day}", True, white, background)
+            textRect1 = text1.get_rect()
+            textRect1.center = (test_x , test_y)
+            display_surface.blit(text1, textRect1)
+            print('test_x',test_x,' test_y',test_y)
 
-                # text2 = font.render(my_rect[square]["Text2"], True, white, background)
-                # textRect2 = text2.get_rect()
-                # cy = my_rect[square]["Y1"] + 2*(my_rect[square]["Y2"] - my_rect[square]["Y1"])//4
-                # textRect2.center = (cx , cy)
-                # display_surface.blit(text2, textRect2)
+            # pygame.draw.rect(display_surface, background, my_rect[square]["Rect"])
+            # cx = my_rect[square]["X1"] + (my_rect[square]["X2"] - my_rect[square]["X1"])//2
+            # cy = my_rect[square]["Y1"] + 1*(my_rect[square]["Y2"] - my_rect[square]["Y1"])//4
+            # textRect1.center = (cx , cy)
+            # display_surface.blit(text1, textRect1)
 
-                # text3 = font.render(my_rect[square]["Text3"], True, white, background)
-                # textRect3 = text3.get_rect()
-                # cy = my_rect[square]["Y1"] + 3*(my_rect[square]["Y2"] - my_rect[square]["Y1"])//4
-                # textRect3.center = (cx, cy)
-                # display_surface.blit(text3, textRect3)
+            # text2 = font.render(my_rect[square]["Text2"], True, white, background)
+            # textRect2 = text2.get_rect()
+            # cy = my_rect[square]["Y1"] + 2*(my_rect[square]["Y2"] - my_rect[square]["Y1"])//4
+            # textRect2.center = (cx , cy)
+            # display_surface.blit(text2, textRect2)
+
+            # text3 = font.render(my_rect[square]["Text3"], True, white, background)
+            # textRect3 = text3.get_rect()
+            # cy = my_rect[square]["Y1"] + 3*(my_rect[square]["Y2"] - my_rect[square]["Y1"])//4
+            # textRect3.center = (cx, cy)
+            # display_surface.blit(text3, textRect3)
 
 
 
@@ -420,6 +431,8 @@ if __name__ == '__main__':
 
             pygame.display.update()
 
+            moving_x = 0
+            moving_y = 0
 
             action = 0
             for event in pygame.event.get():
@@ -442,12 +455,25 @@ if __name__ == '__main__':
                     # print(event.x)
                     # print('event.y')
                     if event.y < 0:
-                        action = 32
+                        action = 22
                         prYellow("Wheel rolled up")
                     if event.y > 0:
-                        action = 31
+                        action = 21
                         prYellow("Wheel rolled down")
                 if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        moving_y = -1
+                        prYellow("Up key pressed")
+                    if event.key == pygame.K_DOWN:
+                        moving_y = 1
+                        prYellow("Down key pressed")
+                    if event.key == pygame.K_LEFT:  
+                        moving_x = -1
+                        prYellow("Left key pressed")
+                    if event.key == pygame.K_RIGHT:
+                        moving_x = 1
+                        prYellow("Right key pressed")
+
                     if event.key == pygame.K_1:
                         action = 1
                         prYellow("1 key pressed")
@@ -459,14 +485,17 @@ if __name__ == '__main__':
                             action = 21
                             prYellow("2 key pressed")
                     if event.key == pygame.K_3:
-                        action = -1
-                        prYellow("3 key pressed")
+                        if event.mod & pygame.KMOD_LSHIFT or event.mod & pygame.KMOD_RSHIFT:
+                            action = 32
+                            prYellow("shift 2 key pressed")
+                        else:
+                            action = 31
+                            prYellow("2 key pressed")
                     if event.key == pygame.K_ESCAPE:
                         action = -1
                         prYellow("Escape key pressed")
                 if event.type == pygame.QUIT:
                         prGreen("Quit event detected")
-                        prGreen("Exiting program")
                         action = -1
 
             if action == 1:
@@ -478,7 +507,7 @@ if __name__ == '__main__':
                         args.sort = ['Name']
                         prGreen("Now sorting by Name")
 
-            if action == 21:
+            if action == 31:
                 textPortfolioSetTime = time.time()
                 if 'All' in args.portfolio:
                     args.portfolio = ['Stocks']
@@ -495,7 +524,7 @@ if __name__ == '__main__':
                 prGreen(f"Now showing {args.portfolio[0]}")
 
 
-            if action == 22:
+            if action == 32:
                 textPortfolioSetTime = time.time()
                 if 'Others' in args.portfolio:
                     args.portfolio = ['Speculation']
@@ -511,7 +540,7 @@ if __name__ == '__main__':
                     args.portfolio = ['Others']
                 prGreen(f"Now showing {args.portfolio[0]}")
 
-            if action == 31:
+            if action == 21:
                 textStockSetTime = time.time()
                 index = equities.index(args.equity[0])
                 if index == len(equities) - 1:
@@ -521,7 +550,7 @@ if __name__ == '__main__':
                 args.equity = [equities[index]]
                 prGreen(f"Now showing {args.equity[0]}")
 
-            if action == 32:
+            if action == 22:
                 textStockSetTime = time.time()
                 index = equities.index(args.equity[0])
                 if index == 0:
