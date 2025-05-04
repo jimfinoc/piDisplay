@@ -162,7 +162,7 @@ if __name__ == '__main__':
         clock = pygame.time.Clock()
         moving_x = 0
         moving_y = 0
-        test_x = 50
+        test_x = 750
         test_y = 450
 
         while not done:
@@ -243,8 +243,20 @@ if __name__ == '__main__':
 
             # prPurple('squares != 0')
             
-            if args.equity == "" or args.equity[0] not in equities:
-                args.equity = [equities[0]]
+            SelectingEquity = False
+            while SelectingEquity == False:
+                try:
+                    if args.equity == "" or args.equity[0] not in equities:
+                        args.equity = [equities[0]]
+                        SelectingEquity = True
+                except:
+                    prRed("Error selecting equity")
+                    # prPurple('args.equity')
+                    # prPurple(args.equity)
+                    # prPurple('equities')
+                    # prPurple(equities)
+                    # prPurple('equities[0]')
+                    # prPurple(equities[0])
             # prBlue(f'equities: {equities}')
             # prBlue(f"Now showing {args.equity[0]}")
             
@@ -363,7 +375,16 @@ if __name__ == '__main__':
             current_day = today.day
             text1 = font.render(f"{current_month}/{current_day}", True, white, background)
             textRect1 = text1.get_rect()
-            textRect1.center = (test_x , test_y)
+            textRect1.center = (50 , 450)
+            display_surface.blit(text1, textRect1)
+
+            font = pygame.font.Font('freesansbold.ttf', 15)
+            today = datetime.date.today()
+            current_month = today.month
+            current_day = today.day
+            text1 = font.render(f"{current_month}/{current_day}", True, white, background)
+            textRect1 = text1.get_rect()
+            textRect1.center = (780, 450)
             display_surface.blit(text1, textRect1)
             print('test_x',test_x,' test_y',test_y)
 
