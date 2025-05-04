@@ -366,13 +366,8 @@ if __name__ == '__main__':
                 textPortfolioRect = textPortfolio.get_rect()
                 x, y = display_surface.get_size()
                 cx = x * 2/3
-                # cy = y * 2/3 
                 PortfolioOption = {'All':1,'Stocks':2,'Options':3,'Both':4,'Speculation':5,'Others':6}
                 cy = y * PortfolioOption[args.portfolio[0]]/7
-                # print('cx')
-                # print(cx)
-                # print('cy')
-                # print(cy)
                 textPortfolioRect.center = (cx, cy)
                 display_surface.blit(textPortfolio, textPortfolioRect)
             if time.time() - textSortSetTime  < time_to_show_text:
@@ -383,10 +378,6 @@ if __name__ == '__main__':
                 cx = x * 1/3
                 SortOption = {'Name':3,'Percent':4}
                 cy = y * SortOption[args.sort[0]]/7
-                # print('cx')
-                # print(cx)
-                # print('cy')
-                # print(cy)
                 textSortRect.center = (cx, cy)
                 display_surface.blit(textSort, textSortRect)
             # elif DataShown == 1: #'Stocks'
@@ -402,7 +393,7 @@ if __name__ == '__main__':
                         prYellow("Left mouse button clicked")
                     if pygame.mouse.get_pressed()[1]:
                         # if event.mod & pygame.KMOD_LSHIFT or event.mod & pygame.KMOD_RSHIFT:
-                        action = 20
+                        action = 21
                         prYellow("Middle mouse button clicked")
                         # else:
                             # action = 20
@@ -415,10 +406,10 @@ if __name__ == '__main__':
                     # print(event.x)
                     # print('event.y')
                     if event.y < 0:
-                        action = 21
+                        action = 22
                         prYellow("Wheel rolled up")
                     if event.y > 0:
-                        action = 20
+                        action = 21
                         prYellow("Wheel rolled down")
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_1:
@@ -426,10 +417,10 @@ if __name__ == '__main__':
                         prYellow("1 key pressed")
                     if event.key == pygame.K_2:
                         if event.mod & pygame.KMOD_LSHIFT or event.mod & pygame.KMOD_RSHIFT:
-                            action = 21
+                            action = 22
                             prYellow("shift 2 key pressed")
                         else:
-                            action = 20
+                            action = 21
                             prYellow("2 key pressed")
                     if event.key == pygame.K_3:
                         action = -1
@@ -437,6 +428,9 @@ if __name__ == '__main__':
                     if event.key == pygame.K_ESCAPE:
                         action = -1
                         prYellow("Escape key pressed")
+                    if event.key == pygame.K_q:
+                        action = -1
+                        prYellow("Q key pressed")
                 if event.type == pygame.QUIT:
                         prGreen("Quit event detected")
                         prGreen("Exiting program")
@@ -451,7 +445,7 @@ if __name__ == '__main__':
                         args.sort = ['Name']
                         prGreen("Now sorting by Name")
 
-            if action == 20:
+            if action == 21:
                 textPortfolioSetTime = time.time()
                 if 'All' in args.portfolio:
                     args.portfolio = ['Stocks']
@@ -468,7 +462,7 @@ if __name__ == '__main__':
                 prGreen(f"Now showing {args.portfolio[0]}")
 
 
-            if action == 21:
+            if action == 22:
                 textPortfolioSetTime = time.time()
                 if 'Others' in args.portfolio:
                     args.portfolio = ['Speculation']
