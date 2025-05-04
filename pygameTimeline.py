@@ -243,20 +243,20 @@ if __name__ == '__main__':
 
             # prPurple('squares != 0')
             
-            SelectingEquity = False
-            while SelectingEquity == False:
-                try:
-                    if args.equity == "":
-                        args.equity = [equities[0]]
-                        SelectingEquity = True
-                    if args.equity[0] not in equities:
-                        args.equity = [equities[0]]
-                        SelectingEquity = True
-                    else:
-                        SelectingEquity = True
-                except:
-                    prRed("Error selecting equity")
-                    time.sleep(1)
+            # SelectingEquity = False
+            # while SelectingEquity == False:
+            try:
+                if args.equity == "":
+                    args.equity = [equities[0]]
+                    SelectingEquity = True
+                if args.equity[0] not in equities:
+                    args.equity = [equities[0]]
+                    SelectingEquity = True
+                else:
+                    SelectingEquity = True
+            except:
+                prRed("Error selecting equity")
+                # time.sleep(1)
                     # prPurple('args.equity')
                     # prPurple(args.equity)
                     # prPurple('equities')
@@ -270,16 +270,16 @@ if __name__ == '__main__':
                 # break
             # squares = squares + 1
             # if size[0][0] > size[0][1] or True==True:
-            cols = []
-            rows = int(math.sqrt(squares))
-            if size[0][0] < size[0][1]:
-                rows = int(squares/rows)
+            # cols = []
+            # rows = int(math.sqrt(squares))
+            # if size[0][0] < size[0][1]:
+            #     rows = int(squares/rows)
 
-            for i in range(rows):
-                cols.append(int(squares/rows))
-            for i in range(rows-1,0,-1):
-                if (sum(cols)<squares):
-                    cols[i]=cols[1]+1
+            # for i in range(rows):
+            #     cols.append(int(squares/rows))
+            # for i in range(rows-1,0,-1):
+            #     if (sum(cols)<squares):
+            #         cols[i]=cols[1]+1
 
 
             # print('cols')
@@ -305,43 +305,43 @@ if __name__ == '__main__':
             #     print (stocksSortedByName[each])
             #     pass
 
-            for each_row in range(rows):
-                for each_col in range(cols[each_row]):
-                    my_rect[count] = {}
-                    # my_rect[count]["Rect"] = pygame.Rect( (x*each_col/cols[each_row],y*each_row/rows) , (x*(each_col+1)/cols[each_row],y*(each_row+1)/rows))
-                    X1 = x*each_col/cols[each_row]
-                    my_rect[count]["X1"] = X1
-                    Y1 = y*each_row/rows
-                    my_rect[count]["Y1"] = Y1
-                    X2 = x*(each_col+1)/cols[each_row]
-                    my_rect[count]["X2"] = X2 
-                    Y2 = y*(each_row+1)/rows
-                    my_rect[count]["Y2"] = Y2
-                    my_rect[count]["Rect"] = pygame.Rect( (X1,Y1) , (X2,Y2) )
-                    if len(stocksSorted) > 0:
-                        my_rect[count]["Text1"] = stocksSorted[count]["symbol"]
-                        my_rect[count]["Text2"] = str(stocksSorted[count]["price"])
-                        my_rect[count]["Text3"] = f'{stocksSorted[count]["change"]:.2f}   {stocksSorted[count]["change_percent"]:.1f}%'
-                    else:
-                        my_rect[count]["Text1"] = "No Data"
-                        my_rect[count]["Text2"] = "No Data"
-                        my_rect[count]["Text3"] = "No Data"
-                    try:
-                        backgroundNumber = float(stocksSorted[count]["change_percent"])
-                    except:
-                        backgroundNumber = 0.0
-                    if backgroundNumber < 0.0:
-                        # backgroundColor = (int(math.sqrt(-backgroundNumber/100.0)*255.0),0,0)
-                        backgroundColor = (max(0,min(int(math.sqrt(-backgroundNumber/100)*256.0),255)),0,0)
-                    elif backgroundNumber > 0.0:
-                        # backgroundColor = (0,int(math.sqrt(backgroundNumber/100.0)*255.0),0)
-                        backgroundColor = (0,max(0,min(int(math.sqrt(backgroundNumber/100)*256.0),255)),0)
+            # for each_row in range(rows):
+            #     for each_col in range(cols[each_row]):
+            #         my_rect[count] = {}
+            #         # my_rect[count]["Rect"] = pygame.Rect( (x*each_col/cols[each_row],y*each_row/rows) , (x*(each_col+1)/cols[each_row],y*(each_row+1)/rows))
+            #         X1 = x*each_col/cols[each_row]
+            #         my_rect[count]["X1"] = X1
+            #         Y1 = y*each_row/rows
+            #         my_rect[count]["Y1"] = Y1
+            #         X2 = x*(each_col+1)/cols[each_row]
+            #         my_rect[count]["X2"] = X2 
+            #         Y2 = y*(each_row+1)/rows
+            #         my_rect[count]["Y2"] = Y2
+            #         my_rect[count]["Rect"] = pygame.Rect( (X1,Y1) , (X2,Y2) )
+            #         if len(stocksSorted) > 0:
+            #             my_rect[count]["Text1"] = stocksSorted[count]["symbol"]
+            #             my_rect[count]["Text2"] = str(stocksSorted[count]["price"])
+            #             my_rect[count]["Text3"] = f'{stocksSorted[count]["change"]:.2f}   {stocksSorted[count]["change_percent"]:.1f}%'
+            #         else:
+            #             my_rect[count]["Text1"] = "No Data"
+            #             my_rect[count]["Text2"] = "No Data"
+            #             my_rect[count]["Text3"] = "No Data"
+            #         try:
+            #             backgroundNumber = float(stocksSorted[count]["change_percent"])
+            #         except:
+            #             backgroundNumber = 0.0
+            #         if backgroundNumber < 0.0:
+            #             # backgroundColor = (int(math.sqrt(-backgroundNumber/100.0)*255.0),0,0)
+            #             backgroundColor = (max(0,min(int(math.sqrt(-backgroundNumber/100)*256.0),255)),0,0)
+            #         elif backgroundNumber > 0.0:
+            #             # backgroundColor = (0,int(math.sqrt(backgroundNumber/100.0)*255.0),0)
+            #             backgroundColor = (0,max(0,min(int(math.sqrt(backgroundNumber/100)*256.0),255)),0)
 
-                    else:
-                        backgroundColor = (0,0,0)
-                    my_rect[count]["backgroundColor"] = backgroundColor
+            #         else:
+            #             backgroundColor = (0,0,0)
+            #         my_rect[count]["backgroundColor"] = backgroundColor
 
-                    count = count + 1
+            #         count = count + 1
 
             
             # print (my_rect)
@@ -355,9 +355,9 @@ if __name__ == '__main__':
                 # pygame.draw.rect(display_surface, white, my_rect[square],width=1)
                 # pygame.display.flip()
 
-            font = pygame.font.Font('freesansbold.ttf', 70//rows)
-            if size[0][0] < size[0][1]:
-                font = pygame.font.Font('freesansbold.ttf', 110//rows)
+            # font = pygame.font.Font('freesansbold.ttf', 70//rows)
+            # if size[0][0] < size[0][1]:
+            #     font = pygame.font.Font('freesansbold.ttf', 110//rows)
 
 
             # backgroundColor = random.choice(stock_color)
@@ -419,39 +419,43 @@ if __name__ == '__main__':
             # pygame.screen.fill((0,0,0))
             # if DataShown == 0: # 'All'
             # if 'All' in args.portfolio:
-            if time.time() - textPortfolioSetTime  < time_to_show_text:
-                font2 = pygame.font.Font('freesansbold.ttf', 30)
-                textPortfolio = font2.render(f'Portfolio shown is {args.portfolio[0]}', True, yellow, background)
-                textPortfolioRect = textPortfolio.get_rect()
-                x, y = display_surface.get_size()
-                cx = x * 2/3
-                PortfolioOption = {'All':1,'Stocks':2,'Options':3,'Both':4,'Speculation':5,'Others':6}
-                cy = y * PortfolioOption[args.portfolio[0]]/7
-                textPortfolioRect.center = (cx, cy)
-                display_surface.blit(textPortfolio, textPortfolioRect)
+            try:
+                if time.time() - textPortfolioSetTime  < time_to_show_text:
+                    font2 = pygame.font.Font('freesansbold.ttf', 30)
+                    textPortfolio = font2.render(f'Portfolio shown is {args.portfolio[0]}', True, yellow, background)
+                    textPortfolioRect = textPortfolio.get_rect()
+                    x, y = display_surface.get_size()
+                    cx = x * 2/3
+                    PortfolioOption = {'All':1,'Stocks':2,'Options':3,'Both':4,'Speculation':5,'Others':6}
+                    cy = y * PortfolioOption[args.portfolio[0]]/7
+                    textPortfolioRect.center = (cx, cy)
+                    display_surface.blit(textPortfolio, textPortfolioRect)
 
-            if time.time() - textSortSetTime  < time_to_show_text:
-                font2 = pygame.font.Font('freesansbold.ttf', 30)
-                textSort = font2.render(f'Sort by {args.sort[0]}', True, yellow, background)
-                textSortRect = textSort.get_rect()
-                x, y = display_surface.get_size()
-                cx = x * 1/3
-                SortOption = {'Name':3,'Percent':4}
-                cy = y * SortOption[args.sort[0]]/7
-                textSortRect.center = (cx, cy)
-                display_surface.blit(textSort, textSortRect)
+                if time.time() - textSortSetTime  < time_to_show_text:
+                    font2 = pygame.font.Font('freesansbold.ttf', 30)
+                    textSort = font2.render(f'Sort by {args.sort[0]}', True, yellow, background)
+                    textSortRect = textSort.get_rect()
+                    x, y = display_surface.get_size()
+                    cx = x * 1/3
+                    SortOption = {'Name':3,'Percent':4}
+                    cy = y * SortOption[args.sort[0]]/7
+                    textSortRect.center = (cx, cy)
+                    display_surface.blit(textSort, textSortRect)
 
-            if time.time() - textStockSetTime  < time_to_show_text:
-                font2 = pygame.font.Font('freesansbold.ttf', 30)
-                textSort = font2.render(f'Now showing {args.equity[0]}', True, yellow, background)
-                textSortRect = textSort.get_rect()
-                x, y = display_surface.get_size()
-                cx = x * 1/2
-                # cy = y / 2
-                cy = y * (equities.index(args.equity[0])+1)/(len(equities)+1)
-                textSortRect.center = (cx, cy)
-                display_surface.blit(textSort, textSortRect)
-
+                if time.time() - textStockSetTime  < time_to_show_text:
+                    font2 = pygame.font.Font('freesansbold.ttf', 30)
+                    textSort = font2.render(f'Now showing {args.equity[0]}', True, yellow, background)
+                    textSortRect = textSort.get_rect()
+                    x, y = display_surface.get_size()
+                    cx = x * 1/2
+                    # cy = y / 2
+                    cy = y * (equities.index(args.equity[0])+1)/(len(equities)+1)
+                    textSortRect.center = (cx, cy)
+                    display_surface.blit(textSort, textSortRect)
+            except:
+                prRed("Error checking text against time")
+                # time.sleep(1)
+                # pass
 
                 
             # elif DataShown == 1: #'Stocks'
