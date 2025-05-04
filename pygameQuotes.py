@@ -365,8 +365,10 @@ if __name__ == '__main__':
                 textPortfolio = font2.render(f'Portfolio shown is {args.portfolio[0]}', True, yellow, background)
                 textPortfolioRect = textPortfolio.get_rect()
                 x, y = display_surface.get_size()
-                cx = x * 1/2
-                cy = y * 2/3 
+                cx = x * 2/3
+                # cy = y * 2/3 
+                PortfolioOption = {'All':1,'Stocks':2,'Options':3,'Both':4,'Speculation':5,'Others':6}
+                cy = y * PortfolioOption[args.portfolio[0]]/7
                 # print('cx')
                 # print(cx)
                 # print('cy')
@@ -378,8 +380,9 @@ if __name__ == '__main__':
                 textSort = font2.render(f'Sort by {args.sort[0]}', True, yellow, background)
                 textSortRect = textSort.get_rect()
                 x, y = display_surface.get_size()
-                cx = x * 1/2
-                cy = y * 1/3
+                cx = x * 1/3
+                SortOption = {'Name':3,'Percent':4}
+                cy = y * SortOption[args.sort[0]]/7
                 # print('cx')
                 # print(cx)
                 # print('cy')
@@ -452,43 +455,34 @@ if __name__ == '__main__':
                 textPortfolioSetTime = time.time()
                 if 'All' in args.portfolio:
                     args.portfolio = ['Stocks']
-                    prGreen("Now showing Stocks")
                 elif 'Stocks' in args.portfolio:
                     args.portfolio = ['Options']
-                    prGreen("Now showing Options")
                 elif 'Options' in args.portfolio:
                     args.portfolio = ['Both']
-                    prGreen("Now showing Both")
                 elif 'Both' in args.portfolio:
                     args.portfolio = ['Speculation']
-                    prGreen("Now showing Speculation")
                 elif 'Speculation' in args.portfolio:
                     args.portfolio = ['Others']
-                    prGreen("Now showing Others")
                 elif 'Others' in args.portfolio:
                     args.portfolio = ['All']
-                    prGreen("Now showing All")
+                prGreen(f"Now showing {args.portfolio[0]}")
+
 
             if action == 21:
                 textPortfolioSetTime = time.time()
-                if 'All' in args.portfolio:
-                    args.portfolio = ['Others']
-                    prGreen("Now showing Others")
-                elif 'Stocks' in args.portfolio:
-                    args.portfolio = ['All']
-                    prGreen("Now showing All")
-                elif 'Options' in args.portfolio:
-                    args.portfolio = ['Stocks']
-                    prGreen("Now showing Stocks")
-                elif 'Both' in args.portfolio:
+                if 'Others' in args.portfolio:
                     args.portfolio = ['Speculation']
-                    prGreen("Now showing Speculation")
                 elif 'Speculation' in args.portfolio:
                     args.portfolio = ['Both']
-                    prGreen("Now showing Both")
-                elif 'Others' in args.portfolio:
+                elif 'Both' in args.portfolio:
                     args.portfolio = ['Options']
-                    prGreen("Now showing Options")
+                elif 'Options' in args.portfolio:
+                    args.portfolio = ['Stocks']
+                elif 'Stocks' in args.portfolio:
+                    args.portfolio = ['All']
+                elif 'All' in args.portfolio:
+                    args.portfolio = ['Others']
+                prGreen(f"Now showing {args.portfolio[0]}")
 
             if action == -1:
                 prGreen("Exiting program")
