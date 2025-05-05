@@ -380,6 +380,11 @@ if __name__ == '__main__':
             textPrice52HighRect.centery = textPriceLowRect.centery + (stock_52_week_high - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
             textPrice52HighRect.left = 5
             display_surface.blit(textPrice52High, textPrice52HighRect)
+            leftside = 50
+            rightside = 778
+            for xskip in range(leftside, rightside, rightside//80):
+                pygame.draw.line(display_surface, cyan, (xskip, textPrice52HighRect.centery), (xskip+5, textPrice52HighRect.centery), 1)
+            # pygame.draw.line(display_surface, cyan, (50, textPrice52HighRect.centery), (778, textPrice52HighRect.centery), 1)
             
 
             # if lowPrice > stock_52_week_low:
@@ -389,6 +394,11 @@ if __name__ == '__main__':
             textPrice52LowRect.centery = textPriceLowRect.centery + (stock_52_week_low - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
             textPrice52LowRect.left = 5
             display_surface.blit(textPrice52Low, textPrice52LowRect)
+            leftside = 50
+            rightside = 778
+            for xskip in range(leftside, rightside, rightside//80):
+                pygame.draw.line(display_surface, cyan, (xskip, textPrice52LowRect.centery), (xskip+5, textPrice52LowRect.centery), 1)
+            # pygame.draw.line(display_surface, cyan, (50, textPrice52LowRect.centery), (778, textPrice52LowRect.centery), 1)
 
 
             # current price, proportional to the high and low price
@@ -398,6 +408,11 @@ if __name__ == '__main__':
             textPriceCurRect.centery = textPriceLowRect.centery + (currentPrice - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
             textPriceCurRect.left = 5
             display_surface.blit(textPriceCur, textPriceCurRect)
+            leftside = 45
+            rightside = 778
+            for xskip in range(leftside, rightside, rightside//30):
+                pygame.draw.line(display_surface, yellow, (xskip, textPriceCurRect.centery), (xskip+10, textPriceCurRect.centery), 1)
+            # pygame.draw.line(display_surface, yellow, (45, textPriceCurRect.centery), (778, textPriceCurRect.centery), 1)
 
             
 
