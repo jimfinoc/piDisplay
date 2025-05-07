@@ -405,15 +405,15 @@ if __name__ == '__main__':
                         # backgroundColor = (max(0,min(int(backgroundNumber*128.0),255)),0,0)
                         backgroundColor = (0,0,0)
                         if backgroundNumber > 0.0:
-                            backgroundColor = (0,16,0)
+                            backgroundColor = (0,4,0)
                         else:   
-                            backgroundColor = (0,112,0)
+                            backgroundColor = (0,96,0)
 
                     elif optiontype == "P":
                         if backgroundNumber < 0.0:
-                            backgroundColor = (32,0,0)
+                            backgroundColor = (4,0,0)
                         else:   
-                            backgroundColor = (128,0,0)
+                            backgroundColor = (96,0,0)
                         
                         # if backgroundNumber > 0.0:
                             # backgroundColor = (max(32,min(int((1-backgroundNumber)*255.0+0),255)),0,0)
