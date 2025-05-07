@@ -338,6 +338,8 @@ if __name__ == '__main__':
             #     print (optionsSortedByName[each])
             #     pass
 
+            optiontype = "C"
+            fullname = ""
             for each_row in range(rows):
                 for each_col in range(cols[each_row]):
                     my_rect[count] = {}
@@ -381,10 +383,14 @@ if __name__ == '__main__':
                         # print(current_price)
                         # print('strike_price')
                         # print(strike_price)
+                        fullname = optionsSorted[count]["instrument"]["symbol"]
                         if optionsSorted[count]["instrument"]["symbol"][12:13] == 'P':
-                            backgroundNumber = float((float(current_price) - float(strike_price))/float(current_price))
-                        else:
                             backgroundNumber = float((float(strike_price) - float(current_price))/float(current_price))
+                            optiontype = "P"
+                            
+                        elif optionsSorted[count]["instrument"]["symbol"][12:13] == 'C':
+                            backgroundNumber = float((float(strike_price) - float(current_price))/float(current_price))
+                            optiontype = "C"
                             # backgroundNumber = float((strike_price - current_price)/current_price)
                         # print('optionsSorted[count]["instrument"]["symbol"]')
                         # print(optionsSorted[count]["instrument"]["symbol"])
@@ -392,11 +398,35 @@ if __name__ == '__main__':
                         # print(backgroundNumber)
                     except:
                         backgroundNumber = 0.0
-                    if backgroundNumber < 0.0:
-                        # backgroundColor = (max(0,min(int(-backgroundNumber*256.0),255)),0,0)
-                        backgroundColor = (255,0,0)
-                    elif backgroundNumber > 0.0:
-                        backgroundColor = (0,max(0,min(int(backgroundNumber*256.0),255)),0)
+
+
+                    if optiontype == "C":
+                        # print("C",backgroundNumber)
+                        # backgroundColor = (max(0,min(int(backgroundNumber*128.0),255)),0,0)
+                        backgroundColor = (0,0,0)
+                        if backgroundNumber > 0.0:
+                            backgroundColor = (0,32,0)
+                        else:   
+                            backgroundColor = (0,128,0)
+
+                    elif optiontype == "P":
+                        if backgroundNumber < 0.0:
+                            backgroundColor = (32,0,0)
+                        else:   
+                            backgroundColor = (128,0,0)
+                        
+                        # if backgroundNumber > 0.0:
+                            # backgroundColor = (max(32,min(int((1-backgroundNumber)*255.0+0),255)),0,0)
+                        # else:
+                            # backgroundColor = (0,0,0)                            # backgroundColor = (255,0,0)
+                        # backgroundColor = (max(16,min(int(backgroundNumber*128.0),255)),0,0)
+                        # print(fullname,backgroundNumber,backgroundColor)
+
+                    # if backgroundNumber < 0.0:
+                    #     backgroundColor = (max(0,min(int(backgroundNumber*128.0),255)),0,0)
+                    #     # backgroundColor = (255,0,0)
+                    # elif backgroundNumber > 0.0:
+                    #     backgroundColor = (0,max(0,min(int(backgroundNumber*128.0),255)),0)
                     else:
                         backgroundColor = (0,0,0)
                     # print('backgroundColor')
