@@ -405,9 +405,9 @@ if __name__ == '__main__':
                         # backgroundColor = (max(0,min(int(backgroundNumber*128.0),255)),0,0)
                         backgroundColor = (0,0,0)
                         if backgroundNumber > 0.0:
-                            backgroundColor = (0,32,0)
+                            backgroundColor = (0,16,0)
                         else:   
-                            backgroundColor = (0,128,0)
+                            backgroundColor = (0,112,0)
 
                     elif optiontype == "P":
                         if backgroundNumber < 0.0:
