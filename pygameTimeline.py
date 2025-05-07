@@ -9,6 +9,7 @@ from ctypes import c_char_p
 import json
 from stockDataFunctions import return_details
 from stockDataFunctions import return_positions
+from stockDataFunctions import return_orders
 import copy
 import argparse
 
@@ -186,6 +187,18 @@ if __name__ == '__main__':
             redisFilterData = {}
             redisAllDataPull = copy.deepcopy(temp_dict)
 
+            list_of_symbol_open_orders = []
+            My_open_orders = return_orders("open")
+            for each in My_open_orders:
+                # print ('each')
+                # print (each)
+                for each_leg in each["orderLegCollection"]:
+                    # print ('each_leg')
+                    # print (each_leg)
+                    if each_leg["orderLegType"] == "OPTION":
+                        list_of_symbol_open_orders.append(each_leg["instrument"]["symbol"])
+
+
             if 'All' in args.portfolio:
                 for each in redisAllDataPull:
                     redisFilterData[each] = redisAllDataPull[each]
@@ -266,19 +279,19 @@ if __name__ == '__main__':
                             # print('optionSymbol',optionSymbol)
                             # print('len(optionSymbol)',len(optionSymbol))
                             strike = float(optionSymbol[13:21])/1000
-                            print('strike',strike)
+                            # print('strike',strike)
                             highPrice = max(highPrice,strike)
                             lowPrice = min(lowPrice,strike)
                             expirationDate = optionSymbol[6:12]
                             largestDate = str(max(int(largestDate),int(expirationDate)))
-                            print ('largestDate',largestDate)
+                            # print ('largestDate',largestDate)
                             last_year = max(last_year,int(f'20{expirationDate[0:2]}'))
                             years.append(int(f'20{expirationDate[0:2]}'))
                             temp = list(set(years))
                             years = sorted(temp)
                 all_option_dates = return_details("My_stock_option_dates")[displayStock]
 
-                print('all_option_dates',all_option_dates)
+                # print('all_option_dates',all_option_dates)
                 # for each in all_option_dates[displayStock]:
                 #     all_option_dates
                 #             optionSymbol = each["instrument"]["symbol"]
@@ -449,7 +462,7 @@ if __name__ == '__main__':
             textDateRectN = textDateN.get_rect()
             textDateRectN.center = (780, 450)
             display_surface.blit(textDateN, textDateRectN)
-            print(args.equity[0])
+            # print(args.equity[0])
             # print('years',years)
 
             all_dates = copy.deepcopy(all_option_dates)
@@ -457,8 +470,8 @@ if __name__ == '__main__':
             # print('all_dates',all_dates)
             # between dates
 
-            print()
-            print('test dates')
+            # print()
+            # print('test dates')
             for each in all_dates[1:-1]:
                 font = pygame.font.Font('freesansbold.ttf', 15)
                 each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
@@ -481,20 +494,26 @@ if __name__ == '__main__':
                         tempDate = optionSymbol[6:12]
                         expirationDateTime = datetime.datetime.strptime(f'20{tempDate}', '%Y%m%d')
                         expirationDate = expirationDateTime.strftime('%Y-%m-%d')
-                        print('optionSymbol',optionSymbol)
-                        print('typeOption',typeOption)
-                        print('expirationDate',expirationDate)
-                        print('strike',strike)
+                        # print('optionSymbol',optionSymbol)
+                        # print('typeOption',typeOption)
+                        # print('expirationDate',expirationDate)
+                        # print('strike',strike)
+                        circlex = 50 + (all_dates.index(expirationDate)) * (textDateRectN.centerx - textDateRect1.centerx) / (len(all_dates)-1)
+                        circley = textPriceLowRect.centery + (strike - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                        if optionSymbol in list_of_symbol_open_orders:
+                            circleColor = yellow
+                            pygame.draw.circle(display_surface, circleColor, (circlex,circley), 6)
+                            circleSize = 4
+                        else:
+                            circleSize = 5
                         if typeOption == 'C':
                             circleColor = (0,255,0)
                         elif typeOption == 'P':
                             circleColor = (255,0,0)
-                        circlex = 50 + (all_dates.index(expirationDate)) * (textDateRectN.centerx - textDateRect1.centerx) / (len(all_dates)-1)
-                        circley = textPriceLowRect.centery + (strike - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                        pygame.draw.circle(display_surface, circleColor, (circlex,circley), circleSize)
 
                         # circley = 50 + (all_dates.index(expirationDate)) * (textDateRectN.centerx - textDateRect1.centerx) / (len(all_dates)-1)
 
-                        pygame.draw.circle(display_surface, circleColor, (circlex,circley), 5)
 
 
             try:
