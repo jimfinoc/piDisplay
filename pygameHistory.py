@@ -24,8 +24,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--sort", choices=['Name','Percent'], default=['Name'], help = "Sort stocks by Name")
 parser.add_argument("-p", "--portfolio", choices=['All','Stocks','Options','Both','Speculation','Others'], default=['Options'], help = "Who's portfolio to show")
 parser.add_argument("-e", "--equity", type=str, default="", help = "This should be a stock (equity) symbol")
-parser.add_argument("-a", "--auto", choices=['Yes','No'], default=["No"], help = "automatically select the next stock after a few seconds of inactivity")
-parser.add_argument("-r", "--refresh", default=10, help = "time in seconds to advance to the next stock")
 # parser.add_argument("stock")
 args = parser.parse_args()
 
@@ -33,7 +31,6 @@ args = parser.parse_args()
 print('args.sort', args.sort)
 print('args.portfolio', args.portfolio)
 print('args.equity', args.equity)
-print('args.auto', args.auto)
 # print('args.portfolio', args.portfolio)
 
 
@@ -181,7 +178,6 @@ if __name__ == '__main__':
         last_year = 0
         years = []
         all_option_dates = []
-        auto_refresh_time = time.time()
         while not done:
             clock.tick(30)
             today = datetime.date.today()
@@ -629,18 +625,6 @@ if __name__ == '__main__':
                 if event.type == pygame.QUIT:
                         prGreen("Quit event detected")
                         action = -1
-
-            if 'Yes' in args.auto:
-                if action != 0:
-                    if time.time() - auto_refresh_time > args.refresh[0]:
-                        action = 21
-                        auto_refresh_time = time.time()
-                else:
-                    auto_refresh_time = time.time()
-
-
-                    
-
 
             if action == 1:
                     textSortSetTime = time.time()

@@ -23,7 +23,7 @@ textPortfolioSetTime = time.time()
 textSortSetTime = time.time()
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-s", "--sort", choices=['Name','Date','Type & Name','Type & Date'], default=['Name'], help = "Sort stocks by Name")
+parser.add_argument("-s", "--sort", choices=['Name','Date','Type & Name','Type & Date'], default=['Date'], help = "Sort stocks by Name")
 parser.add_argument("-p", "--filter", choices=['All','Calls','Puts'], default=['All'], help = "Who's filter to show")
 parser.add_argument("-e", "--equity", choices=['All'], default=['All'], help = "Who's filter to show")
 args = parser.parse_args()
