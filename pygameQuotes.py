@@ -517,7 +517,6 @@ if __name__ == '__main__':
 
             if action == 40:
                 smallFont = startingSmallFont
-                print('smallFont',smallFont)
 
             if action == 41:
                 smallFont = smallFont + 1
