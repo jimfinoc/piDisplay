@@ -24,17 +24,16 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--sort", choices=['Name','Percent'], default=['Name'], help = "Sort stocks by Name")
 parser.add_argument("-p", "--portfolio", choices=['All','Stocks','Options','Both','Speculation','Others'], default=['Options'], help = "Who's portfolio to show")
 parser.add_argument("-e", "--equity", type=str, default="", help = "This should be a stock (equity) symbol")
-parser.add_argument("-a", "--auto", choices=['Yes','No'], default=["No"], help = "automatically select the next stock after a few seconds of inactivity")
+parser.add_argument("-a", "--auto", choices=['Yes','No'], default=["Yes"], help = "automatically select the next stock after a few seconds of inactivity")
 parser.add_argument("-r", "--refresh", default=10, help = "time in seconds to advance to the next stock")
 # parser.add_argument("stock")
 args = parser.parse_args()
 
-# print("args")
 print('args.sort', args.sort)
 print('args.portfolio', args.portfolio)
 print('args.equity', args.equity)
 print('args.auto', args.auto)
-# print('args.portfolio', args.portfolio)
+print('args.refresh', args.refresh)
 
 
 def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
@@ -631,12 +630,21 @@ if __name__ == '__main__':
                         action = -1
 
             if 'Yes' in args.auto:
-                if action != 0:
-                    if time.time() - auto_refresh_time > args.refresh[0]:
+                # print('args.auto (Y)', args.auto)
+                # print('args.refresh', args.refresh)
+                if action == 0:
+                    if time.time() - auto_refresh_time > args.refresh:
                         action = 21
                         auto_refresh_time = time.time()
+                    else:
+                        pass
+                        # print(f'auto_refresh_time in {time.time() - auto_refresh_time} seconds')
                 else:
                     auto_refresh_time = time.time()
+            else:
+                pass
+                # print('args.auto (N)', args.auto)
+
 
 
                     
