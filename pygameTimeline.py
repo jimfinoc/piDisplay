@@ -175,7 +175,9 @@ if __name__ == '__main__':
         stock_52_week_low = 0
         currentPrice = 0
         largestDate = 0
-
+        startingSmallFont = 15
+        smallFont = startingSmallFont
+        largeFont = 30
         current_year = 0
         last_year = 0
         years = []
@@ -365,7 +367,7 @@ if __name__ == '__main__':
             test_y += moving_y
 
             # Stock, top left
-            font = pygame.font.Font('freesansbold.ttf', 15)
+            font = pygame.font.Font('freesansbold.ttf', smallFont)
             textStock = font.render(f"{displayStock}", True, yellow, background)
             textStockRect = textStock.get_rect()
             textStockRect.centery = 10
@@ -374,7 +376,7 @@ if __name__ == '__main__':
             display_surface.blit(textStock, textStockRect)
 
             # high price, on the top
-            font = pygame.font.Font('freesansbold.ttf', 15)
+            font = pygame.font.Font('freesansbold.ttf', smallFont)
             textPriceHigh = font.render(f"{highPrice:.2f}", True, white, background)
             textPriceHighRect = textPriceHigh.get_rect()
             textPriceHighRect.centery = 35
@@ -382,7 +384,7 @@ if __name__ == '__main__':
             display_surface.blit(textPriceHigh, textPriceHighRect)
 
             # low price, on the bottom
-            font = pygame.font.Font('freesansbold.ttf', 15)
+            font = pygame.font.Font('freesansbold.ttf', smallFont)
             textPriceLow = font.render(f"{lowPrice:.2f}", True, white, background)
             textPriceLowRect = textPriceLow.get_rect()
             textPriceLowRect.centery = 425
@@ -390,7 +392,7 @@ if __name__ == '__main__':
             display_surface.blit(textPriceLow, textPriceLowRect)
 
             # if highPrice > stock_52_week_high:
-            font = pygame.font.Font('freesansbold.ttf', 15)
+            font = pygame.font.Font('freesansbold.ttf', smallFont)
             textPrice52High = font.render(f"{stock_52_week_high:.2f}", True, cyan, background)
             textPrice52HighRect = textPrice52High.get_rect()
             textPrice52HighRect.centery = textPriceLowRect.centery + (stock_52_week_high - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
@@ -404,7 +406,7 @@ if __name__ == '__main__':
             
 
             # if lowPrice > stock_52_week_low:
-            font = pygame.font.Font('freesansbold.ttf', 15)
+            font = pygame.font.Font('freesansbold.ttf', smallFont)
             textPrice52Low = font.render(f"{stock_52_week_low:.2f}", True, cyan, background)
             textPrice52LowRect = textPrice52Low.get_rect()
             textPrice52LowRect.centery = textPriceLowRect.centery + (stock_52_week_low - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
@@ -418,7 +420,7 @@ if __name__ == '__main__':
 
 
             # current price, proportional to the high and low price
-            font = pygame.font.Font('freesansbold.ttf', 15)
+            font = pygame.font.Font('freesansbold.ttf', smallFont)
             textPriceCur = font.render(f"{currentPrice:.2f}", True, yellow, background)
             textPriceCurRect = textPriceCur.get_rect()
             textPriceCurRect.centery = textPriceLowRect.centery + (currentPrice - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
@@ -434,7 +436,7 @@ if __name__ == '__main__':
 
 
             # First date, on the left
-            font = pygame.font.Font('freesansbold.ttf', 15)
+            font = pygame.font.Font('freesansbold.ttf', smallFont)
             today = datetime.date.today()
             current_month = today.month
             current_day = today.day
@@ -445,7 +447,7 @@ if __name__ == '__main__':
             display_surface.blit(textDate1, textDateRect1)
 
             # last date. on the right
-            font = pygame.font.Font('freesansbold.ttf', 15)
+            font = pygame.font.Font('freesansbold.ttf', smallFont)
             # print ('largestDate',largestDate)
             lastdateString = str(f'20{largestDate}')
             # last_date = datetime.datetime.strptime(str(f'20{largestDate}'), '%Y%m%d')
@@ -476,7 +478,7 @@ if __name__ == '__main__':
             # print()
             # print('test dates')
             for each in all_dates[1:-1]:
-                font = pygame.font.Font('freesansbold.ttf', 15)
+                font = pygame.font.Font('freesansbold.ttf', smallFont)
                 each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
                 each_month = each_datetime.month
                 each_day = each_datetime.day
@@ -622,6 +624,23 @@ if __name__ == '__main__':
                         else:
                             action = 31
                             prYellow("2 key pressed")
+                    if event.key == pygame.K_EQUALS or event.key == pygame.K_KP_EQUALS:
+                        action = 40
+                        prYellow("= key pressed")
+                    if event.key == pygame.K_MINUS or event.key == pygame.K_KP_MINUS:
+                        if event.mod & pygame.KMOD_LSHIFT or event.mod & pygame.KMOD_RSHIFT:
+                            action = 41
+                            prYellow("shift - key pressed")
+                        else:
+                            action = 42
+                            prYellow("- key pressed")
+                    if event.key == pygame.K_PLUS or event.key == pygame.K_KP_PLUS:
+                        if event.mod & pygame.KMOD_LSHIFT or event.mod & pygame.KMOD_RSHIFT:
+                            action = 42
+                            prYellow("shift + key pressed")
+                        else:
+                            action = 41
+                            prYellow("+ key pressed")
                     if event.key == pygame.K_ESCAPE:
                         action = -1
                         prYellow("Escape key pressed")
@@ -725,5 +744,20 @@ if __name__ == '__main__':
                 p1.join()
                 pygame.display.quit()
                 pygame.quit()
+            
+            if action == 40:
+                smallFont = startingSmallFont
+
+            if action == 41:
+                smallFont = smallFont + 1
+                if smallFont > largeFont:
+                    smallFont = largeFont
+            
+            if action == 42:
+                smallFont = smallFont - 1
+                if smallFont < 5:
+                    smallFont = 5
+
+                
 
 

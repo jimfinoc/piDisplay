@@ -154,6 +154,11 @@ if __name__ == '__main__':
         done = False
         clock = pygame.time.Clock()
 
+        startingSmallFont = 70
+        smallFont = startingSmallFont
+        largeFont = 140
+
+
         while not done:
             clock.tick(30)
             today = datetime.date.today()
@@ -320,9 +325,9 @@ if __name__ == '__main__':
                 # pygame.draw.rect(display_surface, white, my_rect[square],width=1)
                 # pygame.display.flip()
 
-                font = pygame.font.Font('freesansbold.ttf', 70//rows)
+                font = pygame.font.Font('freesansbold.ttf', smallFont//rows)
                 if size[0][0] < size[0][1]:
-                    font = pygame.font.Font('freesansbold.ttf', 110//rows)
+                    font = pygame.font.Font('freesansbold.ttf', largeFont//rows)
 
 
                 # backgroundColor = random.choice(stock_color)
@@ -431,6 +436,24 @@ if __name__ == '__main__':
                     if event.key == pygame.K_q:
                         action = -1
                         prYellow("Q key pressed")
+                    if event.key == pygame.K_EQUALS or event.key == pygame.K_KP_EQUALS:
+                        action = 40
+                        prYellow("= key pressed")
+                    if event.key == pygame.K_MINUS or event.key == pygame.K_KP_MINUS:
+                        if event.mod & pygame.KMOD_LSHIFT or event.mod & pygame.KMOD_RSHIFT:
+                            action = 41
+                            prYellow("shift - key pressed")
+                        else:
+                            action = 42
+                            prYellow("- key pressed")
+                    if event.key == pygame.K_PLUS or event.key == pygame.K_KP_PLUS:
+                        if event.mod & pygame.KMOD_LSHIFT or event.mod & pygame.KMOD_RSHIFT:
+                            action = 42
+                            prYellow("shift + key pressed")
+                        else:
+                            action = 41
+                            prYellow("+ key pressed")
+
                 if event.type == pygame.QUIT:
                         prGreen("Quit event detected")
                         prGreen("Exiting program")
@@ -492,3 +515,18 @@ if __name__ == '__main__':
                 pygame.quit()
 
 
+            if action == 40:
+                smallFont = startingSmallFont
+                print('smallFont',smallFont)
+
+            if action == 41:
+                smallFont = smallFont + 1
+                print('smallFont',smallFont)
+                if smallFont > largeFont:
+                    smallFont = largeFont
+            
+            if action == 42:
+                smallFont = smallFont - 1
+                print('smallFont',smallFont)
+                if smallFont < startingSmallFont/2:
+                    smallFont = startingSmallFont/2
