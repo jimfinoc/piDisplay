@@ -595,10 +595,12 @@ if __name__ == '__main__':
                         prYellow("Wheel rolled down")
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
-                        moving_y = -1
+                        # moving_y = -1
+                        action = 22
                         prYellow("Up key pressed")
                     if event.key == pygame.K_DOWN:
-                        moving_y = 1
+                        # moving_y = 1
+                        action = 21
                         prYellow("Down key pressed")
                     if event.key == pygame.K_LEFT:  
                         moving_x = -1
