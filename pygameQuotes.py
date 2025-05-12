@@ -519,13 +519,13 @@ if __name__ == '__main__':
                 smallFont = startingSmallFont
 
             if action == 41:
-                smallFont = smallFont + 1
+                smallFont = smallFont + rows
                 print('smallFont',smallFont)
                 if smallFont > largeFont:
                     smallFont = largeFont
             
             if action == 42:
-                smallFont = smallFont - 1
+                smallFont = smallFont - rows
                 print('smallFont',smallFont)
-                if smallFont < startingSmallFont/2:
-                    smallFont = startingSmallFont/2
+                if smallFont < rows*2:
+                    smallFont = rows*2
