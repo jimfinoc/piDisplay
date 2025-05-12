@@ -35,19 +35,19 @@ def return_orders(status = "open"):
     return returnData
 
 def return_positions(type = "all"):
-    returnData = []
-    stocks = set()
+    # returnData = []
+    return_data = set()
     position_details = return_details("My_position_details")
     for each in position_details["securitiesAccount"]["positions"]:
         if type == "all" or type == "option":
             if each["instrument"]["assetType"] == "OPTION":
                 # print(each["instrument"]["underlyingSymbol"])
-                stocks.add(each["instrument"]["underlyingSymbol"])
+                return_data.add(each["instrument"]["underlyingSymbol"])
         if type == "all" or type == "stock":
             if each["instrument"]["assetType"] == "EQUITY":
                 # print(each["instrument"]["symbol"])
-                stocks.add(each["instrument"]["symbol"])
-    return stocks
+                return_data.add(each["instrument"]["symbol"])
+    return return_data
 
 def all_dates(stock_option_dates):
     key = set()
