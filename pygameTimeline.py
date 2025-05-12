@@ -668,95 +668,98 @@ if __name__ == '__main__':
 
                     
 
+            try:
+                if action == 1:
+                        textSortSetTime = time.time()
+                        if 'Name' in args.sort:
+                            args.sort = ['Percent']
+                            prGreen("Now sorting by Percent")
+                        elif 'Percent' in args.sort:
+                            args.sort = ['Name']
+                            prGreen("Now sorting by Name")
 
-            if action == 1:
-                    textSortSetTime = time.time()
-                    if 'Name' in args.sort:
-                        args.sort = ['Percent']
-                        prGreen("Now sorting by Percent")
-                    elif 'Percent' in args.sort:
-                        args.sort = ['Name']
-                        prGreen("Now sorting by Name")
-
-            if action == 31:
-                textPortfolioSetTime = time.time()
-                if 'All' in args.portfolio:
-                    args.portfolio = ['Stocks']
-                elif 'Stocks' in args.portfolio:
-                    args.portfolio = ['Options']
-                elif 'Options' in args.portfolio:
-                    args.portfolio = ['Both']
-                elif 'Both' in args.portfolio:
-                    args.portfolio = ['Speculation']
-                elif 'Speculation' in args.portfolio:
-                    args.portfolio = ['Others']
-                elif 'Others' in args.portfolio:
-                    args.portfolio = ['All']
-                prGreen(f"Now showing {args.portfolio[0]}")
-
-
-            if action == 32:
-                textPortfolioSetTime = time.time()
-                if 'Others' in args.portfolio:
-                    args.portfolio = ['Speculation']
-                elif 'Speculation' in args.portfolio:
-                    args.portfolio = ['Both']
-                elif 'Both' in args.portfolio:
-                    args.portfolio = ['Options']
-                elif 'Options' in args.portfolio:
-                    args.portfolio = ['Stocks']
-                elif 'Stocks' in args.portfolio:
-                    args.portfolio = ['All']
-                elif 'All' in args.portfolio:
-                    args.portfolio = ['Others']
-                prGreen(f"Now showing {args.portfolio[0]}")
-
-            if action == 21:
-                textStockSetTime = time.time()
-                index = equities.index(args.equity[0])
-                if index == len(equities) - 1:
-                    index = 0
-                else:
-                    index = index + 1
-                args.equity = [equities[index]]
-                prGreen(f"Now showing {args.equity[0]}")
-
-            if action == 22:
-                textStockSetTime = time.time()
-                index = equities.index(args.equity[0])
-                if index == 0:
-                    index = len(equities) -1
-                else:
-                    index = index - 1
-                args.equity = [equities[index]]
-                prGreen(f"Now showing {args.equity[0]}")
+                if action == 31:
+                    textPortfolioSetTime = time.time()
+                    if 'All' in args.portfolio:
+                        args.portfolio = ['Stocks']
+                    elif 'Stocks' in args.portfolio:
+                        args.portfolio = ['Options']
+                    elif 'Options' in args.portfolio:
+                        args.portfolio = ['Both']
+                    elif 'Both' in args.portfolio:
+                        args.portfolio = ['Speculation']
+                    elif 'Speculation' in args.portfolio:
+                        args.portfolio = ['Others']
+                    elif 'Others' in args.portfolio:
+                        args.portfolio = ['All']
+                    prGreen(f"Now showing {args.portfolio[0]}")
 
 
-            if action == -1:
-                prGreen("Exiting program")
-                stop_threads.value = True
-                # stop_threads = True
-                done = True
-                print('stop_threads')
-                print(stop_threads.value)
-                print('done')
-                print(done)
-                p1.join()
-                pygame.display.quit()
-                pygame.quit()
-            
-            if action == 40:
-                smallFont = startingSmallFont
+                if action == 32:
+                    textPortfolioSetTime = time.time()
+                    if 'Others' in args.portfolio:
+                        args.portfolio = ['Speculation']
+                    elif 'Speculation' in args.portfolio:
+                        args.portfolio = ['Both']
+                    elif 'Both' in args.portfolio:
+                        args.portfolio = ['Options']
+                    elif 'Options' in args.portfolio:
+                        args.portfolio = ['Stocks']
+                    elif 'Stocks' in args.portfolio:
+                        args.portfolio = ['All']
+                    elif 'All' in args.portfolio:
+                        args.portfolio = ['Others']
+                    prGreen(f"Now showing {args.portfolio[0]}")
 
-            if action == 41:
-                smallFont = smallFont + 1
-                if smallFont > largeFont:
-                    smallFont = largeFont
-            
-            if action == 42:
-                smallFont = smallFont - 1
-                if smallFont < 5:
-                    smallFont = 5
+                if action == 21:
+                    textStockSetTime = time.time()
+                    index = equities.index(args.equity[0])
+                    if index == len(equities) - 1:
+                        index = 0
+                    else:
+                        index = index + 1
+                    args.equity = [equities[index]]
+                    prGreen(f"Now showing {args.equity[0]}")
+
+                if action == 22:
+                    textStockSetTime = time.time()
+                    index = equities.index(args.equity[0])
+                    if index == 0:
+                        index = len(equities) -1
+                    else:
+                        index = index - 1
+                    args.equity = [equities[index]]
+                    prGreen(f"Now showing {args.equity[0]}")
+
+
+                if action == -1:
+                    prGreen("Exiting program")
+                    stop_threads.value = True
+                    # stop_threads = True
+                    done = True
+                    print('stop_threads')
+                    print(stop_threads.value)
+                    print('done')
+                    print(done)
+                    p1.join()
+                    pygame.display.quit()
+                    pygame.quit()
+                
+                if action == 40:
+                    smallFont = startingSmallFont
+
+                if action == 41:
+                    smallFont = smallFont + 1
+                    if smallFont > largeFont:
+                        smallFont = largeFont
+                
+                if action == 42:
+                    smallFont = smallFont - 1
+                    if smallFont < 5:
+                        smallFont = 5
+            except:
+                print("Error checking action")
+                time.sleep(1)
 
                 
 
