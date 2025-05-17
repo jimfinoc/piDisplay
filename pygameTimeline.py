@@ -23,17 +23,21 @@ textStockSetTime = time.time()
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--sort", choices=['Name','Percent'], default=['Name'], help = "Sort stocks by Name")
 parser.add_argument("-p", "--portfolio", choices=['All','Stocks','Options','Both','Speculation','Others'], default=['Options'], help = "Who's portfolio to show")
-parser.add_argument("-e", "--equity", type=str, default="", help = "This should be a stock (equity) symbol")
+parser.add_argument("-e", "--equity", type=str, default="", help = "This should be a stock (equity) symbol, if an equity is entered, the auto function will be overridden 'No'")
 parser.add_argument("-a", "--auto", choices=['Yes','No'], default=["Yes"], help = "automatically select the next stock after a few seconds of inactivity")
 parser.add_argument("-r", "--refresh", default=10, help = "time in seconds to advance to the next stock")
 # parser.add_argument("stock")
 args = parser.parse_args()
+
+if args.equity != "":
+    args.auto = ['No']
 
 print('args.sort', args.sort)
 print('args.portfolio', args.portfolio)
 print('args.equity', args.equity)
 print('args.auto', args.auto)
 print('args.refresh', args.refresh)
+
 
 
 def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
@@ -477,17 +481,29 @@ if __name__ == '__main__':
 
             # print()
             # print('test dates')
+
+            sumOfDates = 0
+            for each in all_dates:
+                each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
+                each_month = each_datetime.month
+                each_day = each_datetime.day
+                each_year = each_datetime.year
+                if (current_day, current_month, current_year) != (each_day, each_month, each_year):
+                    sumOfDates += 1
+
             for each in all_dates[1:-1]:
                 font = pygame.font.Font('freesansbold.ttf', smallFont)
                 each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
                 each_month = each_datetime.month
                 each_day = each_datetime.day
-                # print('each_month/each_day')
-                # print(f'{each_month}/{each_day}')
+                each_year = each_datetime.year
+                # if (current_day, current_month, current_year) != (each_day, each_month, each_year):    
+                    # print('each_month/each_day')
+                    # print(f'{each_month}/{each_day}')
                 text1 = font.render(f"{each_month}/{each_day}", True, white, background)
                 textRect1 = text1.get_rect()
                 textRect1.centery = textDateRect1.centery
-                textRect1.centerx = 50 + (all_dates.index(each)) * (textDateRectN.centerx - textDateRect1.centerx) / (len(all_dates)-1)
+                textRect1.centerx = 50 + (all_dates.index(each)) * (textDateRectN.centerx - textDateRect1.centerx) / (sumOfDates-1)
                 display_surface.blit(text1, textRect1)
 
             for each in position_details["securitiesAccount"]["positions"]:
