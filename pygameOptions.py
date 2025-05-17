@@ -169,12 +169,18 @@ if __name__ == '__main__':
         BlockSymbol = "No Data"
         BlockStock = "No Data"
         BlockStockPrice = "No Data"
-
+        strike_lookup_counter = 0
+        My_stock_option_strikes = return_details("My_stock_option_strikes")
+        prGreen('My_stock_option_strikes loaded for the first time')
         while not done:
             equity_set = set()
             clock.tick(30)
             today = datetime.date.today()
             position_temp_dict = return_details("My_position_details")
+            strike_lookup_counter = strike_lookup_counter + 1
+            if strike_lookup_counter%1000==0:
+                My_stock_option_strikes = return_details("My_stock_option_strikes")
+                print('refreshed My_stock_option_strikes')
             try:
                 for each in position_temp_dict["securitiesAccount"]["positions"]:
                     if each["instrument"]["assetType"] == "OPTION":
@@ -356,6 +362,7 @@ if __name__ == '__main__':
                     my_rect[count]["Rect2"] = pygame.Rect( (X1,Y1) , (X2-X1,Y2-Y1) )
                     # my_rect[count]["Rect2"] = pygame.Rect( (X1+10,Y1+10) , (X2-10,Y2-10) )
                     if len(optionsSorted) > 0:
+
                         my_rect[count]["Text1"] = f'{optionsSorted[count]["instrument"]["symbol"][0:6].replace(" ","")} {optionsSorted[count]["shortQuantity"]} {optionsSorted[count]["instrument"]["symbol"][12:13]}'
                         my_rect[count]["Text2"] = optionsSorted[count]['instrument']["symbol"][6:12]
                         strike_price = f'{(float(optionsSorted[count]["instrument"]["symbol"][13:19])/10):.2f}'
@@ -556,7 +563,7 @@ if __name__ == '__main__':
                 BlockRectText3.center = (BlockTextX , BlockTextY3)
                 display_surface.blit(BlockRenderText3, BlockRectText3)
 
-                BlockRenderText5a = BlockFont.render("Price", True, white, black)
+                BlockRenderText5a = BlockFont.render("Stock Price", True, white, black)
                 BlockTextY5 = y * 5/12
                 BlockRectText5a = BlockRenderText5a.get_rect()
                 BlockRectText5a.center = (x*1/4 , BlockTextY5)
@@ -589,13 +596,14 @@ if __name__ == '__main__':
                 BlockRectText8b.center = (x*3/4 , BlockTextY8)
                 display_surface.blit(BlockRenderText8b, BlockRectText8b)
 
-                BlockRenderText9a = BlockFont.render("Option income2", True, white, black)
+
+                BlockRenderText9a = BlockFont.render(str(BlockOptionIncome), True, white, black)
                 BlockTextY9 = y * 9/12
                 BlockRectText9a = BlockRenderText9a.get_rect()
                 BlockRectText9a.center = (x*1/4 , BlockTextY9)
                 display_surface.blit(BlockRenderText9a, BlockRectText9a)
 
-                BlockRenderText9b = BlockFont.render("Bid Ask2", True, white, black)
+                BlockRenderText9b = BlockFont.render(BlockBidAsk, True, white, black)
                 BlockRectText9b = BlockRenderText9b.get_rect()
                 BlockRectText9b.center = (x*3/4 , BlockTextY9)
                 display_surface.blit(BlockRenderText9b, BlockRectText9b)
@@ -623,20 +631,63 @@ if __name__ == '__main__':
                                     BlockText2 = my_rect[each]["Text2"]
                                     BlockText3 = my_rect[each]["Text3"]
                                     BlockSymbol = my_rect[each]["symbol"]
-                                    
+
+                                    # BlockOptionIncome = -1
+                                    try:
+                                        for each in position_temp_dict["securitiesAccount"]["positions"]:
+                                            if each["instrument"]["assetType"] == "OPTION":
+                                                if each["instrument"]["symbol"] == BlockSymbol:
+                                                    BlockOptionIncome = f'{each["averagePrice"]*100:.2f}'
+                                    except:
+                                        print('Error in equity_list creation')
+                                        BlockOptionIncome = f'{0:.2f}'
+
+                                    BlockBidAsk = "What, what?"
+                                    try:
+                                        for each in My_stock_option_strikes:
+                                            if each == BlockStock:
+                                                print("found BlockStock")
+                                                if BlockCallPut == 'C':
+                                                    for each in My_stock_option_strikes[BlockStock]["callExpDateMap"]:
+                                                        print(each[0:10])
+                                                        if BlockOptionSpecialDate == each[0:10]:
+                                                            print ('strike')
+                                                        pass
+                                                elif BlockCallPut == 'P':
+                                                    # for each in My_stock_option_strikes[BlockStock]["callExpDateMap"]:
+                                                        pass
+                                                # if each["instrument"]["symbol"] == BlockSymbol:
+                                                    # BlockBidAsk = f'{each["averagePrice"]*100:.2f}'
+                                    except:
+                                        print('Error in equity_list creation')
+                                        BlockBidAsk = f'{0:.2f} {0:.2f}'
+
                                     prGreen(BlockText1)
                                     prGreen(BlockText2)
                                     dateobjectFut = datetime.datetime.strptime("20"+BlockText2, '%Y%m%d')
-                                    dateobjectNow = datetime.datetime.now()
+                                    delta = datetime.timedelta(days=1, hours=0, minutes=0)
+                                    dateobjectNow = datetime.datetime.today() - delta
+                                    # dateobjectNow = datetime.datetime.now()
                                     difference = dateobjectFut - dateobjectNow
 
                                     prRed(f"{dateobjectFut,dateobjectNow, difference.days}")
                                     prGreen(BlockText3)
                                     prGreen(BlockSymbol)
                                     BlockStock = BlockSymbol[0:6].replace(" ", "")
+                                    BlockCallPut = BlockSymbol[12:13]
+                                    BlockOptionDate = BlockSymbol[6:12]
                                     BlockStockPrice = temp_dict[BlockStock]["price"]
-                                    prRed(BlockStock)
-                                    prRed(BlockStockPrice)
+                                    prRed("BlockStock")
+                                    print(f"{BlockStock}")
+                                    prRed("BlockCallPut")
+                                    prRed( BlockCallPut)
+                                    prRed("BlockStockPrice")
+                                    prRed( BlockStockPrice)
+                                    prRed("BlockOptionDate")
+                                    prRed(BlockOptionDate)
+                                    prRed("BlockOptionSpecialDate")
+                                    BlockOptionSpecialDate = "20"+BlockOptionDate[0:2] + "-" + BlockOptionDate[2:4] + "-" + BlockOptionDate[4:6]
+                                    prRed(BlockOptionSpecialDate)
 
 
 
