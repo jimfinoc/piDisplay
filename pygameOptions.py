@@ -170,17 +170,17 @@ if __name__ == '__main__':
         BlockStock = "No Data"
         BlockStockPrice = "No Data"
         strike_lookup_counter = 0
-        My_stock_option_strikes = return_details("My_stock_option_strikes")
-        prGreen('My_stock_option_strikes loaded for the first time')
+        # My_stock_option_strikes = return_details("My_stock_option_strikes")
+        # prGreen('My_stock_option_strikes loaded for the first time')
         while not done:
             equity_set = set()
             clock.tick(30)
             today = datetime.date.today()
             position_temp_dict = return_details("My_position_details")
             strike_lookup_counter = strike_lookup_counter + 1
-            if strike_lookup_counter%1000==0:
-                My_stock_option_strikes = return_details("My_stock_option_strikes")
-                print('refreshed My_stock_option_strikes')
+            # if strike_lookup_counter%10==0:
+            #     My_stock_option_strikes = return_details("My_stock_option_strikes")
+            #     print('refreshed My_stock_option_strikes')
             try:
                 for each in position_temp_dict["securitiesAccount"]["positions"]:
                     if each["instrument"]["assetType"] == "OPTION":
@@ -642,25 +642,32 @@ if __name__ == '__main__':
                                         print('Error in equity_list creation')
                                         BlockOptionIncome = f'{0:.2f}'
 
-                                    BlockBidAsk = "What, what?"
                                     try:
-                                        for each in My_stock_option_strikes:
-                                            if each == BlockStock:
-                                                print("found BlockStock")
-                                                if BlockCallPut == 'C':
-                                                    for each in My_stock_option_strikes[BlockStock]["callExpDateMap"]:
-                                                        print(each[0:10])
-                                                        if BlockOptionSpecialDate == each[0:10]:
-                                                            print ('strike')
-                                                        pass
-                                                elif BlockCallPut == 'P':
-                                                    # for each in My_stock_option_strikes[BlockStock]["callExpDateMap"]:
-                                                        pass
-                                                # if each["instrument"]["symbol"] == BlockSymbol:
-                                                    # BlockBidAsk = f'{each["averagePrice"]*100:.2f}'
+                                        My_stock_option_strikes = return_details("My_stock_option_strikes")
+                                        Bid = My_stock_option_strikes[BlockSymbol]["bid"]
+                                        Ask = My_stock_option_strikes[BlockSymbol]["ask"]
+                                        BlockBidAsk = f'{Bid*100:.2f} - {Ask*100:.2f}'
                                     except:
-                                        print('Error in equity_list creation')
                                         BlockBidAsk = f'{0:.2f} {0:.2f}'
+
+                                    # try:
+                                    #     for each in My_stock_option_strikes:
+                                    #         if each == BlockStock:
+                                    #             print("found BlockStock")
+                                    #             if BlockCallPut == 'C':
+                                    #                 for each in My_stock_option_strikes[BlockStock]["callExpDateMap"]:
+                                    #                     print(each[0:10])
+                                    #                     if BlockOptionSpecialDate == each[0:10]:
+                                    #                         print ('strike')
+                                    #                     pass
+                                    #             elif BlockCallPut == 'P':
+                                    #                 # for each in My_stock_option_strikes[BlockStock]["callExpDateMap"]:
+                                    #                     pass
+                                    #             # if each["instrument"]["symbol"] == BlockSymbol:
+                                    #                 # BlockBidAsk = f'{each["averagePrice"]*100:.2f}'
+                                    # except:
+                                    #     print('Error in equity_list creation')
+                                    #     BlockBidAsk = f'{0:.2f} {0:.2f}'
 
                                     prGreen(BlockText1)
                                     prGreen(BlockText2)
