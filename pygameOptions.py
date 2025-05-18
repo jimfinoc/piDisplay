@@ -363,7 +363,7 @@ if __name__ == '__main__':
                     # my_rect[count]["Rect2"] = pygame.Rect( (X1+10,Y1+10) , (X2-10,Y2-10) )
                     if len(optionsSorted) > 0:
 
-                        my_rect[count]["Text1"] = f'{optionsSorted[count]["instrument"]["symbol"][0:6].replace(" ","")} {optionsSorted[count]["shortQuantity"]} {optionsSorted[count]["instrument"]["symbol"][12:13]}'
+                        my_rect[count]["Text1"] = f'{optionsSorted[count]["instrument"]["symbol"][0:6].replace(" ","")} - {optionsSorted[count]["shortQuantity"]:.0f} x {optionsSorted[count]["instrument"]["symbol"][12:13]}'
                         my_rect[count]["Text2"] = optionsSorted[count]['instrument']["symbol"][6:12]
                         strike_price = f'{(float(optionsSorted[count]["instrument"]["symbol"][13:19])/10):.2f}'
                         my_rect[count]["Text3"] = strike_price
@@ -592,23 +592,24 @@ if __name__ == '__main__':
                 display_surface.blit(BlockRenderText8a, BlockRectText8a)
 
                 BlockRenderText8b = BlockFont.render("Bid Ask (x100)", True, white, black)
-                BlockRectText8b = BlockRenderText5b.get_rect()
+                BlockRectText8b = BlockRenderText8b.get_rect()
                 BlockRectText8b.center = (x*3/4 , BlockTextY8)
                 display_surface.blit(BlockRenderText8b, BlockRectText8b)
 
 
-                BlockRenderText9a = BlockFont.render(str(BlockOptionIncome), True, white, black)
+                BlockRenderText9a = BlockFont.render(f'{BlockOptionIncome}', True, white, black)
                 BlockTextY9 = y * 9/12
                 BlockRectText9a = BlockRenderText9a.get_rect()
                 BlockRectText9a.center = (x*1/4 , BlockTextY9)
                 display_surface.blit(BlockRenderText9a, BlockRectText9a)
 
                 BlockRenderText9b = BlockFont.render(BlockBidAsk, True, white, black)
+                BlockTextY9 = y * 9/12
                 BlockRectText9b = BlockRenderText9b.get_rect()
                 BlockRectText9b.center = (x*3/4 , BlockTextY9)
                 display_surface.blit(BlockRenderText9b, BlockRectText9b)
 
-                BlockRenderTextB = BlockFont.render("Counter order, Placed time, price", True, white, black)
+                BlockRenderTextB = BlockFont.render(f"{CounterOrder}, Placed time, price", True, white, black)
                 BlockTextYB = y * 11/12
                 BlockRectTextB = BlockRenderTextB.get_rect()
                 BlockRectTextB.center = (BlockTextX , BlockTextYB)
@@ -622,7 +623,7 @@ if __name__ == '__main__':
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if pygame.mouse.get_pressed()[0]:
                         if zoomInBox == False:
-                            prPurple(f"zoomInBox is {zoomInBox}")
+                            # prPurple(f"zoomInBox is {zoomInBox}")
                             for each in my_rect:
                                 if my_rect[each]["Rect"].collidepoint(event.pos):
                                     # action = 1
@@ -649,25 +650,27 @@ if __name__ == '__main__':
                                         BlockBidAsk = f'{Bid*100:.2f} - {Ask*100:.2f}'
                                     except:
                                         BlockBidAsk = f'{0:.2f} {0:.2f}'
+                                        
+                                    try:
+                                        CounterOrder = "No Order"
+                                        for eachOrder in My_open_orders:
+                                            for each_leg in eachOrder["orderLegCollection"]:
+                                                if each_leg["orderLegType"] == "OPTION":
+                                                    if each_leg["instrument"]["symbol"] == BlockSymbol:
+                                                        CounterOrder = f"Buying back at {eachOrder["price"]:.2f}"
+    
 
-                                    # try:
-                                    #     for each in My_stock_option_strikes:
-                                    #         if each == BlockStock:
-                                    #             print("found BlockStock")
-                                    #             if BlockCallPut == 'C':
-                                    #                 for each in My_stock_option_strikes[BlockStock]["callExpDateMap"]:
-                                    #                     print(each[0:10])
-                                    #                     if BlockOptionSpecialDate == each[0:10]:
-                                    #                         print ('strike')
-                                    #                     pass
-                                    #             elif BlockCallPut == 'P':
-                                    #                 # for each in My_stock_option_strikes[BlockStock]["callExpDateMap"]:
-                                    #                     pass
-                                    #             # if each["instrument"]["symbol"] == BlockSymbol:
-                                    #                 # BlockBidAsk = f'{each["averagePrice"]*100:.2f}'
-                                    # except:
-                                    #     print('Error in equity_list creation')
-                                    #     BlockBidAsk = f'{0:.2f} {0:.2f}'
+                                        # CounterOrder = My_stock_option_strikes[BlockSymbol]["CounterOrder"]
+                                    except:
+                                        CounterOrder = "No Order"
+
+                                    BlockFont = pygame.font.Font('freesansbold.ttf', 30)
+                                    BlockRenderText9b = BlockFont.render(BlockBidAsk, True, white, black)
+                                    BlockTextY9 = y * 9/12
+                                    BlockRectText9b = BlockRenderText9b.get_rect()
+                                    BlockRectText9b.center = (x*3/4 , BlockTextY9)
+                                    display_surface.blit(BlockRenderText9b, BlockRectText9b)
+
 
                                     prGreen(BlockText1)
                                     prGreen(BlockText2)
@@ -703,7 +706,7 @@ if __name__ == '__main__':
                             prYellow("Left mouse button clicked")
                             zoomInBox = True
                         elif zoomInBox == True:
-                            prPurple(f"zoomInBox is {zoomInBox}")
+                            # prPurple(f"zoomInBox is {zoomInBox}")
                             zoomInBox = False
 
                     if pygame.mouse.get_pressed()[1]:
