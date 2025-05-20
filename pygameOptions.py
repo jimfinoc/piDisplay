@@ -658,7 +658,7 @@ if __name__ == '__main__':
                                             for each_leg in eachOrder["orderLegCollection"]:
                                                 if each_leg["orderLegType"] == "OPTION":
                                                     if each_leg["instrument"]["symbol"] == BlockSymbol:
-                                                        CounterOrder = f"Buying back at {eachOrder["price"]:.2f}"
+                                                        CounterOrder = f"Buying back at {eachOrder['price']:.2f}"
     
 
                                         # CounterOrder = My_stock_option_strikes[BlockSymbol]["CounterOrder"]
