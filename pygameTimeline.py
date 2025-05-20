@@ -18,6 +18,7 @@ time_to_show_text = 2
 
 textPortfolioSetTime = time.time()
 textSortSetTime = time.time()
+textAutoCheckTime = time.time()
 textStockSetTime = time.time()
 
 parser = argparse.ArgumentParser()
@@ -491,44 +492,26 @@ if __name__ == '__main__':
 
             all_dates = copy.deepcopy(all_option_dates)
             all_dates.insert(0,f'{today.year}-{today.month:02d}-{today.day:02d}')
-            # print('all_dates',all_dates)
-            # between dates
 
-            # print()
-            # print('test dates')
-
-            # sumOfDates = 1
             for each in all_dates:
                 each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
                 each_month = each_datetime.month
                 each_day = each_datetime.day
                 each_year = each_datetime.year
-                # if (current_day, current_month, current_year) != (each_day, each_month, each_year):
-                #     sumOfDates += 1
                 if f'{each_year}-{each_month:02d}-{each_day:02d}' not in dictionary_for_dates_and_x_coordinates:
-                    # sumOfDates += 1
                     dictionary_for_dates_and_x_coordinates[f'{each_year}-{each_month:02d}-{each_day:02d}'] = 0
 
-            # print('dictionary_for_dates_and_x_coordinates')
-            # print(dictionary_for_dates_and_x_coordinates)
-            # print('len(dictionary_for_dates_and_x_coordinates)')
-            # print(len(dictionary_for_dates_and_x_coordinates))
-            # print('sumOfDates')
-            # print(sumOfDates)
-            # print()
             for each in all_dates[1:-1]:
                 font = pygame.font.Font('freesansbold.ttf', smallFont)
                 each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
                 each_month = each_datetime.month
                 each_day = each_datetime.day
                 each_year = each_datetime.year
-                # if (current_day, current_month, current_year) != (each_day, each_month, each_year):    
-                    # print('each_month/each_day')
-                    # print(f'{each_month}/{each_day}')
+
                 text1 = font.render(f"{each_month}/{each_day}", True, white, background)
                 textRect1 = text1.get_rect()
                 textRect1.centery = textDateRect1.centery
-                # textRect1.centerx = 50 + (all_dates.index(each)) * (textDateRectN.centerx - textDateRect1.centerx) / (sumOfDates)
+
                 textRect1.centerx = 50 + (all_dates.index(each)) * (textDateRectN.centerx - textDateRect1.centerx) / (len(dictionary_for_dates_and_x_coordinates)-1)
                 display_surface.blit(text1, textRect1)
 
@@ -541,10 +524,7 @@ if __name__ == '__main__':
                         tempDate = optionSymbol[6:12]
                         expirationDateTime = datetime.datetime.strptime(f'20{tempDate}', '%Y%m%d')
                         expirationDate = expirationDateTime.strftime('%Y-%m-%d')
-                        # print('optionSymbol',optionSymbol)
-                        # print('typeOption',typeOption)
-                        # print('expirationDate',expirationDate)
-                        # print('strike',strike)
+
                         circlex = 50 + (all_dates.index(expirationDate)) * (textDateRectN.centerx - textDateRect1.centerx) / (len(all_dates)-1)
                         circley = textPriceLowRect.centery + (strike - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
                         if optionSymbol in list_of_symbol_open_orders:
@@ -563,41 +543,55 @@ if __name__ == '__main__':
 
 
 
-            try:
-                if time.time() - textPortfolioSetTime  < time_to_show_text:
-                    font2 = pygame.font.Font('freesansbold.ttf', 30)
-                    textPortfolio = font2.render(f'Portfolio shown is {args.portfolio[0]}', True, yellow, background)
-                    textPortfolioRect = textPortfolio.get_rect()
-                    x, y = display_surface.get_size()
-                    cx = x * 2/3
-                    PortfolioOption = {'All':1,'Stocks':2,'Options':3,'Both':4,'Speculation':5,'Others':6}
-                    cy = y * PortfolioOption[args.portfolio[0]]/7
-                    textPortfolioRect.center = (cx, cy)
-                    display_surface.blit(textPortfolio, textPortfolioRect)
+            # try:
+            if time.time() - textPortfolioSetTime  < time_to_show_text:
+                font2 = pygame.font.Font('freesansbold.ttf', 30)
+                textPortfolio = font2.render(f'Portfolio shown is {args.portfolio[0]}', True, yellow, background)
+                textPortfolioRect = textPortfolio.get_rect()
+                x, y = display_surface.get_size()
+                cx = x * 2/3
+                PortfolioOption = {'All':1,'Stocks':2,'Options':3,'Both':4,'Speculation':5,'Others':6}
+                cy = y * PortfolioOption[args.portfolio[0]]/7
+                textPortfolioRect.center = (cx, cy)
+                display_surface.blit(textPortfolio, textPortfolioRect)
 
-                if time.time() - textSortSetTime  < time_to_show_text:
-                    font2 = pygame.font.Font('freesansbold.ttf', 30)
-                    textSort = font2.render(f'Sort by {args.sort[0]}', True, yellow, background)
-                    textSortRect = textSort.get_rect()
-                    x, y = display_surface.get_size()
-                    cx = x * 1/3
-                    SortOption = {'Name':3,'Percent':4}
-                    cy = y * SortOption[args.sort[0]]/7
-                    textSortRect.center = (cx, cy)
-                    display_surface.blit(textSort, textSortRect)
+            if time.time() - textSortSetTime  < time_to_show_text:
+                font2 = pygame.font.Font('freesansbold.ttf', 30)
+                textSort = font2.render(f'Sort by {args.sort[0]}', True, yellow, background)
+                textSortRect = textSort.get_rect()
+                x, y = display_surface.get_size()
+                cx = x * 1/3
+                SortOption = {'Name':3,'Percent':4}
+                cy = y * SortOption[args.sort[0]]/7
+                textSortRect.center = (cx, cy)
+                display_surface.blit(textSort, textSortRect)
 
-                if time.time() - textStockSetTime  < time_to_show_text:
-                    font2 = pygame.font.Font('freesansbold.ttf', 30)
-                    textSort = font2.render(f'Now showing {args.equity[0]}', True, yellow, background)
-                    textSortRect = textSort.get_rect()
-                    x, y = display_surface.get_size()
-                    cx = x * 1/2
-                    # cy = y / 2
-                    cy = y * (equities.index(args.equity[0])+1)/(len(equities)+1)
-                    textSortRect.center = (cx, cy)
-                    display_surface.blit(textSort, textSortRect)
-            except:
-                prRed("Error checking text against time")
+            if time.time() - textAutoCheckTime  < time_to_show_text:
+                font2 = pygame.font.Font('freesansbold.ttf', 30)
+                textSort = font2.render(f'Auto scrolling: {args.auto[0]}', True, yellow, background)
+                textSortRect = textSort.get_rect()
+                x, y = display_surface.get_size()
+                cx = x * 1/3
+                SortOption = {'Yes':3,'No':4}
+                cy = y * SortOption[args.auto[0]]/7
+                textSortRect.center = (cx, cy)
+                display_surface.blit(textSort, textSortRect)
+
+
+
+
+            if time.time() - textStockSetTime  < time_to_show_text:
+                font2 = pygame.font.Font('freesansbold.ttf', 30)
+                textSort = font2.render(f'Now showing {args.equity[0]}', True, yellow, background)
+                textSortRect = textSort.get_rect()
+                x, y = display_surface.get_size()
+                cx = x * 1/2
+                # cy = y / 2
+                cy = y * (equities.index(args.equity[0])+1)/(len(equities)+1)
+                textSortRect.center = (cx, cy)
+                display_surface.blit(textSort, textSortRect)
+            # except:
+                # prRed("Error checking text against time")
                 # time.sleep(1)
                 # pass
 
@@ -613,7 +607,7 @@ if __name__ == '__main__':
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if pygame.mouse.get_pressed()[0]:
-                        action = 1
+                        action = 5
                         prYellow("Left mouse button clicked")
                     if pygame.mouse.get_pressed()[1]:
                         # if event.mod & pygame.KMOD_LSHIFT or event.mod & pygame.KMOD_RSHIFT:
@@ -654,6 +648,11 @@ if __name__ == '__main__':
                     if event.key == pygame.K_1:
                         action = 1
                         prYellow("1 key pressed")
+
+                    if event.key == pygame.K_a or event.key == pygame.K_SCROLLOCK or event.key == pygame.K_SCROLLLOCK:
+                        action = 5
+                        prYellow("a key pressed")
+
                     if event.key == pygame.K_2:
                         if event.mod & pygame.KMOD_LSHIFT or event.mod & pygame.KMOD_RSHIFT:
                             action = 22
@@ -721,6 +720,16 @@ if __name__ == '__main__':
                         elif 'Percent' in args.sort:
                             args.sort = ['Name']
                             prGreen("Now sorting by Name")
+
+                if action == 5:
+                        textAutoCheckTime = time.time()
+                        if 'No' in args.auto:
+                            args.auto = ['Yes']
+                            prRed("Now auto scrolling")
+                        elif 'Yes' in args.auto:
+                            args.auto = ['No']
+                            prRed("Now NOT auto scrolling")
+
 
                 if action == 31:
                     textPortfolioSetTime = time.time()
