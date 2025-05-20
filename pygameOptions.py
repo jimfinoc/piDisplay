@@ -609,7 +609,8 @@ if __name__ == '__main__':
                 BlockRectText9b.center = (x*3/4 , BlockTextY9)
                 display_surface.blit(BlockRenderText9b, BlockRectText9b)
 
-                BlockRenderTextB = BlockFont.render(f"{CounterOrder}, Placed time, price", True, white, black)
+                # BlockRenderTextB = BlockFont.render(f"{CounterOrder}, Placed time, price", True, white, black)
+                BlockRenderTextB = BlockFont.render(f"{CounterOrder}", True, white, black)
                 BlockTextYB = y * 11/12
                 BlockRectTextB = BlockRenderTextB.get_rect()
                 BlockRectTextB.center = (BlockTextX , BlockTextYB)

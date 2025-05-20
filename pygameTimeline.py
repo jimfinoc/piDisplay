@@ -370,6 +370,10 @@ if __name__ == '__main__':
             test_x += moving_x
             test_y += moving_y
 
+            ################################################################
+            # Stock and other data on the left show up looking good!
+            ################################################################
+
             # Stock, top left
             font = pygame.font.Font('freesansbold.ttf', smallFont)
             textStock = font.render(f"{displayStock}", True, yellow, background)
@@ -421,8 +425,7 @@ if __name__ == '__main__':
             for xskip in range(leftside, rightside, rightside//80):
                 pygame.draw.line(display_surface, cyan, (xskip, textPrice52LowRect.centery), (xskip+5, textPrice52LowRect.centery), 1)
             # pygame.draw.line(display_surface, cyan, (50, textPrice52LowRect.centery), (778, textPrice52LowRect.centery), 1)
-
-
+            
             # current price, proportional to the high and low price
             font = pygame.font.Font('freesansbold.ttf', smallFont)
             textPriceCur = font.render(f"{currentPrice:.2f}", True, yellow, background)
@@ -435,10 +438,18 @@ if __name__ == '__main__':
             for xskip in range(leftside, rightside, rightside//30):
                 pygame.draw.line(display_surface, yellow, (xskip, textPriceCurRect.centery), (xskip+10, textPriceCurRect.centery), 1)
             # pygame.draw.line(display_surface, yellow, (45, textPriceCurRect.centery), (778, textPriceCurRect.centery), 1)
+            circleSize = 5
+            circleColor = yellow
+            circlex = 51
+            pygame.draw.circle(display_surface, circleColor, (circlex,textPriceCurRect.centery), circleSize)
 
-            
+            ################################################################
+            # Lets alighn the dates with the dots!
+            # plus if today's date is in the list, 
+            # it needs to be on the far left
+            ################################################################
 
-
+            dictionary_for_dates_and_x_coordinates = {}
             # First date, on the left
             font = pygame.font.Font('freesansbold.ttf', smallFont)
             today = datetime.date.today()
@@ -449,6 +460,8 @@ if __name__ == '__main__':
             textDateRect1 = textDate1.get_rect()
             textDateRect1.center = (50 , 450)
             display_surface.blit(textDate1, textDateRect1)
+
+            dictionary_for_dates_and_x_coordinates[f'{today.year}-{today.month:02d}-{today.day:02d}'] = textDateRect1.centerx
 
             # last date. on the right
             font = pygame.font.Font('freesansbold.ttf', smallFont)
@@ -474,6 +487,8 @@ if __name__ == '__main__':
             # print(args.equity[0])
             # print('years',years)
 
+            dictionary_for_dates_and_x_coordinates[f'{last_year}-{last_month:02d}-{last_day:02d}'] = textDateRectN.centerx
+
             all_dates = copy.deepcopy(all_option_dates)
             all_dates.insert(0,f'{today.year}-{today.month:02d}-{today.day:02d}')
             # print('all_dates',all_dates)
@@ -482,15 +497,25 @@ if __name__ == '__main__':
             # print()
             # print('test dates')
 
-            sumOfDates = 0
+            # sumOfDates = 1
             for each in all_dates:
                 each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
                 each_month = each_datetime.month
                 each_day = each_datetime.day
                 each_year = each_datetime.year
-                if (current_day, current_month, current_year) != (each_day, each_month, each_year):
-                    sumOfDates += 1
+                # if (current_day, current_month, current_year) != (each_day, each_month, each_year):
+                #     sumOfDates += 1
+                if f'{each_year}-{each_month:02d}-{each_day:02d}' not in dictionary_for_dates_and_x_coordinates:
+                    # sumOfDates += 1
+                    dictionary_for_dates_and_x_coordinates[f'{each_year}-{each_month:02d}-{each_day:02d}'] = 0
 
+            # print('dictionary_for_dates_and_x_coordinates')
+            # print(dictionary_for_dates_and_x_coordinates)
+            # print('len(dictionary_for_dates_and_x_coordinates)')
+            # print(len(dictionary_for_dates_and_x_coordinates))
+            # print('sumOfDates')
+            # print(sumOfDates)
+            # print()
             for each in all_dates[1:-1]:
                 font = pygame.font.Font('freesansbold.ttf', smallFont)
                 each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
@@ -503,7 +528,8 @@ if __name__ == '__main__':
                 text1 = font.render(f"{each_month}/{each_day}", True, white, background)
                 textRect1 = text1.get_rect()
                 textRect1.centery = textDateRect1.centery
-                textRect1.centerx = 50 + (all_dates.index(each)) * (textDateRectN.centerx - textDateRect1.centerx) / (sumOfDates-1)
+                # textRect1.centerx = 50 + (all_dates.index(each)) * (textDateRectN.centerx - textDateRect1.centerx) / (sumOfDates)
+                textRect1.centerx = 50 + (all_dates.index(each)) * (textDateRectN.centerx - textDateRect1.centerx) / (len(dictionary_for_dates_and_x_coordinates)-1)
                 display_surface.blit(text1, textRect1)
 
             for each in position_details["securitiesAccount"]["positions"]:
