@@ -365,7 +365,7 @@ if __name__ == '__main__':
 
                         my_rect[count]["Text1"] = f'{optionsSorted[count]["instrument"]["symbol"][0:6].replace(" ","")} - {optionsSorted[count]["shortQuantity"]:.0f} x {optionsSorted[count]["instrument"]["symbol"][12:13]}'
                         my_rect[count]["Text2"] = optionsSorted[count]['instrument']["symbol"][6:12]
-                        strike_price = f'{(float(optionsSorted[count]["instrument"]["symbol"][13:19])/10):.2f}'
+                        strike_price = f'{(float(optionsSorted[count]["instrument"]["symbol"][13:20])/100):.2f}'
                         my_rect[count]["Text3"] = strike_price
                         my_rect[count]["symbol"] = optionsSorted[count]["instrument"]["symbol"]
 
