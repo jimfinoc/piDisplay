@@ -543,55 +543,52 @@ if __name__ == '__main__':
 
 
 
-            # try:
-            if time.time() - textPortfolioSetTime  < time_to_show_text:
-                font2 = pygame.font.Font('freesansbold.ttf', 30)
-                textPortfolio = font2.render(f'Portfolio shown is {args.portfolio[0]}', True, yellow, background)
-                textPortfolioRect = textPortfolio.get_rect()
-                x, y = display_surface.get_size()
-                cx = x * 2/3
-                PortfolioOption = {'All':1,'Stocks':2,'Options':3,'Both':4,'Speculation':5,'Others':6}
-                cy = y * PortfolioOption[args.portfolio[0]]/7
-                textPortfolioRect.center = (cx, cy)
-                display_surface.blit(textPortfolio, textPortfolioRect)
+            try:
+                if time.time() - textPortfolioSetTime  < time_to_show_text:
+                    font2 = pygame.font.Font('freesansbold.ttf', 30)
+                    textPortfolio = font2.render(f'Portfolio shown is {args.portfolio[0]}', True, yellow, background)
+                    textPortfolioRect = textPortfolio.get_rect()
+                    x, y = display_surface.get_size()
+                    cx = x * 2/3
+                    PortfolioOption = {'All':1,'Stocks':2,'Options':3,'Both':4,'Speculation':5,'Others':6}
+                    cy = y * PortfolioOption[args.portfolio[0]]/7
+                    textPortfolioRect.center = (cx, cy)
+                    display_surface.blit(textPortfolio, textPortfolioRect)
 
-            if time.time() - textSortSetTime  < time_to_show_text:
-                font2 = pygame.font.Font('freesansbold.ttf', 30)
-                textSort = font2.render(f'Sort by {args.sort[0]}', True, yellow, background)
-                textSortRect = textSort.get_rect()
-                x, y = display_surface.get_size()
-                cx = x * 1/3
-                SortOption = {'Name':3,'Percent':4}
-                cy = y * SortOption[args.sort[0]]/7
-                textSortRect.center = (cx, cy)
-                display_surface.blit(textSort, textSortRect)
+                if time.time() - textSortSetTime  < time_to_show_text:
+                    font2 = pygame.font.Font('freesansbold.ttf', 30)
+                    textSort = font2.render(f'Sort by {args.sort[0]}', True, yellow, background)
+                    textSortRect = textSort.get_rect()
+                    x, y = display_surface.get_size()
+                    cx = x * 1/3
+                    SortOption = {'Name':3,'Percent':4}
+                    cy = y * SortOption[args.sort[0]]/7
+                    textSortRect.center = (cx, cy)
+                    display_surface.blit(textSort, textSortRect)
 
-            if time.time() - textAutoCheckTime  < time_to_show_text:
-                font2 = pygame.font.Font('freesansbold.ttf', 30)
-                textSort = font2.render(f'Auto scrolling: {args.auto[0]}', True, yellow, background)
-                textSortRect = textSort.get_rect()
-                x, y = display_surface.get_size()
-                cx = x * 1/3
-                SortOption = {'Yes':3,'No':4}
-                cy = y * SortOption[args.auto[0]]/7
-                textSortRect.center = (cx, cy)
-                display_surface.blit(textSort, textSortRect)
+                if time.time() - textAutoCheckTime  < time_to_show_text:
+                    font2 = pygame.font.Font('freesansbold.ttf', 30)
+                    textSort = font2.render(f'Auto scrolling: {args.auto[0]}', True, yellow, background)
+                    textSortRect = textSort.get_rect()
+                    x, y = display_surface.get_size()
+                    cx = x * 1/3
+                    SortOption = {'Yes':3,'No':4}
+                    cy = y * SortOption[args.auto[0]]/7
+                    textSortRect.center = (cx, cy)
+                    display_surface.blit(textSort, textSortRect)
 
-
-
-
-            if time.time() - textStockSetTime  < time_to_show_text:
-                font2 = pygame.font.Font('freesansbold.ttf', 30)
-                textSort = font2.render(f'Now showing {args.equity[0]}', True, yellow, background)
-                textSortRect = textSort.get_rect()
-                x, y = display_surface.get_size()
-                cx = x * 1/2
-                # cy = y / 2
-                cy = y * (equities.index(args.equity[0])+1)/(len(equities)+1)
-                textSortRect.center = (cx, cy)
-                display_surface.blit(textSort, textSortRect)
-            # except:
-                # prRed("Error checking text against time")
+                if time.time() - textStockSetTime  < time_to_show_text:
+                    font2 = pygame.font.Font('freesansbold.ttf', 30)
+                    textSort = font2.render(f'Now showing {args.equity[0]}', True, yellow, background)
+                    textSortRect = textSort.get_rect()
+                    x, y = display_surface.get_size()
+                    cx = x * 1/2
+                    # cy = y / 2
+                    cy = y * (equities.index(args.equity[0])+1)/(len(equities)+1)
+                    textSortRect.center = (cx, cy)
+                    display_surface.blit(textSort, textSortRect)
+            except:
+                prRed("Error checking text against time")
                 # time.sleep(1)
                 # pass
 
