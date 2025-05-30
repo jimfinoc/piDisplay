@@ -1,3 +1,4 @@
+#!/Users/james/Programming/piDisplay/.venv/bin python3
 import pygame
 import datetime
 import time
@@ -12,6 +13,7 @@ from stockDataFunctions import return_positions
 from stockDataFunctions import return_orders
 import copy
 import argparse
+import os
 
 time_between_redis_pulls = 1
 time_to_show_text = 2
@@ -29,6 +31,10 @@ parser.add_argument("-a", "--auto", choices=['Yes','No'], default=["Yes"], help 
 parser.add_argument("-r", "--refresh", default=10, help = "time in seconds to advance to the next stock")
 # parser.add_argument("stock")
 args = parser.parse_args()
+
+if not os.path.isfile(".env"): 
+    print("No .env file found, please create one with your API keys")
+    quit()
 
 if args.equity != "":
     args.auto = ['No']
@@ -101,6 +107,7 @@ if __name__ == '__main__':
             flags = pygame.FULLSCREEN
             screen_width=0
             screen_height=0
+            pygame.mouse.set_visible(False)
         else:
             # flags = pygame.FULLSCREEN
             # screen_width=3440 #1280
@@ -110,10 +117,10 @@ if __name__ == '__main__':
             # screen_height=720
             screen_width=800
             screen_height=480
+            pygame.mouse.set_visible(True)
 
         display_surface = pygame.display.set_mode([screen_width, screen_height],flags)
 
-        pygame.mouse.set_visible(False)
         # display_surface = pygame.display.set_mode((800, 480), pygame.FULLSCREEN)
         print(pygame.display.Info())
         # print()
