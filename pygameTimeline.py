@@ -500,6 +500,10 @@ if __name__ == '__main__':
             all_dates = copy.deepcopy(all_option_dates)
             all_dates.insert(0,f'{today.year}-{today.month:02d}-{today.day:02d}')
 
+            temp_set = set(all_dates)
+            all_dates = sorted(list(temp_set))
+
+            print('all_dates', all_dates)
             for each in all_dates:
                 each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
                 each_month = each_datetime.month
