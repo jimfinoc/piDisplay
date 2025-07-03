@@ -502,8 +502,8 @@ if __name__ == '__main__':
 
             temp_set = set(all_dates)
             all_dates = sorted(list(temp_set))
+            # print('all_dates', all_dates)
 
-            print('all_dates', all_dates)
             for each in all_dates:
                 each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
                 each_month = each_datetime.month
