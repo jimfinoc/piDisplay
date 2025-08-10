@@ -57,8 +57,8 @@ if not os.path.isfile(".env"):
     print("No .env file found, please create one with your API keys")
     quit()
 
-if args.equity != "":
-    args.auto = ['No']
+# if args.equity != "":
+    # args.auto = ['No']
 
 print('args.sort', args.sort)
 print('args.portfolio', args.portfolio)
