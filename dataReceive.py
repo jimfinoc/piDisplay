@@ -51,7 +51,7 @@ try:
             # pass
 
         counter += 1
-        time.sleep(1) # Wait before next cycle
+        # time.sleep(1) # Wait before next cycle
 
 except serial.SerialException as e:
     print(f"Error opening or communicating with serial port: {e}")
