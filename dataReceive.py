@@ -42,7 +42,7 @@ try:
     while True:
         # message_to_send = f"Hello from Pi! Counter: {counter}"
         # send_data(message_to_send)
-        time.sleep(1) # Wait for a second
+        # time.sleep(1) # Wait for a second
 
         received_message = receive_data()
         if received_message:
