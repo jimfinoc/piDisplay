@@ -40,18 +40,11 @@ try:
     # Main loop for continuous TX/RX
     counter = 0
     while True:
-        # message_to_send = f"Hello from Pi! Counter: {counter}"
-        # send_data(message_to_send)
-        # time.sleep(1) # Wait for a second
-
         received_message = receive_data()
         if received_message:
-            # Process received message if needed
-            print(f"Processing received message: {received_message}")
-            # pass
+            pass
 
         counter += 1
-        # time.sleep(1) # Wait before next cycle
 
 except serial.SerialException as e:
     print(f"Error opening or communicating with serial port: {e}")
