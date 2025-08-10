@@ -600,13 +600,6 @@ if __name__ == '__main__':
                 if time.time() - textStockSetTime  < time_to_show_text:
                     font2 = pygame.font.Font('freesansbold.ttf', 30)
                     textSort = font2.render(f'Now showing {args.equity[0]}', True, yellow, background)
-                    if SerialModuleEnabled:
-                        try:
-                            ser = serial.Serial('/dev/ttyS0', 9600, timeout=1)
-                            ser.write(f'{args.equity[0]}\n'.encode())
-                            ser.close()
-                        except serial.SerialException as e:
-                            prRed(f"Serial communication error: {e}")
                     textSortRect = textSort.get_rect()
                     x, y = display_surface.get_size()
                     cx = x * 1/2
@@ -807,7 +800,6 @@ if __name__ == '__main__':
                         index = index - 1
                     args.equity = [equities[index]]
                     prGreen(f"Now showing {args.equity[0]}")
-
 
                 if action == -1:
                     prGreen("Exiting program")
