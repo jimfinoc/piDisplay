@@ -57,10 +57,6 @@ if not os.path.isfile(".env"):
     print("No .env file found, please create one with your API keys")
     quit()
 
-# if args.equity != "":
-if args.auto == 'Sync':
-    args.auto = ['Sync']
-
 print('args.sort', args.sort)
 print('args.portfolio', args.portfolio)
 print('args.equity', args.equity)
@@ -289,7 +285,7 @@ if __name__ == '__main__':
 
             try:
                 if SerialModuleEnabled:
-                    if args.auto == ['Sync']:
+                    if args.auto == ['Sync'] or args.auto == 'Sync':
                         args.equity = [last_received_message]
                 if args.equity == "":
                     args.equity = [equities[0]]
