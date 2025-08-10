@@ -204,6 +204,7 @@ if __name__ == '__main__':
         years = []
         all_option_dates = []
         auto_refresh_time = time.time()
+        lastDisplayStock = ""
         while not done:
             clock.tick(30)
             today = datetime.date.today()
@@ -285,6 +286,19 @@ if __name__ == '__main__':
                 else:
                     SelectingEquity = True
                 displayStock = args.equity[0]
+
+                ##### Data sending via serial port 
+                if SerialModuleEnabled:
+                    if lastDisplayStock != displayStock:
+                        try:
+                            ser = serial.Serial('/dev/ttyS0', 9600, timeout=1)
+                            ser.write(f'{args.equity[0]}\n'.encode())
+                            ser.close()
+                            lastDisplayStock = displayStock
+                        except serial.SerialException as e:
+                            prRed(f"Serial communication error: {e}")
+                ##### Data sending complete
+
                 # print('displayStock',displayStock)
                 # print(redisAllDataPull[displayStock])
                 highPrice = redisAllDataPull[displayStock]['52_week_high']
