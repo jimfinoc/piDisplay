@@ -58,7 +58,8 @@ if not os.path.isfile(".env"):
     quit()
 
 # if args.equity != "":
-    # args.auto = ['No']
+    if args.auto == 'Sync':
+        args.auto = ['Sync']
 
 print('args.sort', args.sort)
 print('args.portfolio', args.portfolio)
