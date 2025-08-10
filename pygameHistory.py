@@ -12,26 +12,59 @@ from stockDataFunctions import return_positions
 from stockDataFunctions import return_orders
 import copy
 import argparse
+import os
+
+SerialModuleEnabled = False
+try:
+    import serial
+    print("Serial module enabled.")
+    SerialModuleEnabled = True
+    ser = serial.Serial('/dev/ttyS0', 9600, timeout=1)
+
+    def receive_data():
+        if ser.in_waiting > 0:
+            received_bytes = ser.readline() # Read until newline or timeout
+            try:
+                decoded_data = received_bytes.decode('utf-8').strip()
+                print(f"Received: {decoded_data}")
+                return decoded_data
+            except UnicodeDecodeError:
+                print(f"Received non-UTF-8 data: {received_bytes}")
+        return None
+
+except ImportError:
+    print("Serial module not found. Not communicating via serial.")
+
 
 time_between_redis_pulls = 1
 time_to_show_text = 2
 
 textPortfolioSetTime = time.time()
 textSortSetTime = time.time()
+textAutoCheckTime = time.time()
 textStockSetTime = time.time()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--sort", choices=['Name','Percent'], default=['Name'], help = "Sort stocks by Name")
 parser.add_argument("-p", "--portfolio", choices=['All','Stocks','Options','Both','Speculation','Others'], default=['Options'], help = "Who's portfolio to show")
-parser.add_argument("-e", "--equity", type=str, default="", help = "This should be a stock (equity) symbol")
+parser.add_argument("-e", "--equity", type=str, default="", help = "This should be a stock (equity) symbol, if an equity is entered, the auto function will be overridden 'No'")
+parser.add_argument("-a", "--auto", choices=['Yes','No','Sync'], default=["Yes"], help = "automatically select the next stock after a few seconds of inactivity")
+parser.add_argument("-r", "--refresh", default=10, help = "time in seconds to advance to the next stock")
 # parser.add_argument("stock")
 args = parser.parse_args()
 
-# print("args")
+if not os.path.isfile(".env"): 
+    print("No .env file found, please create one with your API keys")
+    quit()
+
+if args.equity != "":
+    args.auto = ['No']
+
 print('args.sort', args.sort)
 print('args.portfolio', args.portfolio)
 print('args.equity', args.equity)
-# print('args.portfolio', args.portfolio)
+print('args.auto', args.auto)
+print('args.refresh', args.refresh)
 
 
 def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
@@ -186,6 +219,10 @@ if __name__ == '__main__':
             equities = []
             redisFilterData = {}
             redisAllDataPull = copy.deepcopy(temp_dict)
+            if SerialModuleEnabled:
+                received_message = receive_data()
+                if received_message:
+                    last_received_message = received_message
 
             list_of_symbol_open_orders = []
             My_open_orders = return_orders("open")
@@ -250,14 +287,13 @@ if __name__ == '__main__':
 
 
             try:
+                if SerialModuleEnabled:
+                    if args.auto == ['Sync']:
+                        args.equity = [last_received_message]
                 if args.equity == "":
                     args.equity = [equities[0]]
-                    SelectingEquity = True
                 if args.equity[0] not in equities:
                     args.equity = [equities[0]]
-                    SelectingEquity = True
-                else:
-                    SelectingEquity = True
                 displayStock = args.equity[0]
                 # print('displayStock',displayStock)
                 # print(redisAllDataPull[displayStock])
@@ -539,6 +575,18 @@ if __name__ == '__main__':
                     textSortRect.center = (cx, cy)
                     display_surface.blit(textSort, textSortRect)
 
+                if time.time() - textAutoCheckTime  < time_to_show_text:
+                    font2 = pygame.font.Font('freesansbold.ttf', 30)
+                    textSort = font2.render(f'Auto scrolling: {args.auto[0]}', True, yellow, background)
+                    textSortRect = textSort.get_rect()
+                    x, y = display_surface.get_size()
+                    cx = x * 1/3
+                    SortOption = {'Yes':3,'No':4,'Sync':5}
+                    cy = y * SortOption[args.auto[0]]/7
+                    textSortRect.center = (cx, cy)
+                    display_surface.blit(textSort, textSortRect)
+
+
                 if time.time() - textStockSetTime  < time_to_show_text:
                     font2 = pygame.font.Font('freesansbold.ttf', 30)
                     textSort = font2.render(f'Now showing {args.equity[0]}', True, yellow, background)
@@ -566,7 +614,7 @@ if __name__ == '__main__':
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if pygame.mouse.get_pressed()[0]:
-                        action = 1
+                        action = 6
                         prYellow("Left mouse button clicked")
                     if pygame.mouse.get_pressed()[1]:
                         # if event.mod & pygame.KMOD_LSHIFT or event.mod & pygame.KMOD_RSHIFT:
@@ -634,6 +682,24 @@ if __name__ == '__main__':
                     elif 'Percent' in args.sort:
                         args.sort = ['Name']
                         prGreen("Now sorting by Name")
+
+            if action == 6:
+                    textAutoCheckTime = time.time()
+                    if 'No' in args.auto:
+                        args.auto = ['Yes']
+                        prRed("Now auto scrolling")
+                    elif 'Sync' in args.auto:
+                        args.auto = ['No']
+                        prRed("Now NOT auto scrolling")
+                    elif 'Yes' in args.auto:
+                        if SerialModuleEnabled:
+                            args.auto = ['Sync']
+                            prRed("Now syncing to Serial Input")
+                        else:
+                            args.auto = ['No']
+                            prRed("Now NOT auto scrolling")
+
+
 
             if action == 31:
                 textPortfolioSetTime = time.time()
