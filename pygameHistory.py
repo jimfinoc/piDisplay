@@ -302,6 +302,7 @@ if __name__ == '__main__':
                 largestDate = 0
 
                 # order_details
+                history_details = return_details("My_history_details")
 
                 position_details = return_details("My_position_details")
                 for each in position_details["securitiesAccount"]["positions"]:
