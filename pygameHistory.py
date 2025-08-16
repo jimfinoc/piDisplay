@@ -208,6 +208,27 @@ if __name__ == '__main__':
         last_year = 0
         years = []
         all_option_dates = []
+
+        timecheck = int(datetime.datetime.now().timestamp()*1000)
+        # print('datetime.datetime.now()',datetime.datetime.now())
+        # print('datetime.datetime.now().timestamp())*1000',datetime.datetime.now().timestamp()*1000)
+        stock_history = return_details("My_stock_history")
+        # stock_history_candles = return_details("My_stock_history")[displayStock]['candles']
+        random_key = random.choice(list(stock_history.keys()))
+        print('random_key', random_key)
+        # random_value = stock_history[random_key]
+        stock_history_candles = return_details("My_stock_history")[random_key]['candles']
+
+        for each in stock_history_candles:
+            if each['datetime'] < timecheck:
+                timecheck = each['datetime']
+
+        # print('timecheck',timecheck)
+        # print('timecheck',datetime.datetime.fromtimestamp(timecheck/1000))
+        # print()
+
+
+
         while not done:
             clock.tick(30)
             today = datetime.date.today()
@@ -302,7 +323,7 @@ if __name__ == '__main__':
                 largestDate = 0
 
                 # order_details
-                history_details = return_details("My_stock_history")
+                # history_details = return_details("My_stock_history")
 
                 position_details = return_details("My_position_details")
                 for each in position_details["securitiesAccount"]["positions"]:
@@ -325,16 +346,7 @@ if __name__ == '__main__':
                             years = sorted(temp)
                 all_option_dates = return_details("My_stock_option_dates")[displayStock]
 
-                timecheck = int(datetime.datetime.now().timestamp()*1000)
-                # print('datetime.datetime.now()',datetime.datetime.now())
-                # print('datetime.datetime.now().timestamp())*1000',datetime.datetime.now().timestamp()*1000)
-                stock_history_candles = return_details("My_stock_history")[displayStock]['candles']
-                for each in stock_history_candles:
-                    if each['datetime'] < timecheck:
-                        timecheck = each['datetime']
-                # print('timecheck',timecheck)
-                # print('timecheck',datetime.datetime.fromtimestamp(timecheck/1000))
-                # print()
+                stock_history_candles = stock_history[displayStock]['candles']
 
 
 
