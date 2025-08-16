@@ -325,24 +325,17 @@ if __name__ == '__main__':
                             years = sorted(temp)
                 all_option_dates = return_details("My_stock_option_dates")[displayStock]
 
-                # print('all_option_dates',all_option_dates)
-                # for each in all_option_dates[displayStock]:
-                #     all_option_dates
-                #             optionSymbol = each["instrument"]["symbol"]
-                #             # print()
-                #             # print('optionSymbol',optionSymbol)
-                #             # print('len(optionSymbol)',len(optionSymbol))
-                #             strike = float(optionSymbol[13:21])/1000
-                #             # print('strike',strike)
-                #             highPrice = max(highPrice,strike)
-                #             lowPrice = min(lowPrice,strike)
-                #             expirationDate = optionSymbol[6:12]
-                #             largestDate = str(max(int(largestDate),int(expirationDate)))
-                #             # print ('largestDate',largestDate)
-                #             # last_year = max(last_year,int(f'20{expirationDate[0:2]}'))
-                #             # years.append(int(f'20{expirationDate[0:2]}'))
-                #             # temp = list(set(years))
-                #             # years = sorted(temp)
+                timecheck = int(datetime.datetime.now().timestamp()*1000)
+                # print('datetime.datetime.now()',datetime.datetime.now())
+                # print('datetime.datetime.now().timestamp())*1000',datetime.datetime.now().timestamp()*1000)
+                stock_history_candles = return_details("My_stock_history")[displayStock]['candles']
+                for each in stock_history_candles:
+                    if each['datetime'] < timecheck:
+                        timecheck = each['datetime']
+                # print('timecheck',timecheck)
+                # print('timecheck',datetime.datetime.fromtimestamp(timecheck/1000))
+                # print()
+
 
 
 
@@ -463,88 +456,109 @@ if __name__ == '__main__':
 
             
 
-
-            # First date, on the left
+            # Current date, on the right
             font = pygame.font.Font('freesansbold.ttf', 15)
             today = datetime.date.today()
             current_month = today.month
             current_day = today.day
             current_year = today.year
-            textDate1 = font.render(f"{current_month}/{current_day}", True, white, background)
-            textDateRect1 = textDate1.get_rect()
-            textDateRect1.center = (50 , 450)
-            display_surface.blit(textDate1, textDateRect1)
+            textDate0 = font.render(f"{current_month}/{current_day}", True, white, background)
+            textDateRect0 = textDate0.get_rect()
+            # textDateRect1.center = (50 , 450)
+            textDateRect0.center = (780 , 450)
+            display_surface.blit(textDate0, textDateRect0)
 
-            # last date. on the right
+
+            # earilest date. on the left
             font = pygame.font.Font('freesansbold.ttf', 15)
             # print ('largestDate',largestDate)
             lastdateString = str(f'20{largestDate}')
-            # last_date = datetime.datetime.strptime(str(f'20{largestDate}'), '%Y%m%d')
-            
+            # first_date = datetime.datetime.strptime(str(f'20{largestDate}'), '%Y%m%d')
             today = datetime.datetime.today()
-            last_date = today
-            for each in all_option_dates:
-                each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
-                if each_datetime >= last_date:
-                    last_date = each_datetime
-                years.append(each_datetime.year)
-            # print(last_date,'last_date')
-            last_month = last_date.month
-            last_day = last_date.day
-            last_year = last_date.year
+            first_date = today
+            first_date = datetime.datetime.fromtimestamp(timecheck/1000)
+            # print('first_date', first_date)
+            # for each in all_option_dates:
+            #     each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
+            #     if each_datetime <= first_date:
+            #         first_date = each_datetime
+            #     years.append(each_datetime.year)
+            # print(first_date,'first_date')
+            last_month = first_date.month
+            last_day = first_date.day
+            last_year = first_date.year
             textDateN = font.render(f"{last_month}/{last_day}", True, white, background)
             textDateRectN = textDateN.get_rect()
-            textDateRectN.center = (780, 450)
+            # textDateRectN.center = (780, 450)
+            textDateRectN.center = (50, 450)
             display_surface.blit(textDateN, textDateRectN)
             # print(args.equity[0])
             # print('years',years)
 
-            all_dates = copy.deepcopy(all_option_dates)
-            all_dates.insert(0,f'{today.year}-{today.month:02d}-{today.day:02d}')
+            # all_dates = copy.deepcopy(all_option_dates)
+            # all_dates.insert(0,f'{today.year}-{today.month:02d}-{today.day:02d}')
             # print('all_dates',all_dates)
             # between dates
 
             # print()
             # print('test dates')
-            for each in all_dates[1:-1]:
-                font = pygame.font.Font('freesansbold.ttf', 15)
-                each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
-                each_month = each_datetime.month
-                each_day = each_datetime.day
-                # print('each_month/each_day')
-                # print(f'{each_month}/{each_day}')
-                text1 = font.render(f"{each_month}/{each_day}", True, white, background)
-                textRect1 = text1.get_rect()
-                textRect1.centery = textDateRect1.centery
-                textRect1.centerx = 50 + (all_dates.index(each)) * (textDateRectN.centerx - textDateRect1.centerx) / (len(all_dates)-1)
-                display_surface.blit(text1, textRect1)
-
-            for each in position_details["securitiesAccount"]["positions"]:
-                if each["instrument"]["assetType"] == "OPTION":
-                    if each["instrument"]["underlyingSymbol"] == displayStock:
-                        optionSymbol = each["instrument"]["symbol"]
-                        typeOption = optionSymbol[12:13]
-                        strike = float(optionSymbol[13:21])/1000
-                        tempDate = optionSymbol[6:12]
-                        expirationDateTime = datetime.datetime.strptime(f'20{tempDate}', '%Y%m%d')
-                        expirationDate = expirationDateTime.strftime('%Y-%m-%d')
-                        # print('optionSymbol',optionSymbol)
-                        # print('typeOption',typeOption)
-                        # print('expirationDate',expirationDate)
-                        # print('strike',strike)
-                        circlex = 50 + (all_dates.index(expirationDate)) * (textDateRectN.centerx - textDateRect1.centerx) / (len(all_dates)-1)
-                        circley = textPriceLowRect.centery + (strike - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
-                        if optionSymbol in list_of_symbol_open_orders:
-                            circleColor = yellow
-                            pygame.draw.circle(display_surface, circleColor, (circlex,circley), 6)
-                            circleSize = 4
-                        else:
-                            circleSize = 5
-                        if typeOption == 'C':
-                            circleColor = (0,255,0)
-                        elif typeOption == 'P':
-                            circleColor = (255,0,0)
-                        pygame.draw.circle(display_surface, circleColor, (circlex,circley), circleSize)
+            # for each in stock_history_candles[1:-1]:
+            for each_candle in stock_history_candles:
+                pass
+                # font = pygame.font.Font('freesansbold.ttf', 15)
+                # candle_date = datetime.datetime.fromtimestamp(each_candle['datetime']/1000).strftime('%Y-%m-%d')
+                # each_datetime = datetime.datetime.strptime(candle_date, '%Y-%m-%d')
+                # each_month = each_datetime.month
+                # each_day = each_datetime.day
+                # # print('each_month/each_day')
+                # # print(f'{each_month}/{each_day}')
+                # text1 = font.render(f"{each_month}/{each_day}", True, white, background)
+                # textRect1 = text1.get_rect()
+                # textRect1.centery = textDateRect0.centery
+                # textRect1.centerx = 50 + (stock_history_candles.index(each_candle)) * (textDateRect0.centerx - textDateRectN.centerx) / (len(stock_history_candles))
+                # display_surface.blit(text1, textRect1)
+                circlex = 50 + (stock_history_candles.index(each_candle)) * (textDateRect0.centerx - textDateRectN.centerx) / (len(stock_history_candles))
+                circley_close = textPriceLowRect.centery + (each_candle['close'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                circley_open = textPriceLowRect.centery + (each_candle['open'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                circley_high = textPriceLowRect.centery + (each_candle['high'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                circley_low = textPriceLowRect.centery + (each_candle['low'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                circleSize = 3
+                circleColor = (128,128,128)
+                pygame.draw.circle(display_surface, circleColor, (circlex,circley_high), circleSize, draw_top_left=0, draw_top_right=0, draw_bottom_left=1, draw_bottom_right=1)
+                pygame.draw.circle(display_surface, circleColor, (circlex,circley_low), circleSize, draw_top_left=1, draw_top_right=1, draw_bottom_left=0, draw_bottom_right=0)
+                pygame.draw.line(display_surface, circleColor, (circlex, circley_high), (circlex, circley_low), 1)
+                if each_candle['close'] > each_candle['open']:
+                    circleColor = (0,255,0)
+                elif each_candle['close'] < each_candle['open']:
+                    circleColor = (255,0,0)
+                pygame.draw.circle(display_surface, circleColor, (circlex,circley_close), circleSize, draw_top_left=0, draw_top_right=1, draw_bottom_left=0, draw_bottom_right=1)
+                pygame.draw.circle(display_surface, circleColor, (circlex,circley_open), circleSize, draw_top_left=1, draw_top_right=0, draw_bottom_left=1, draw_bottom_right=0)
+            # for each in position_details["securitiesAccount"]["positions"]:
+            #     if each["instrument"]["assetType"] == "OPTION":
+            #         if each["instrument"]["underlyingSymbol"] == displayStock:
+            #             optionSymbol = each["instrument"]["symbol"]
+            #             typeOption = optionSymbol[12:13]
+            #             strike = float(optionSymbol[13:21])/1000
+            #             tempDate = optionSymbol[6:12]
+            #             expirationDateTime = datetime.datetime.strptime(f'20{tempDate}', '%Y%m%d')
+            #             expirationDate = expirationDateTime.strftime('%Y-%m-%d')
+            #             # print('optionSymbol',optionSymbol)
+            #             # print('typeOption',typeOption)
+            #             # print('expirationDate',expirationDate)
+            #             # print('strike',strike)
+                        # circlex = 50 + (all_dates.index(expirationDate)) * (textDateRectN.centerx - textDateRect1.centerx) / (len(all_dates)-1)
+                        # circley = textPriceLowRect.centery + (strike - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+            #             if optionSymbol in list_of_symbol_open_orders:
+            #                 circleColor = yellow
+                            # pygame.draw.circle(display_surface, circleColor, (circlex,circley), 6)
+                            # circleSize = 4
+            #             else:
+                        #     circleSize = 5
+                        # if typeOption == 'C':
+                        #     circleColor = (0,255,0)
+                        # elif typeOption == 'P':
+                        #     circleColor = (255,0,0)
+                        # pygame.draw.circle(display_surface, circleColor, (circlex,circley), circleSize)
 
                         # circley = 50 + (all_dates.index(expirationDate)) * (textDateRectN.centerx - textDateRect1.centerx) / (len(all_dates)-1)
 
@@ -697,8 +711,6 @@ if __name__ == '__main__':
                             args.auto = ['No']
                             prRed("Now NOT auto scrolling")
 
-
-
             if action == 31:
                 textPortfolioSetTime = time.time()
                 if 'All' in args.portfolio:
@@ -714,7 +726,6 @@ if __name__ == '__main__':
                 elif 'Others' in args.portfolio:
                     args.portfolio = ['All']
                 prGreen(f"Now showing {args.portfolio[0]}")
-
 
             if action == 32:
                 textPortfolioSetTime = time.time()
@@ -751,7 +762,6 @@ if __name__ == '__main__':
                     index = index - 1
                 args.equity = [equities[index]]
                 prGreen(f"Now showing {args.equity[0]}")
-
 
             if action == -1:
                 prGreen("Exiting program")
