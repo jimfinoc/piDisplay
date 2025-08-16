@@ -405,6 +405,15 @@ if __name__ == '__main__':
             # Stock and other data on the left show up looking good!
             ################################################################
 
+            font = pygame.font.Font('freesansbold.ttf', 15)
+            textProgram = font.render("Option Timeline", True, white, background)
+            textProgramRect = textProgram.get_rect()
+            textProgramRect.centery = 10
+            textProgramRect.centerx = 400
+
+            display_surface.blit(textProgram, textProgramRect)
+
+
             # Stock, top left
             font = pygame.font.Font('freesansbold.ttf', smallFont)
             textStock = font.render(f"{displayStock}", True, yellow, background)

@@ -400,6 +400,14 @@ if __name__ == '__main__':
             test_x += moving_x
             test_y += moving_y
 
+            font = pygame.font.Font('freesansbold.ttf', 15)
+            textProgram = font.render("Stock History", True, white, background)
+            textProgramRect = textProgram.get_rect()
+            textProgramRect.centery = 10
+            textProgramRect.centerx = 400
+
+            display_surface.blit(textProgram, textProgramRect)
+
             # Stock, top left
             font = pygame.font.Font('freesansbold.ttf', 15)
             textStock = font.render(f"{displayStock}", True, yellow, background)
