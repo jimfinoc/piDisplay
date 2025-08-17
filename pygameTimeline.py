@@ -15,15 +15,6 @@ import copy
 import argparse
 import os
 
-SerialModuleEnabled = False
-try:
-    import serial
-    print("Serial module enabled.")
-    SerialModuleEnabled = True
-except ImportError:
-    print("Serial module not found. Not communicating via serial.")
-
-
 time_between_redis_pulls = 1
 time_to_show_text = 2
 
@@ -47,12 +38,6 @@ if not os.path.isfile(".env"):
 
 if args.equity != "":
     args.auto = ['No']
-
-print('args.sort', args.sort)
-print('args.portfolio', args.portfolio)
-print('args.equity', args.equity)
-print('args.auto', args.auto)
-print('args.refresh', args.refresh)
 
 
 
@@ -81,6 +66,21 @@ def redisPullDataFunction(lock, shared_dict,stop_threads):
     prRed('Stop printing')
 
 if __name__ == '__main__':
+    SerialModuleEnabled = False
+    try:
+        import serial
+        print("Serial module enabled.")
+        SerialModuleEnabled = True
+    except ImportError:
+        print("Serial module not found. Not communicating via serial.")
+
+    print('args.sort', args.sort)
+    print('args.portfolio', args.portfolio)
+    print('args.equity', args.equity)
+    print('args.auto', args.auto)
+    print('args.refresh', args.refresh)
+    print()
+
     with Manager() as manager:
         temp_dict = manager.dict()
         lock = manager.Lock()        

@@ -15,25 +15,6 @@ import argparse
 import os
 
 SerialModuleEnabled = False
-try:
-    import serial
-    print("Serial module enabled.")
-    SerialModuleEnabled = True
-    ser = serial.Serial('/dev/ttyS0', 9600, timeout=1)
-
-    def receive_data():
-        if ser.in_waiting > 0:
-            received_bytes = ser.readline() # Read until newline or timeout
-            try:
-                decoded_data = received_bytes.decode('utf-8').strip()
-                print(f"Received: {decoded_data}")
-                return decoded_data
-            except UnicodeDecodeError:
-                print(f"Received non-UTF-8 data: {received_bytes}")
-        return None
-
-except ImportError:
-    print("Serial module not found. Not communicating via serial.")
 
 
 time_between_redis_pulls = 1
@@ -56,13 +37,6 @@ args = parser.parse_args()
 if not os.path.isfile(".env"): 
     print("No .env file found, please create one with your API keys")
     quit()
-
-print('args.sort', args.sort)
-print('args.portfolio', args.portfolio)
-print('args.equity', args.equity)
-print('args.auto', args.auto)
-print('args.refresh', args.refresh)
-
 
 def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
 def prGreen(skk): print("\033[92m {}\033[00m" .format(skk))
@@ -89,6 +63,33 @@ def redisPullDataFunction(lock, shared_dict,stop_threads):
     prRed('Stop printing')
 
 if __name__ == '__main__':
+    print('args.sort', args.sort)
+    print('args.portfolio', args.portfolio)
+    print('args.equity', args.equity)
+    print('args.auto', args.auto)
+    print('args.refresh', args.refresh)
+    print()
+
+    try:
+        import serial
+        print("Serial module enabled.")
+        SerialModuleEnabled = True
+        ser = serial.Serial('/dev/ttyS0', 9600, timeout=1)
+
+        def receive_data():
+            if ser.in_waiting > 0:
+                received_bytes = ser.readline() # Read until newline or timeout
+                try:
+                    decoded_data = received_bytes.decode('utf-8').strip()
+                    print(f"Received: {decoded_data}")
+                    return decoded_data
+                except UnicodeDecodeError:
+                    print(f"Received non-UTF-8 data: {received_bytes}")
+            return None
+    except ImportError:
+        print("Serial module not found. Not communicating via serial.")
+    print()
+    
     with Manager() as manager:
         temp_dict = manager.dict()
         lock = manager.Lock()        
