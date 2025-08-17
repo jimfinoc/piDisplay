@@ -502,7 +502,10 @@ if __name__ == '__main__':
             display_surface.blit(textDate1, textDateRect1)
 
             dictionary_for_dates_and_x_coordinates[f'{today.year}-{today.month:02d}-{today.day:02d}'] = textDateRect1.centerx
-
+            
+            last_year_to_check = current_year
+            current_year_x_coordinate = textDateRect1.centerx
+            
             # last date. on the right
             font = pygame.font.Font('freesansbold.ttf', smallFont)
             # print ('largestDate',largestDate)
@@ -551,12 +554,26 @@ if __name__ == '__main__':
                 each_day = each_datetime.day
                 each_year = each_datetime.year
 
+
                 text1 = font.render(f"{each_month}/{each_day}", True, white, background)
                 textRect1 = text1.get_rect()
                 textRect1.centery = textDateRect1.centery
 
                 textRect1.centerx = 50 + (all_dates.index(each)) * (textDateRectN.centerx - textDateRect1.centerx) / (len(dictionary_for_dates_and_x_coordinates)-1)
                 display_surface.blit(text1, textRect1)
+
+                if each_year != last_year_to_check:
+                    last_year_to_check = each_year
+                    print ('last_year_to_check', last_year_to_check)
+                    print ('current_year', current_year)
+                    print ('current_year_x_coordinate', current_year_x_coordinate)
+                    print ('textRect1.centerx', textRect1.centerx)
+                    averagex = (current_year_x_coordinate + textRect1.centerx) / 2
+                    print('averagex', averagex)
+                    print()
+                    pygame.draw.line(display_surface, (64,64,64), (averagex, 20), (averagex, y-20), 1)
+                else:
+                    current_year_x_coordinate = textRect1.centerx
 
             for each in position_details["securitiesAccount"]["positions"]:
                 if each["instrument"]["assetType"] == "OPTION":
