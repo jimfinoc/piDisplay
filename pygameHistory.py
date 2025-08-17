@@ -15,6 +15,9 @@ import argparse
 import os
 
 SerialModuleEnabled = False
+UDPacketModuleEnabled = False
+UDP_ip = "127.0.0.1"  # Example: localhost
+UDP_port = 12345     # Example port
 
 
 time_between_redis_pulls = 1
@@ -29,7 +32,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--sort", choices=['Name','Percent'], default=['Name'], help = "Sort stocks by Name")
 parser.add_argument("-p", "--portfolio", choices=['All','Stocks','Options','Both','Speculation','Others'], default=['Options'], help = "Who's portfolio to show")
 parser.add_argument("-e", "--equity", type=str, default="", help = "This should be a stock (equity) symbol, if an equity is entered, the auto function will be overridden 'No'")
-parser.add_argument("-a", "--auto", choices=['Yes','No','Sync'], default=["Yes"], help = "automatically select the next stock after a few seconds of inactivity")
+parser.add_argument("-a", "--auto", choices=['Yes','No','Sync'], default=["Sync"], help = "automatically select the next stock after a few seconds of inactivity")
 parser.add_argument("-r", "--refresh", default=10, help = "time in seconds to advance to the next stock")
 # parser.add_argument("stock")
 args = parser.parse_args()
@@ -88,7 +91,28 @@ if __name__ == '__main__':
             return None
     except ImportError:
         print("Serial module not found. Not communicating via serial.")
+        try:
+            import socket
+            print("UDP Socket module enabled.")
+            UDPacketModuleEnabled = True
+
+            # Create a UDP socket
+            sock = socket.socket(socket.AF_INET,  # Internet
+                                socket.SOCK_DGRAM) # UDP
+
+            # Bind the socket to the address and port
+            sock.bind((UDP_ip, UDP_port))
+            sock.settimeout(0)
+
+            print(f"Listening for UDP packets on {UDP_ip}:{UDP_port}")
+
+
+        except ImportError:
+            print("Socket module not found. Not communicating via UDP.")
     print()
+
+    pygame.init()
+    pygame.display.set_caption("Stock History Viewer")
 
     with Manager() as manager:
         temp_dict = manager.dict()
@@ -98,7 +122,6 @@ if __name__ == '__main__':
         p1 = Process(target=redisPullDataFunction, args=(lock, temp_dict, stop_threads))
         p1.start()
 
-        pygame.init()
         print()
         size = pygame.display.get_desktop_sizes()
         if size[0] == (3440,1440):
@@ -242,6 +265,18 @@ if __name__ == '__main__':
                 received_message = receive_data()
                 if received_message:
                     last_received_message = received_message
+            if UDPacketModuleEnabled:
+                try:
+                    # print("Waiting for UDP packet...")
+                    data, addr = sock.recvfrom(64)  # Buffer size is 1024 bytes
+                    print(f"Received {data} from {addr}")
+                    received_message = data.decode('utf-8').strip()
+                    print(f"Received UDP packet: {received_message} from {addr}")
+                    if received_message:
+                        last_received_message = received_message
+                except socket.error as e:
+                    pass
+                    # print(f"Socket error: {e}")
 
             list_of_symbol_open_orders = []
             My_open_orders = return_orders("open")
@@ -306,7 +341,7 @@ if __name__ == '__main__':
 
 
             try:
-                if SerialModuleEnabled:
+                if SerialModuleEnabled or UDPacketModuleEnabled:
                     if args.auto == ['Sync'] or args.auto == 'Sync':
                         args.equity = [last_received_message]
                 if args.equity == "":
@@ -739,6 +774,9 @@ if __name__ == '__main__':
                         if SerialModuleEnabled:
                             args.auto = ['Sync']
                             prRed("Now syncing to Serial Input")
+                        elif UDPacketModuleEnabled:
+                            args.auto = ['Sync']
+                            prRed("Now syncing to UDP Input")
                         else:
                             args.auto = ['No']
                             prRed("Now NOT auto scrolling")

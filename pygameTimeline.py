@@ -337,7 +337,7 @@ if __name__ == '__main__':
                 # order_details
 
                 position_details = return_details("My_position_details")
-                print('position_details', position_details)
+                # print('position_details', position_details)
                 for each in position_details["securitiesAccount"]["positions"]:
                     if each["instrument"]["assetType"] == "OPTION":
                         if each["instrument"]["underlyingSymbol"] == displayStock:
@@ -349,8 +349,8 @@ if __name__ == '__main__':
                             # print('strike',strike)
                             highPrice = max(highPrice,strike)
                             lowPrice = min(lowPrice,strike)
-                            print('highPrice', highPrice)  
-                            print('lowPrice', lowPrice)
+                            # print('highPrice', highPrice)  
+                            # print('lowPrice', lowPrice)
                             expirationDate = optionSymbol[6:12]
                             largestDate = str(max(int(largestDate),int(expirationDate)))
                             # print ('largestDate',largestDate)
@@ -474,8 +474,8 @@ if __name__ == '__main__':
                 font = pygame.font.Font('freesansbold.ttf', smallFont)
                 textPrice52High = font.render(f"{stock_52_week_high:.2f}", True, cyan, background)
                 textPrice52HighRect = textPrice52High.get_rect()
-                print('highPrice', highPrice)
-                print('lowPrice', lowPrice)
+                # print('highPrice', highPrice)
+                # print('lowPrice', lowPrice)
                 textPrice52HighRect.centery = textPriceLowRect.centery + (stock_52_week_high - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
                 textPrice52HighRect.left = 5
                 display_surface.blit(textPrice52High, textPrice52HighRect)
