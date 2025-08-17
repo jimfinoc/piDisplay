@@ -128,7 +128,7 @@ if __name__ == '__main__':
             # flags = pygame.FULLSCREEN
             # screen_width=3440 #1280
             # screen_height=1440 #720
-            flags = pygame.SHOWN
+            flags = pygame.SHOWN | pygame.RESIZABLE
             # screen_width=1280
             # screen_height=720
             screen_width=800
@@ -140,13 +140,13 @@ if __name__ == '__main__':
         # display_surface = pygame.display.set_mode((800, 480), pygame.FULLSCREEN)
         print(pygame.display.Info())
         # print()
-        x, y = display_surface.get_size()
+        surface_x, surface_y = display_surface.get_size()
         # x = x - 1
         # y = y - 1
-        print('x')
-        print(x)
-        print('y')
-        print(y)
+        print('surface_x')
+        print(surface_x)
+        print('surface_y')
+        print(surface_y)
         white = (255, 255, 255)
         yellow = (255, 255, 0)
         red = (128, 0, 0)
@@ -194,8 +194,8 @@ if __name__ == '__main__':
         clock = pygame.time.Clock()
         moving_x = 0
         moving_y = 0
-        test_x = 5
-        test_y = 450
+        test_x = 5 * surface_x / 800 
+        test_y = 450 / 480 * surface_y
         displayStock = ""
         highPrice = 0
         lowPrice = 0
@@ -394,8 +394,8 @@ if __name__ == '__main__':
             ################################################################
             ################################################################
 
-            pygame.draw.rect(display_surface, background, (0,0,x,y),width=0)
-            pygame.draw.rect(display_surface, (100,100,0), (50,20,x-50-20,y-20-40),width=2)
+            pygame.draw.rect(display_surface, background, (0,0,surface_x,surface_y),width=0)
+            pygame.draw.rect(display_surface, (100,100,0), (50,20,surface_x-50-20,surface_y-20-40),width=2)
             
             test_x += moving_x
             test_y += moving_y
@@ -403,8 +403,8 @@ if __name__ == '__main__':
             font = pygame.font.Font('freesansbold.ttf', 15)
             textProgram = font.render("Stock History", True, white, background)
             textProgramRect = textProgram.get_rect()
-            textProgramRect.centery = 10
-            textProgramRect.centerx = 400
+            textProgramRect.centerx = 400 * surface_x / 800 
+            textProgramRect.centery = 10 * surface_y / 480
 
             display_surface.blit(textProgram, textProgramRect)
 
@@ -412,25 +412,24 @@ if __name__ == '__main__':
             font = pygame.font.Font('freesansbold.ttf', 15)
             textStock = font.render(f"{displayStock}", True, yellow, background)
             textStockRect = textStock.get_rect()
-            textStockRect.centery = 10
-            textStockRect.left = 5
-
+            textStockRect.left = 5 * surface_x / 800 
+            textStockRect.centery = 10 / 480 * surface_y
             display_surface.blit(textStock, textStockRect)
 
             # high price, on the top
             font = pygame.font.Font('freesansbold.ttf', 15)
             textPriceHigh = font.render(f"{highPrice:.2f}", True, white, background)
             textPriceHighRect = textPriceHigh.get_rect()
-            textPriceHighRect.centery = 35
-            textPriceHighRect.left = 5
+            textPriceHighRect.left = 5 * surface_x / 800 
+            textPriceHighRect.centery = 35 / 480 * surface_y
             display_surface.blit(textPriceHigh, textPriceHighRect)
 
             # low price, on the bottom
             font = pygame.font.Font('freesansbold.ttf', 15)
             textPriceLow = font.render(f"{lowPrice:.2f}", True, white, background)
             textPriceLowRect = textPriceLow.get_rect()
-            textPriceLowRect.centery = 425
-            textPriceLowRect.left = 5
+            textPriceLowRect.left = 5 * surface_x / 800 
+            textPriceLowRect.centery = 425 / 480 * surface_y
             display_surface.blit(textPriceLow, textPriceLowRect)
 
             # if highPrice > stock_52_week_high:
@@ -438,12 +437,12 @@ if __name__ == '__main__':
             textPrice52High = font.render(f"{stock_52_week_high:.2f}", True, cyan, background)
             textPrice52HighRect = textPrice52High.get_rect()
             textPrice52HighRect.centery = textPriceLowRect.centery + (stock_52_week_high - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
-            textPrice52HighRect.left = 5
+            textPrice52HighRect.left = 5 * surface_x / 800 
             display_surface.blit(textPrice52High, textPrice52HighRect)
-            leftside = 50
-            rightside = 778
-            for xskip in range(leftside, rightside, rightside//80):
-                pygame.draw.line(display_surface, cyan, (xskip, textPrice52HighRect.centery), (xskip+5, textPrice52HighRect.centery), 1)
+            leftside = int (50 * surface_x / 800)
+            rightside = int (778 * surface_x / 800)
+            for xskip in range(leftside, rightside, rightside//int(80 * surface_x / 800 )):
+                pygame.draw.line(display_surface, cyan, (xskip, textPrice52HighRect.centery), (xskip+(5 * surface_x / 800 ), textPrice52HighRect.centery), 1)
             # pygame.draw.line(display_surface, cyan, (50, textPrice52HighRect.centery), (778, textPrice52HighRect.centery), 1)
             
 
@@ -454,10 +453,10 @@ if __name__ == '__main__':
             textPrice52LowRect.centery = textPriceLowRect.centery + (stock_52_week_low - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
             textPrice52LowRect.left = 5
             display_surface.blit(textPrice52Low, textPrice52LowRect)
-            leftside = 50
-            rightside = 778
-            for xskip in range(leftside, rightside, rightside//80):
-                pygame.draw.line(display_surface, cyan, (xskip, textPrice52LowRect.centery), (xskip+5, textPrice52LowRect.centery), 1)
+            leftside = int (50 * surface_x / 800)
+            rightside = int (778 * surface_x / 800)
+            for xskip in range(leftside, rightside, rightside//int(80 * surface_x / 800 )):
+                pygame.draw.line(display_surface, cyan, (xskip, textPrice52LowRect.centery), (xskip+(5 * surface_x / 800 ), textPrice52LowRect.centery), 1)
             # pygame.draw.line(display_surface, cyan, (50, textPrice52LowRect.centery), (778, textPrice52LowRect.centery), 1)
 
 
@@ -468,10 +467,10 @@ if __name__ == '__main__':
             textPriceCurRect.centery = textPriceLowRect.centery + (currentPrice - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
             textPriceCurRect.left = 5
             display_surface.blit(textPriceCur, textPriceCurRect)
-            leftside = 45
-            rightside = 778
-            for xskip in range(leftside, rightside, rightside//30):
-                pygame.draw.line(display_surface, yellow, (xskip, textPriceCurRect.centery), (xskip+10, textPriceCurRect.centery), 1)
+            leftside = int (50 * surface_x / 800)
+            rightside = int (778 * surface_x / 800)
+            for xskip in range(leftside, rightside, rightside//int(30 * surface_x / 800 )):
+                pygame.draw.line(display_surface, yellow, (xskip, textPriceCurRect.centery), (xskip+(10 * surface_x / 800 ), textPriceCurRect.centery), 1)
             # pygame.draw.line(display_surface, yellow, (45, textPriceCurRect.centery), (778, textPriceCurRect.centery), 1)
 
             
@@ -485,7 +484,7 @@ if __name__ == '__main__':
             textDate0 = font.render(f"{current_month}/{current_day}", True, white, background)
             textDateRect0 = textDate0.get_rect()
             # textDateRect1.center = (50 , 450)
-            textDateRect0.center = (780 , 450)
+            textDateRect0.center = (780  * surface_x / 800 , 450 / 480 * surface_y)
             display_surface.blit(textDate0, textDateRect0)
 
 
@@ -510,7 +509,7 @@ if __name__ == '__main__':
             textDateN = font.render(f"{last_month}/{last_day}", True, white, background)
             textDateRectN = textDateN.get_rect()
             # textDateRectN.center = (780, 450)
-            textDateRectN.center = (50, 450)
+            textDateRectN.center = (50 * surface_x / 800 , 450 / 480 * surface_y)
             display_surface.blit(textDateN, textDateRectN)
             # print(args.equity[0])
             # print('years',years)
@@ -537,7 +536,7 @@ if __name__ == '__main__':
                 # textRect1.centery = textDateRect0.centery
                 # textRect1.centerx = 50 + (stock_history_candles.index(each_candle)) * (textDateRect0.centerx - textDateRectN.centerx) / (len(stock_history_candles))
                 # display_surface.blit(text1, textRect1)
-                circlex = 50 + (stock_history_candles.index(each_candle)) * (textDateRect0.centerx - textDateRectN.centerx) / (len(stock_history_candles))
+                circlex = 50 * surface_x / 800 + (stock_history_candles.index(each_candle)) * (textDateRect0.centerx - textDateRectN.centerx) / (len(stock_history_candles))
                 circley_close = textPriceLowRect.centery + (each_candle['close'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
                 circley_open = textPriceLowRect.centery + (each_candle['open'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
                 circley_high = textPriceLowRect.centery + (each_candle['high'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
@@ -644,6 +643,11 @@ if __name__ == '__main__':
 
             action = 0
             for event in pygame.event.get():
+                if event.type == pygame.VIDEORESIZE:
+                    surface_x, surface_y = event.size
+                    display_surface = pygame.display.set_mode((surface_x, surface_y), pygame.RESIZABLE)
+                    print('Resized to', surface_x, surface_y)
+
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if pygame.mouse.get_pressed()[0]:
                         action = 6
