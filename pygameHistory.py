@@ -89,7 +89,7 @@ if __name__ == '__main__':
     except ImportError:
         print("Serial module not found. Not communicating via serial.")
     print()
-    
+
     with Manager() as manager:
         temp_dict = manager.dict()
         lock = manager.Lock()        
@@ -395,164 +395,171 @@ if __name__ == '__main__':
             ################################################################
             ################################################################
 
-            pygame.draw.rect(display_surface, background, (0,0,surface_x,surface_y),width=0)
-            pygame.draw.rect(display_surface, (100,100,0), (50,20,surface_x-50-20,surface_y-20-40),width=2)
-            
-            test_x += moving_x
-            test_y += moving_y
+            try:
+                pygame.draw.rect(display_surface, background, (0,0,surface_x,surface_y),width=0)
+                pygame.draw.rect(display_surface, (100,100,0), (50,20,surface_x-50-20,surface_y-20-40),width=2)
+                
+                test_x += moving_x
+                test_y += moving_y
 
-            font = pygame.font.Font('freesansbold.ttf', 15)
-            textProgram = font.render("Stock History", True, white, background)
-            textProgramRect = textProgram.get_rect()
-            textProgramRect.centerx = 400 * surface_x / 800 
-            textProgramRect.centery = 10 * surface_y / 480
+                font = pygame.font.Font('freesansbold.ttf', 15)
+                textProgram = font.render("Stock History", True, white, background)
+                textProgramRect = textProgram.get_rect()
+                textProgramRect.centerx = 400 * surface_x / 800 
+                textProgramRect.centery = 10 * surface_y / 480
 
-            display_surface.blit(textProgram, textProgramRect)
+                display_surface.blit(textProgram, textProgramRect)
 
-            # Stock, top left
-            font = pygame.font.Font('freesansbold.ttf', 15)
-            textStock = font.render(f"{displayStock}", True, yellow, background)
-            textStockRect = textStock.get_rect()
-            textStockRect.left = 5 * surface_x / 800 
-            textStockRect.centery = 10 / 480 * surface_y
-            display_surface.blit(textStock, textStockRect)
+                # Stock, top left
+                font = pygame.font.Font('freesansbold.ttf', 15)
+                textStock = font.render(f"{displayStock}", True, yellow, background)
+                textStockRect = textStock.get_rect()
+                textStockRect.left = 5 * surface_x / 800 
+                textStockRect.centery = 10 / 480 * surface_y
+                display_surface.blit(textStock, textStockRect)
 
-            # high price, on the top
-            font = pygame.font.Font('freesansbold.ttf', 15)
-            textPriceHigh = font.render(f"{highPrice:.2f}", True, white, background)
-            textPriceHighRect = textPriceHigh.get_rect()
-            textPriceHighRect.left = 5 * surface_x / 800 
-            textPriceHighRect.centery = 35 / 480 * surface_y
-            display_surface.blit(textPriceHigh, textPriceHighRect)
+                # high price, on the top
+                font = pygame.font.Font('freesansbold.ttf', 15)
+                textPriceHigh = font.render(f"{highPrice:.2f}", True, white, background)
+                textPriceHighRect = textPriceHigh.get_rect()
+                textPriceHighRect.left = 5 * surface_x / 800 
+                textPriceHighRect.centery = 35 / 480 * surface_y
+                display_surface.blit(textPriceHigh, textPriceHighRect)
 
-            # low price, on the bottom
-            font = pygame.font.Font('freesansbold.ttf', 15)
-            textPriceLow = font.render(f"{lowPrice:.2f}", True, white, background)
-            textPriceLowRect = textPriceLow.get_rect()
-            textPriceLowRect.left = 5 * surface_x / 800 
-            textPriceLowRect.centery = 425 / 480 * surface_y
-            display_surface.blit(textPriceLow, textPriceLowRect)
+                # low price, on the bottom
+                font = pygame.font.Font('freesansbold.ttf', 15)
+                textPriceLow = font.render(f"{lowPrice:.2f}", True, white, background)
+                textPriceLowRect = textPriceLow.get_rect()
+                textPriceLowRect.left = 5 * surface_x / 800 
+                textPriceLowRect.centery = 425 / 480 * surface_y
+                display_surface.blit(textPriceLow, textPriceLowRect)
 
-            # if highPrice > stock_52_week_high:
-            font = pygame.font.Font('freesansbold.ttf', 15)
-            textPrice52High = font.render(f"{stock_52_week_high:.2f}", True, cyan, background)
-            textPrice52HighRect = textPrice52High.get_rect()
-            textPrice52HighRect.centery = textPriceLowRect.centery + (stock_52_week_high - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
-            textPrice52HighRect.left = 5 * surface_x / 800 
-            display_surface.blit(textPrice52High, textPrice52HighRect)
-            leftside = int (50 * surface_x / 800)
-            rightside = int (778 * surface_x / 800)
-            for xskip in range(leftside, rightside, rightside//int(80 * surface_x / 800 )):
-                pygame.draw.line(display_surface, cyan, (xskip, textPrice52HighRect.centery), (xskip+(5 * surface_x / 800 ), textPrice52HighRect.centery), 1)
-            # pygame.draw.line(display_surface, cyan, (50, textPrice52HighRect.centery), (778, textPrice52HighRect.centery), 1)
-            
+                # if highPrice > stock_52_week_high:
+                font = pygame.font.Font('freesansbold.ttf', 15)
+                textPrice52High = font.render(f"{stock_52_week_high:.2f}", True, cyan, background)
+                textPrice52HighRect = textPrice52High.get_rect()
+                textPrice52HighRect.centery = textPriceLowRect.centery + (stock_52_week_high - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                textPrice52HighRect.left = 5 * surface_x / 800 
+                display_surface.blit(textPrice52High, textPrice52HighRect)
+                leftside = int (50 * surface_x / 800)
+                rightside = int (778 * surface_x / 800)
+                for xskip in range(leftside, rightside, rightside//int(80 * surface_x / 800 )):
+                    pygame.draw.line(display_surface, cyan, (xskip, textPrice52HighRect.centery), (xskip+(5 * surface_x / 800 ), textPrice52HighRect.centery), 1)
+                # pygame.draw.line(display_surface, cyan, (50, textPrice52HighRect.centery), (778, textPrice52HighRect.centery), 1)
+                
 
-            # if lowPrice > stock_52_week_low:
-            font = pygame.font.Font('freesansbold.ttf', 15)
-            textPrice52Low = font.render(f"{stock_52_week_low:.2f}", True, cyan, background)
-            textPrice52LowRect = textPrice52Low.get_rect()
-            textPrice52LowRect.centery = textPriceLowRect.centery + (stock_52_week_low - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
-            textPrice52LowRect.left = 5
-            display_surface.blit(textPrice52Low, textPrice52LowRect)
-            leftside = int (50 * surface_x / 800)
-            rightside = int (778 * surface_x / 800)
-            for xskip in range(leftside, rightside, rightside//int(80 * surface_x / 800 )):
-                pygame.draw.line(display_surface, cyan, (xskip, textPrice52LowRect.centery), (xskip+(5 * surface_x / 800 ), textPrice52LowRect.centery), 1)
-            # pygame.draw.line(display_surface, cyan, (50, textPrice52LowRect.centery), (778, textPrice52LowRect.centery), 1)
-
-
-            # current price, proportional to the high and low price
-            font = pygame.font.Font('freesansbold.ttf', 15)
-            textPriceCur = font.render(f"{currentPrice:.2f}", True, yellow, background)
-            textPriceCurRect = textPriceCur.get_rect()
-            textPriceCurRect.centery = textPriceLowRect.centery + (currentPrice - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
-            textPriceCurRect.left = 5
-            display_surface.blit(textPriceCur, textPriceCurRect)
-            leftside = int (50 * surface_x / 800)
-            rightside = int (778 * surface_x / 800)
-            for xskip in range(leftside, rightside, rightside//int(30 * surface_x / 800 )):
-                pygame.draw.line(display_surface, yellow, (xskip, textPriceCurRect.centery), (xskip+(10 * surface_x / 800 ), textPriceCurRect.centery), 1)
-            # pygame.draw.line(display_surface, yellow, (45, textPriceCurRect.centery), (778, textPriceCurRect.centery), 1)
-
-            
-
-            # Current date, on the right
-            font = pygame.font.Font('freesansbold.ttf', 15)
-            today = datetime.date.today()
-            current_month = today.month
-            current_day = today.day
-            current_year = today.year
-            textDate0 = font.render(f"{current_month}/{current_day}", True, white, background)
-            textDateRect0 = textDate0.get_rect()
-            # textDateRect1.center = (50 , 450)
-            textDateRect0.center = (780  * surface_x / 800 , 450 / 480 * surface_y)
-            display_surface.blit(textDate0, textDateRect0)
+                # if lowPrice > stock_52_week_low:
+                font = pygame.font.Font('freesansbold.ttf', 15)
+                textPrice52Low = font.render(f"{stock_52_week_low:.2f}", True, cyan, background)
+                textPrice52LowRect = textPrice52Low.get_rect()
+                textPrice52LowRect.centery = textPriceLowRect.centery + (stock_52_week_low - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                textPrice52LowRect.left = 5
+                display_surface.blit(textPrice52Low, textPrice52LowRect)
+                leftside = int (50 * surface_x / 800)
+                rightside = int (778 * surface_x / 800)
+                for xskip in range(leftside, rightside, rightside//int(80 * surface_x / 800 )):
+                    pygame.draw.line(display_surface, cyan, (xskip, textPrice52LowRect.centery), (xskip+(5 * surface_x / 800 ), textPrice52LowRect.centery), 1)
+                # pygame.draw.line(display_surface, cyan, (50, textPrice52LowRect.centery), (778, textPrice52LowRect.centery), 1)
 
 
-            # earilest date. on the left
-            font = pygame.font.Font('freesansbold.ttf', 15)
-            # print ('largestDate',largestDate)
-            lastdateString = str(f'20{largestDate}')
-            # first_date = datetime.datetime.strptime(str(f'20{largestDate}'), '%Y%m%d')
-            today = datetime.datetime.today()
-            first_date = today
-            first_date = datetime.datetime.fromtimestamp(timecheck/1000)
-            # print('first_date', first_date)
-            # for each in all_option_dates:
-            #     each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
-            #     if each_datetime <= first_date:
-            #         first_date = each_datetime
-            #     years.append(each_datetime.year)
-            # print(first_date,'first_date')
-            last_month = first_date.month
-            last_day = first_date.day
-            last_year = first_date.year
-            textDateN = font.render(f"{last_month}/{last_day}", True, white, background)
-            textDateRectN = textDateN.get_rect()
-            # textDateRectN.center = (780, 450)
-            textDateRectN.center = (50 * surface_x / 800 , 450 / 480 * surface_y)
-            display_surface.blit(textDateN, textDateRectN)
-            # print(args.equity[0])
-            # print('years',years)
+                # current price, proportional to the high and low price
+                font = pygame.font.Font('freesansbold.ttf', 15)
+                textPriceCur = font.render(f"{currentPrice:.2f}", True, yellow, background)
+                textPriceCurRect = textPriceCur.get_rect()
+                textPriceCurRect.centery = textPriceLowRect.centery + (currentPrice - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                textPriceCurRect.left = 5
+                display_surface.blit(textPriceCur, textPriceCurRect)
+                leftside = int (50 * surface_x / 800)
+                rightside = int (778 * surface_x / 800)
+                for xskip in range(leftside, rightside, rightside//int(30 * surface_x / 800 )):
+                    pygame.draw.line(display_surface, yellow, (xskip, textPriceCurRect.centery), (xskip+(10 * surface_x / 800 ), textPriceCurRect.centery), 1)
+                # pygame.draw.line(display_surface, yellow, (45, textPriceCurRect.centery), (778, textPriceCurRect.centery), 1)
 
-            # all_dates = copy.deepcopy(all_option_dates)
-            # all_dates.insert(0,f'{today.year}-{today.month:02d}-{today.day:02d}')
-            # print('all_dates',all_dates)
-            # between dates
+                
 
-            # print()
-            # print('test dates')
-            # for each in stock_history_candles[1:-1]:
-            for each_candle in stock_history_candles:
-                pass
-                # font = pygame.font.Font('freesansbold.ttf', 15)
-                # candle_date = datetime.datetime.fromtimestamp(each_candle['datetime']/1000).strftime('%Y-%m-%d')
-                # each_datetime = datetime.datetime.strptime(candle_date, '%Y-%m-%d')
-                # each_month = each_datetime.month
-                # each_day = each_datetime.day
-                # # print('each_month/each_day')
-                # # print(f'{each_month}/{each_day}')
-                # text1 = font.render(f"{each_month}/{each_day}", True, white, background)
-                # textRect1 = text1.get_rect()
-                # textRect1.centery = textDateRect0.centery
-                # textRect1.centerx = 50 + (stock_history_candles.index(each_candle)) * (textDateRect0.centerx - textDateRectN.centerx) / (len(stock_history_candles))
-                # display_surface.blit(text1, textRect1)
-                circlex = 50 * surface_x / 800 + (stock_history_candles.index(each_candle)) * (textDateRect0.centerx - textDateRectN.centerx) / (len(stock_history_candles))
-                circley_close = textPriceLowRect.centery + (each_candle['close'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
-                circley_open = textPriceLowRect.centery + (each_candle['open'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
-                circley_high = textPriceLowRect.centery + (each_candle['high'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
-                circley_low = textPriceLowRect.centery + (each_candle['low'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
-                circleSize = 3
-                circleColor = (128,128,128)
-                pygame.draw.circle(display_surface, circleColor, (circlex,circley_high), circleSize, draw_top_left=0, draw_top_right=0, draw_bottom_left=1, draw_bottom_right=1)
-                pygame.draw.circle(display_surface, circleColor, (circlex,circley_low), circleSize, draw_top_left=1, draw_top_right=1, draw_bottom_left=0, draw_bottom_right=0)
-                pygame.draw.line(display_surface, circleColor, (circlex, circley_high), (circlex, circley_low), 1)
-                if each_candle['close'] > each_candle['open']:
-                    circleColor = (0,255,0)
-                elif each_candle['close'] < each_candle['open']:
-                    circleColor = (255,0,0)
-                pygame.draw.circle(display_surface, circleColor, (circlex,circley_close), circleSize, draw_top_left=0, draw_top_right=1, draw_bottom_left=0, draw_bottom_right=1)
-                pygame.draw.circle(display_surface, circleColor, (circlex,circley_open), circleSize, draw_top_left=1, draw_top_right=0, draw_bottom_left=1, draw_bottom_right=0)
+                # Current date, on the right
+                font = pygame.font.Font('freesansbold.ttf', 15)
+                today = datetime.date.today()
+                current_month = today.month
+                current_day = today.day
+                current_year = today.year
+                textDate0 = font.render(f"{current_month}/{current_day}", True, white, background)
+                textDateRect0 = textDate0.get_rect()
+                # textDateRect1.center = (50 , 450)
+                textDateRect0.center = (780  * surface_x / 800 , 450 / 480 * surface_y)
+                display_surface.blit(textDate0, textDateRect0)
+
+
+                # earilest date. on the left
+                font = pygame.font.Font('freesansbold.ttf', 15)
+                # print ('largestDate',largestDate)
+                lastdateString = str(f'20{largestDate}')
+                # first_date = datetime.datetime.strptime(str(f'20{largestDate}'), '%Y%m%d')
+                today = datetime.datetime.today()
+                first_date = today
+                first_date = datetime.datetime.fromtimestamp(timecheck/1000)
+                # print('first_date', first_date)
+                # for each in all_option_dates:
+                #     each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
+                #     if each_datetime <= first_date:
+                #         first_date = each_datetime
+                #     years.append(each_datetime.year)
+                # print(first_date,'first_date')
+                last_month = first_date.month
+                last_day = first_date.day
+                last_year = first_date.year
+                textDateN = font.render(f"{last_month}/{last_day}", True, white, background)
+                textDateRectN = textDateN.get_rect()
+                # textDateRectN.center = (780, 450)
+                textDateRectN.center = (50 * surface_x / 800 , 450 / 480 * surface_y)
+                display_surface.blit(textDateN, textDateRectN)
+                # print(args.equity[0])
+                # print('years',years)
+
+                # all_dates = copy.deepcopy(all_option_dates)
+                # all_dates.insert(0,f'{today.year}-{today.month:02d}-{today.day:02d}')
+                # print('all_dates',all_dates)
+                # between dates
+
+                # print()
+                # print('test dates')
+                # for each in stock_history_candles[1:-1]:
+                for each_candle in stock_history_candles:
+                    pass
+                    # font = pygame.font.Font('freesansbold.ttf', 15)
+                    # candle_date = datetime.datetime.fromtimestamp(each_candle['datetime']/1000).strftime('%Y-%m-%d')
+                    # each_datetime = datetime.datetime.strptime(candle_date, '%Y-%m-%d')
+                    # each_month = each_datetime.month
+                    # each_day = each_datetime.day
+                    # # print('each_month/each_day')
+                    # # print(f'{each_month}/{each_day}')
+                    # text1 = font.render(f"{each_month}/{each_day}", True, white, background)
+                    # textRect1 = text1.get_rect()
+                    # textRect1.centery = textDateRect0.centery
+                    # textRect1.centerx = 50 + (stock_history_candles.index(each_candle)) * (textDateRect0.centerx - textDateRectN.centerx) / (len(stock_history_candles))
+                    # display_surface.blit(text1, textRect1)
+                    circlex = 50 * surface_x / 800 + (stock_history_candles.index(each_candle)) * (textDateRect0.centerx - textDateRectN.centerx) / (len(stock_history_candles))
+                    circley_close = textPriceLowRect.centery + (each_candle['close'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                    circley_open = textPriceLowRect.centery + (each_candle['open'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                    circley_high = textPriceLowRect.centery + (each_candle['high'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                    circley_low = textPriceLowRect.centery + (each_candle['low'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                    circleSize = 3
+                    circleColor = (128,128,128)
+                    pygame.draw.circle(display_surface, circleColor, (circlex,circley_high), circleSize, draw_top_left=0, draw_top_right=0, draw_bottom_left=1, draw_bottom_right=1)
+                    pygame.draw.circle(display_surface, circleColor, (circlex,circley_low), circleSize, draw_top_left=1, draw_top_right=1, draw_bottom_left=0, draw_bottom_right=0)
+                    pygame.draw.line(display_surface, circleColor, (circlex, circley_high), (circlex, circley_low), 1)
+                    if each_candle['close'] > each_candle['open']:
+                        circleColor = (0,255,0)
+                    elif each_candle['close'] < each_candle['open']:
+                        circleColor = (255,0,0)
+                    pygame.draw.circle(display_surface, circleColor, (circlex,circley_close), circleSize, draw_top_left=0, draw_top_right=1, draw_bottom_left=0, draw_bottom_right=1)
+                    pygame.draw.circle(display_surface, circleColor, (circlex,circley_open), circleSize, draw_top_left=1, draw_top_right=0, draw_bottom_left=1, draw_bottom_right=0)
+
+            except Exception as e:
+                prRed("Error displaying data")
+                prRed(e)
+                # time.sleep(1)
+                # pass
             # for each in position_details["securitiesAccount"]["positions"]:
             #     if each["instrument"]["assetType"] == "OPTION":
             #         if each["instrument"]["underlyingSymbol"] == displayStock:
