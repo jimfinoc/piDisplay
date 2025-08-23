@@ -148,6 +148,7 @@ if __name__ == '__main__':
             flags = pygame.FULLSCREEN
             screen_width=0
             screen_height=0
+            pygame.mouse.set_visible(False)
         else:
             # flags = pygame.FULLSCREEN
             # screen_width=3440 #1280
@@ -160,7 +161,6 @@ if __name__ == '__main__':
 
         display_surface = pygame.display.set_mode([screen_width, screen_height],flags)
 
-        pygame.mouse.set_visible(False)
         # display_surface = pygame.display.set_mode((800, 480), pygame.FULLSCREEN)
         print(pygame.display.Info())
         # print()
@@ -234,15 +234,17 @@ if __name__ == '__main__':
         all_option_dates = []
 
         timecheck = int(datetime.datetime.now().timestamp()*1000)
+        # print('Initial timecheck', timecheck)
         # print('datetime.datetime.now()',datetime.datetime.now())
         # print('datetime.datetime.now().timestamp())*1000',datetime.datetime.now().timestamp()*1000)
         stock_history = return_details("My_stock_history")
         # stock_history_candles = return_details("My_stock_history")[displayStock]['candles']
         random_key = random.choice(list(stock_history.keys()))
-        print('random_key', random_key)
+        # print('random_key', random_key)
         # random_value = stock_history[random_key]
         stock_history_candles = return_details("My_stock_history")[random_key]['candles']
-
+        # print('len(stock_history_candles)', len(stock_history_candles))
+        # print('stock_history_candles[0]', stock_history_candles[0])
         for each in stock_history_candles:
             if each['datetime'] < timecheck:
                 timecheck = each['datetime']
@@ -269,7 +271,7 @@ if __name__ == '__main__':
                 try:
                     # print("Waiting for UDP packet...")
                     data, addr = sock.recvfrom(64)  # Buffer size is 1024 bytes
-                    print(f"Received {data} from {addr}")
+                    # print(f"Received {data} from {addr}")
                     received_message = data.decode('utf-8').strip()
                     print(f"Received UDP packet: {received_message} from {addr}")
                     if received_message:
@@ -431,6 +433,7 @@ if __name__ == '__main__':
             ################################################################
 
             try:
+                oldest_date = {}             
                 pygame.draw.rect(display_surface, background, (0,0,surface_x,surface_y),width=0)
                 pygame.draw.rect(display_surface, (100,100,0), (50,20,surface_x-50-20,surface_y-20-40),width=2)
                 
@@ -515,38 +518,55 @@ if __name__ == '__main__':
                 # Current date, on the right
                 font = pygame.font.Font('freesansbold.ttf', 15)
                 today = datetime.date.today()
-                current_month = today.month
-                current_day = today.day
-                current_year = today.year
-                textDate0 = font.render(f"{current_month}/{current_day}", True, white, background)
+                # print('today', today)
+                # today = datetime.datetime.now()
+                # print('today', today)
+                current_date = {}
+                current_date['month'] = today.month
+                current_date['day'] = today.day
+                current_date['year'] = today.year
+                current_date['timestamp'] = int(datetime.datetime(today.year, today.month, today.day, 0,0,0).timestamp()*1000)
+                # current_date['timestamp'] = int(today
+                textDate0 = font.render(f"{current_date['month']}/{current_date['day']}", True, white, background)
                 textDateRect0 = textDate0.get_rect()
                 # textDateRect1.center = (50 , 450)
                 textDateRect0.center = (780  * surface_x / 800 , 450 / 480 * surface_y)
+                current_date['x'] = textDateRect0.centerx
                 display_surface.blit(textDate0, textDateRect0)
+                # print('current_date', current_date)
 
 
                 # earilest date. on the left
                 font = pygame.font.Font('freesansbold.ttf', 15)
                 # print ('largestDate',largestDate)
-                lastdateString = str(f'20{largestDate}')
+                # lastdateString = str(f'20{largestDate}')
                 # first_date = datetime.datetime.strptime(str(f'20{largestDate}'), '%Y%m%d')
-                today = datetime.datetime.today()
-                first_date = today
+                # today = datetime.datetime.today()
+                # first_date = today
+                # print('first_date1', first_date)
                 first_date = datetime.datetime.fromtimestamp(timecheck/1000)
-                # print('first_date', first_date)
+                # print('first_date( timecheck)', timecheck)
+                # print('first_date( fromtimestamp() )', first_date)
+                # print('first_date(  timestamp() )', int(first_date.timestamp()*1000))
                 # for each in all_option_dates:
                 #     each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
                 #     if each_datetime <= first_date:
                 #         first_date = each_datetime
                 #     years.append(each_datetime.year)
                 # print(first_date,'first_date')
-                last_month = first_date.month
-                last_day = first_date.day
-                last_year = first_date.year
-                textDateN = font.render(f"{last_month}/{last_day}", True, white, background)
+
+                oldest_date['month'] = first_date.month
+                oldest_date['day'] = first_date.day
+                oldest_date['year'] = first_date.year
+                oldest_date['timestamp'] = int(first_date.timestamp()*1000)
+
+                textDateN = font.render(f"{oldest_date['month']}/{oldest_date['day']}", True, white, background)
                 textDateRectN = textDateN.get_rect()
                 # textDateRectN.center = (780, 450)
                 textDateRectN.center = (50 * surface_x / 800 , 450 / 480 * surface_y)
+                oldest_date['x'] = textDateRectN.centerx
+                # print(' oldest_date', oldest_date)
+
                 display_surface.blit(textDateN, textDateRectN)
                 # print(args.equity[0])
                 # print('years',years)
@@ -559,6 +579,9 @@ if __name__ == '__main__':
                 # print()
                 # print('test dates')
                 # for each in stock_history_candles[1:-1]:
+                # print()
+                # print("current_date['x'], oldest_date['x'], current_date['timestamp'], oldest_date['timestamp']")
+                # print(current_date['x'], oldest_date['x'], current_date['timestamp'], oldest_date['timestamp'])
                 for each_candle in stock_history_candles:
                     pass
                     # font = pygame.font.Font('freesansbold.ttf', 15)
@@ -573,7 +596,10 @@ if __name__ == '__main__':
                     # textRect1.centery = textDateRect0.centery
                     # textRect1.centerx = 50 + (stock_history_candles.index(each_candle)) * (textDateRect0.centerx - textDateRectN.centerx) / (len(stock_history_candles))
                     # display_surface.blit(text1, textRect1)
-                    circlex = 50 * surface_x / 800 + (stock_history_candles.index(each_candle)) * (textDateRect0.centerx - textDateRectN.centerx) / (len(stock_history_candles))
+
+                    # circlex = 50 * surface_x / 800 + (stock_history_candles.index(each_candle)) * (textDateRect0.centerx - textDateRectN.centerx) / (len(stock_history_candles))
+                    circlex = 50 * surface_x / 800 + (each_candle['datetime']-oldest_date['timestamp']) * (current_date['x'] - oldest_date['x']) / (current_date['timestamp'] - oldest_date['timestamp'])
+                    # print("each_candle['datetime']", each_candle['datetime'],"circlex", circlex)
                     circley_close = textPriceLowRect.centery + (each_candle['close'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
                     circley_open = textPriceLowRect.centery + (each_candle['open'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
                     circley_high = textPriceLowRect.centery + (each_candle['high'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
