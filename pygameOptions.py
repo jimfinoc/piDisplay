@@ -15,6 +15,7 @@ import argparse
 
 time.sleep(2)
 pygame.init()
+pygame.display.set_caption("Option Positions")
 
 time_between_redis_pulls = 1
 time_to_show_text = 2
@@ -98,7 +99,7 @@ if __name__ == '__main__':
             # flags = pygame.FULLSCREEN
             # screen_width=3440 #1280
             # screen_height=1440 #720
-            flags = pygame.SHOWN
+            flags = pygame.SHOWN | pygame.RESIZABLE
             # screen_width=2560
             # screen_height=1024
             screen_width=800
@@ -110,13 +111,13 @@ if __name__ == '__main__':
         # display_surface = pygame.display.set_mode((800, 480), pygame.FULLSCREEN)
         print(pygame.display.Info())
         # print()
-        x, y = display_surface.get_size()
+        surface_x, surface_y = display_surface.get_size()
         # x = x - 1
         # y = y - 1
-        print('x')
-        print(x)
-        print('y')
-        print(y)
+        print('surface_x')
+        print(surface_x)
+        print('surface_y')
+        print(surface_y)
         white = (255, 255, 255)
         yellow = (255, 255, 0)
         red = (128, 0, 0)
@@ -350,14 +351,16 @@ if __name__ == '__main__':
                 for each_col in range(cols[each_row]):
                     my_rect[count] = {}
                     # my_rect[count]["Rect"] = pygame.Rect( (x*each_col/cols[each_row],y*each_row/rows) , (x*(each_col+1)/cols[each_row],y*(each_row+1)/rows))
-                    X1 = x*each_col/cols[each_row]
+                    X1 = surface_x*each_col/cols[each_row]
                     my_rect[count]["X1"] = X1
-                    Y1 = y*each_row/rows
+                    Y1 = surface_y*each_row/rows
                     my_rect[count]["Y1"] = Y1
-                    X2 = x*(each_col+1)/cols[each_row]
+                    X2 = surface_x*(each_col+1)/cols[each_row]
                     my_rect[count]["X2"] = X2 
-                    Y2 = y*(each_row+1)/rows
+                    Y2 = surface_y*(each_row+1)/rows
                     my_rect[count]["Y2"] = Y2
+                    # my_rect[count]["Rect"] = pygame.Rect( (X1,Y1) , (X2-X1+1,Y2-Y1+1) )
+                    # my_rect[count]["Rect2"] = pygame.Rect( (X1,Y1) , (X2-X1,Y2-Y1) )
                     my_rect[count]["Rect"] = pygame.Rect( (X1,Y1) , (X2-X1+1,Y2-Y1+1) )
                     my_rect[count]["Rect2"] = pygame.Rect( (X1,Y1) , (X2-X1,Y2-Y1) )
                     # my_rect[count]["Rect2"] = pygame.Rect( (X1+10,Y1+10) , (X2-10,Y2-10) )
@@ -468,9 +471,10 @@ if __name__ == '__main__':
 
                 pygame.draw.rect(display_surface, background, my_rect[square]["Rect"])
                 text1 = font.render(my_rect[square]["Text1"], True, white, background)
-                cx = my_rect[square]["X1"] + (my_rect[square]["X2"] - my_rect[square]["X1"])//2
                 textRect1 = text1.get_rect()
+                cx = my_rect[square]["X1"] + (my_rect[square]["X2"] - my_rect[square]["X1"])//2
                 cy = my_rect[square]["Y1"] + 1*(my_rect[square]["Y2"] - my_rect[square]["Y1"])//4
+                # textRect1.center = (cx * 800 / surface_x , cy)
                 textRect1.center = (cx , cy)
                 display_surface.blit(text1, textRect1)
 
@@ -490,6 +494,7 @@ if __name__ == '__main__':
                 try:
                     if my_rect[square]["symbol"] in list_of_symbol_open_orders:
                         pygame.draw.rect(display_surface, yellow, my_rect[square]["Rect2"],width=3,border_radius=10)
+                        # pygame.draw.rect(display_surface, yellow, my_rect[square]["Rect"],width=3,border_radius=10)
                 except:
                     print('Error in my_rect[square]["symbol"]')
                     # pygame.draw.rect(display_surface, yellow, my_rect[square]["Rect"],width=5,border_radius=50)
@@ -541,30 +546,30 @@ if __name__ == '__main__':
 
             if zoomInBox == True:
                 BlockFont = pygame.font.Font('freesansbold.ttf', 30)
-                Block = pygame.Rect( 0,0 , x, y)
+                Block = pygame.Rect( 0,0 , surface_x, surface_y)
                 pygame.draw.rect(display_surface, black, Block)
 
                 BlockRenderText1 = BlockFont.render(BlockText1, True, white, black)
-                BlockTextX = x * 1/2
-                BlockTextY1 = y * 1/12
+                BlockTextX = surface_x * 1/2
+                BlockTextY1 = surface_y * 1/12
                 BlockRectText1 = BlockRenderText1.get_rect()
                 BlockRectText1.center = (BlockTextX , BlockTextY1)
                 display_surface.blit(BlockRenderText1, BlockRectText1)
 
                 BlockRenderText2 = BlockFont.render(BlockText2, True, white, black)
-                BlockTextY2 = y * 2/12
+                BlockTextY2 = surface_y * 2/12
                 BlockRectText2 = BlockRenderText2.get_rect()
                 BlockRectText2.center = (BlockTextX , BlockTextY2)
                 display_surface.blit(BlockRenderText2, BlockRectText2)
 
                 BlockRenderText3 = BlockFont.render(BlockText3, True, white, black)
-                BlockTextY3 = y * 3/12
+                BlockTextY3 = surface_y * 3/12
                 BlockRectText3 = BlockRenderText3.get_rect()
                 BlockRectText3.center = (BlockTextX , BlockTextY3)
                 display_surface.blit(BlockRenderText3, BlockRectText3)
 
                 BlockRenderText5a = BlockFont.render("Stock Price", True, white, black)
-                BlockTextY5 = y * 5/12
+                BlockTextY5 = surface_y * 5/12
                 BlockRectText5a = BlockRenderText5a.get_rect()
                 BlockRectText5a.center = (x*1/4 , BlockTextY5)
                 display_surface.blit(BlockRenderText5a, BlockRectText5a)
@@ -575,7 +580,7 @@ if __name__ == '__main__':
                 display_surface.blit(BlockRenderText5b, BlockRectText5b)
 
                 BlockRenderText6a = BlockFont.render(f"{BlockStockPrice:.2f}", True, white, black)
-                BlockTextY6 = y * 6/12
+                BlockTextY6 = surface_y * 6/12
                 BlockRectText6a = BlockRenderText6a.get_rect()
                 BlockRectText6a.center = (x*1/4 , BlockTextY6)
                 display_surface.blit(BlockRenderText6a, BlockRectText6a)
@@ -621,6 +626,11 @@ if __name__ == '__main__':
 
             action = 0
             for event in pygame.event.get():
+                if event.type == pygame.VIDEORESIZE:
+                    surface_x, surface_y = event.size
+                    display_surface = pygame.display.set_mode((surface_x, surface_y), pygame.RESIZABLE)
+                    print('Resized to', surface_x, surface_y)
+
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if pygame.mouse.get_pressed()[0]:
                         if zoomInBox == False:
@@ -667,9 +677,9 @@ if __name__ == '__main__':
 
                                     BlockFont = pygame.font.Font('freesansbold.ttf', 30)
                                     BlockRenderText9b = BlockFont.render(BlockBidAsk, True, white, black)
-                                    BlockTextY9 = y * 9/12
+                                    BlockTextY9 = surface_y * 9/12
                                     BlockRectText9b = BlockRenderText9b.get_rect()
-                                    BlockRectText9b.center = (x*3/4 , BlockTextY9)
+                                    BlockRectText9b.center = (surface_x*3/4 , BlockTextY9)
                                     display_surface.blit(BlockRenderText9b, BlockRectText9b)
 
 

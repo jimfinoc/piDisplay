@@ -218,7 +218,7 @@ if __name__ == '__main__':
         clock = pygame.time.Clock()
         moving_x = 0
         moving_y = 0
-        test_x = 5 * surface_x / 800 
+        test_x = 5 / 800 * surface_x
         test_y = 450 / 480 * surface_y
         displayStock = ""
         highPrice = 0

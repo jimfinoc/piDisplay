@@ -4,14 +4,4 @@
 /.venv
 /gps.py
 /test.py
-.My_orders_details.json
-.My_position_details.json
-.My_stocks.json
-.My_stock_option_dates.json
-.My_stock_option_strikes.json
-.My_lot_details.json
-.My_quotes.json
-.My_google_stocks.json
-.gitignore
-.My_other_stocks.json
-.My_speculation_stocks.json
+.*

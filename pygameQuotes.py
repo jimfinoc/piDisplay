@@ -62,6 +62,7 @@ if __name__ == '__main__':
         p1.start()
 
         pygame.init()
+        pygame.display.set_caption("Stock Quotes")
         print()
         size = pygame.display.get_desktop_sizes()
         if size[0] == (3440,1440):
@@ -88,13 +89,16 @@ if __name__ == '__main__':
             flags = pygame.FULLSCREEN
             screen_width=0
             screen_height=0
+            pygame.mouse.set_visible(False)
+
         else:
             # flags = pygame.FULLSCREEN
             # screen_width=3440 #1280
             # screen_height=1440 #720
-            flags = pygame.SHOWN
-            screen_width=1280
-            screen_height=720
+            flags = pygame.SHOWN | pygame.RESIZABLE
+            screen_width=800
+            screen_height=480
+            pygame.mouse.set_visible(True)
             
         display_surface = pygame.display.set_mode([screen_width, screen_height],flags)
 
@@ -102,13 +106,13 @@ if __name__ == '__main__':
         # display_surface = pygame.display.set_mode((800, 480), pygame.FULLSCREEN)
         print(pygame.display.Info())
         # print()
-        x, y = display_surface.get_size()
+        surface_x, surface_y = display_surface.get_size()
         # x = x - 1
         # y = y - 1
-        print('x')
-        print(x)
-        print('y')
-        print(y)
+        print('surface_x')
+        print(surface_x)
+        print('surface_y')
+        print(surface_y)
         white = (255, 255, 255)
         yellow = (255, 255, 0)
         red = (128, 0, 0)
@@ -279,13 +283,13 @@ if __name__ == '__main__':
                 for each_col in range(cols[each_row]):
                     my_rect[count] = {}
                     # my_rect[count]["Rect"] = pygame.Rect( (x*each_col/cols[each_row],y*each_row/rows) , (x*(each_col+1)/cols[each_row],y*(each_row+1)/rows))
-                    X1 = x*each_col/cols[each_row]
+                    X1 = surface_x*each_col/cols[each_row]
                     my_rect[count]["X1"] = X1
-                    Y1 = y*each_row/rows
+                    Y1 = surface_y*each_row/rows
                     my_rect[count]["Y1"] = Y1
-                    X2 = x*(each_col+1)/cols[each_row]
+                    X2 = surface_x*(each_col+1)/cols[each_row]
                     my_rect[count]["X2"] = X2 
-                    Y2 = y*(each_row+1)/rows
+                    Y2 = surface_y*(each_row+1)/rows
                     my_rect[count]["Y2"] = Y2
                     my_rect[count]["Rect"] = pygame.Rect( (X1,Y1) , (X2,Y2) )
                     if len(stocksSorted) > 0:
@@ -392,6 +396,11 @@ if __name__ == '__main__':
 
             action = 0
             for event in pygame.event.get():
+                if event.type == pygame.VIDEORESIZE:
+                    surface_x, surface_y = event.size
+                    display_surface = pygame.display.set_mode((surface_x, surface_y), pygame.RESIZABLE)
+                    print('Resized to', surface_x, surface_y)
+
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if pygame.mouse.get_pressed()[0]:
                         action = 1
