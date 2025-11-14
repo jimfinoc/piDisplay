@@ -632,6 +632,12 @@ if __name__ == '__main__':
                             elif typeOption == 'P':
                                 circleColor = (255,0,0)
                             pygame.draw.circle(display_surface, circleColor, (circlex,circley), circleSize)
+                            if each["shortQuantity"] > 1:
+                                font = pygame.font.Font('freesansbold.ttf', 12)
+                                textLong = font.render(f"x{int(each['shortQuantity'])}", True, circleColor, background)
+                                textLongRect = textLong.get_rect()
+                                textLongRect.center = (circlex + 10, circley - 12)
+                                display_surface.blit(textLong, textLongRect)
 
                             # circley = 50 + (all_dates.index(expirationDate)) * (textDateRectN.centerx - textDateRect1.centerx) / (len(all_dates)-1)
 
