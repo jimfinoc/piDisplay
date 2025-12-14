@@ -60,6 +60,8 @@ class notebook_with_tab():
         total_market_value = 0.0
         total_profit_loss = 0.0
         stock_row = 1
+        print("type(My_position_details)")
+        print(type(My_position_details))
         for each in My_position_details["securitiesAccount"]["positions"]:
             if each["instrument"]["assetType"] == "EQUITY":
                 stock_row += 1
@@ -68,6 +70,7 @@ class notebook_with_tab():
                 self.stockdict[each["instrument"]["symbol"]]["price"] = tk.StringVar()
                 self.stockdict[each["instrument"]["symbol"]]["netChange"] = tk.StringVar()
                 self.stockdict[each["instrument"]["symbol"]]["netChangePercent"] = tk.StringVar()
+                self.stockdict[each["instrument"]["symbol"]]["profit_loss"] = tk.StringVar()
 
                 ttk.Label(self.Overview, text = each["instrument"]["symbol"] ).grid(column = 0,  row = stock_row, padx = 10, pady = 0)   
                 ttk.Label(self.Overview, text = f'{each["longQuantity"]:.0f}' ).grid(column = 1,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
@@ -85,7 +88,18 @@ class notebook_with_tab():
                 profit_loss = each["longOpenProfitLoss"]
                 total_profit_loss += profit_loss
                 # ttk.Label(self.Overview, text = f'{profit_loss:.2f}',style="TLabel").grid(column = 6,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
-                ttk.Label(self.Overview, text = f'{profit_loss:.2f}').grid(column = 6,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
+
+                ttk.Label(self.Overview, textvariable=self.stockdict[each["instrument"]["symbol"]]["profit_loss"]).grid(column = 6,  row = stock_row, padx = 10, pady = 10)
+                # ttk.Label(self.Overview, text = f'{profit_loss:.2f}').grid(column = 6,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
+
+        stock_row += 1
+        for each in headers:
+            replaced_string = "-" * len(each)
+            ttk.Label(self.Overview, text = replaced_string).grid(column = headers.index(each),  row = stock_row, padx = 10, pady = 0)
+
+        stock_row += 1
+        ttk.Label(self.Overview, text = f'{total_market_value:.2f}').grid(column = 5,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
+
 
     def update_overview_labels(self,tab_name, My_position_details):        
         total_market_value = 0.0
@@ -109,24 +123,28 @@ class notebook_with_tab():
                 ttk.Label(self.Overview, text = f'{market_value:.2f}').grid(column = 5,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
 
                 profit_loss = each["longOpenProfitLoss"]
+                profit_loss = each['longQuantity'] * each["instrument"]["netChange"]
                 total_profit_loss += profit_loss
                 ttk.Label(self.Overview, text = f'{profit_loss:.2f}').grid(column = 6,  row = stock_row, padx = 10, pady = 0 ,sticky="e")   
 
     def update_prices(self):
         My_quotes = return_details("My_quotes")
         for each in My_quotes:
-            print("each")
-            print (each)
+            # print("each")
+            # print (each)
             if each in self.stocklist:
-                print('each')
-                print(each)
-                print('My_quotes[each]["symbol"]')
-                print(My_quotes[each]["symbol"])
-                print('My_quotes[each]["price"]')
-                print(My_quotes[each]["price"])
-                self.stockdict[each]['price'].set(f'{My_quotes[each]["price"]}')
-                self.stockdict[each]['netChange'].set(f'{My_quotes[each]["change"]}')
-                self.stockdict[each]['netChangePercent'].set(f'{My_quotes[each]["change_percent"]}%')
+                # print('each')
+                # print(each)
+                # print('My_quotes[each]["symbol"]')
+                # print(My_quotes[each]["symbol"])
+                # print('My_quotes[each]["price"]')
+                # print(My_quotes[each]["price"])
+                self.stockdict[each]['price'].set(f'{My_quotes[each]["price"]:.2f}')
+                self.stockdict[each]['netChange'].set(f'{My_quotes[each]["change"]:.2f}')
+                self.stockdict[each]['netChangePercent'].set(f'{My_quotes[each]["change_percent"]:.2f}%')
+                # self.stockdict[each["instrument"]["symbol"]]["netChangePercent"]
+                # self.stockdict[each["instrument"]["symbol"]]["profit_loss"]).grid(column = 6,  row = stock_row, padx = 10, pady = 10)
+                
                 # self.stockdict[each["symbol"]]["netChange"].set(f'{each["change"]:.2f}')
                 # self.stockdict[each["symbol"]]["netChangePercent"].set(f'{each["change_percent"]:.2f}')
                 # print(each)
@@ -134,5 +152,6 @@ class notebook_with_tab():
         self.window.after(1000, self.update_prices)
 
 
-
-
+if __name__ == "__main__":
+    print("This is a module and should not be run directly.")
+    

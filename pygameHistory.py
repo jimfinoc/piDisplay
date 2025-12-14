@@ -382,7 +382,7 @@ if __name__ == '__main__':
                             years.append(int(f'20{expirationDate[0:2]}'))
                             temp = list(set(years))
                             years = sorted(temp)
-                all_option_dates = return_details("My_stock_option_dates")[displayStock]
+                all_option_dates = return_details("All_stock_option_dates")[displayStock]
 
                 stock_history_candles = stock_history[displayStock]['candles']
 

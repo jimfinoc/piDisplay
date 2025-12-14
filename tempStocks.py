@@ -91,15 +91,15 @@ My_order_details = return_details("My_orders_details")
 print(3)
 My_position_details = return_details("My_position_details")
 print(4)
-My_stock_option_dates = return_details("My_stock_option_dates")
+All_stock_option_dates = return_details("All_stock_option_dates")
 print(5)
 My_lot_details = return_details("My_lot_details")
 # print(6)
 # My_stock_option_strikes = return_details("My_stock_option_strikes")
 
-# All_stock_option_dates = all_dates(My_stock_option_dates)
-all_dates(My_stock_option_dates)
-My_dates = list(all_dates(My_stock_option_dates))
+# All_stock_option_dates = all_dates(All_stock_option_dates)
+all_dates(All_stock_option_dates)
+My_dates = list(all_dates(All_stock_option_dates))
 My_dates.sort()
 
 # print()
@@ -535,7 +535,7 @@ for each_stock in My_involved_all:
     ttk.Label(side_right, text = "-----").grid(column = 2,  row = date_row, padx = 10, pady = 0,sticky="w")
     ttk.Label(side_right, text = "-----").grid(column = 3,  row = date_row, padx = 10, pady = 0,sticky="w")
     
-    for each_date in My_stock_option_dates[each_stock]:
+    for each_date in All_stock_option_dates[each_stock]:
         date_row += 1
         print("each_date")
         print(each_date)

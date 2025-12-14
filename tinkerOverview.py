@@ -34,10 +34,10 @@ My_owned_stocks = return_positions("stock")
 My_open_orders = return_orders("open")
 My_involved_all = list(return_positions("all"))
 My_involved_all.sort()
-My_stock_option_dates = return_details("My_stock_option_dates")
+All_stock_option_dates = return_details("All_stock_option_dates")
 My_involved_all = list(return_positions("all"))
 My_involved_all.sort()
-My_sorted_option_dates = list(all_dates(My_stock_option_dates))
+My_sorted_option_dates = list(all_dates(All_stock_option_dates))
 My_sorted_option_dates.sort()
 
 total_calls = {}

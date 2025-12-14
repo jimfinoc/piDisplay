@@ -359,7 +359,7 @@ if __name__ == '__main__':
                             years.append(int(f'20{expirationDate[0:2]}'))
                             temp = list(set(years))
                             years = sorted(temp)
-                all_option_dates = return_details("My_stock_option_dates")[displayStock]
+                all_option_dates = return_details("All_stock_option_dates")[displayStock]
 
                 # print('all_option_dates',all_option_dates)
                 # for each in all_option_dates[displayStock]:
@@ -452,8 +452,17 @@ if __name__ == '__main__':
                 textStockRect = textStock.get_rect()
                 textStockRect.centery = 10 / 480 * surface_y
                 textStockRect.left = 5
-
                 display_surface.blit(textStock, textStockRect)
+
+                # Time. top right
+                font = pygame.font.Font('freesansbold.ttf', smallFont)
+                now = datetime.datetime.now()
+                current_time_str = now.strftime("%Y-%m-%d %H:%M:%S")
+                textTime = font.render(f"{current_time_str}", True, white, background)
+                textTimeRect = textTime.get_rect()
+                textTimeRect.centery = 10 / 480 * surface_y
+                textTimeRect.right = surface_x - 5
+                display_surface.blit(textTime, textTimeRect)
 
                 # high price, on the top
                 font = pygame.font.Font('freesansbold.ttf', smallFont)
@@ -691,6 +700,8 @@ if __name__ == '__main__':
                     # cy = surface_y / 2
                     cy = surface_y * (equities.index(args.equity[0])+1)/(len(equities)+1)
                     textSortRect.center = (cx, cy)
+                    if not SerialModuleEnabled:
+                        pygame.image.save(display_surface, f".stock_{args.equity[0]}.png")
                     display_surface.blit(textSort, textSortRect)
             except:
                 prRed("Error checking text against time")
