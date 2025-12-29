@@ -318,7 +318,7 @@ def on_keypress(event):
         keep_plotting = False
         # plt.close()  # Close the plot window
         quit()
-    if event.key is ".":
+    if event.key == ".":
         callback.next()
     if event.key == ",":
         callback.prev()
