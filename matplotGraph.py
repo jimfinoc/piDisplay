@@ -28,6 +28,7 @@ def prCyan(skk): print("\033[96m {}\033[00m" .format(skk))
 def prBlue(skk): print("\033[94m {}\033[00m" .format(skk))
 def prBlack(skk): print("\033[98m {}\033[00m" .format(skk))
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--equity", type=str, default="", help = "This should be a stock (equity) symbol, if an equity is entered, the auto function will be overridden 'No'")
 args = parser.parse_args()
@@ -47,12 +48,14 @@ class Index:
         self.refresh()
 
     def refresh(self):
+        global displayStock
         axd['L'].clear()
         axd['R'].clear()
         i = self.ind % len(equities)
         fig.suptitle(equities[i], color='yellow', fontsize=20)
         displayStock = equities[i]
         prGreen(f"displayStock: {displayStock}")
+        # if displayStock in 
         stock_history_candles = stock_history[equities[i]]['candles']
         data = {
             'Date': [],
@@ -233,19 +236,19 @@ class Index:
 
         plt.draw()
 
-    def next(self, event):
+    def next0(self, event):
         self.ind += 1
         self.refresh()
 
-    def prev(self, event):
+    def prev0(self, event):
         self.ind -= 1
         self.refresh()
 
-    def next(self):
+    def next1(self):
         self.ind += 1
         self.refresh()
 
-    def prev(self):
+    def prev1(self):
         self.ind -= 1
         self.refresh()
 
@@ -287,24 +290,24 @@ axprev = fig.add_axes([0.01, 0.01, 0.1, 0.05])
 axnext = fig.add_axes([0.89, 0.01, 0.1, 0.05])
 
 bnext = Button(axnext, 'Next',color='black', hovercolor='LightSkyBlue')
-bnext.on_clicked(callback.next)
+bnext.on_clicked(callback.next0)
 
 bprev = Button(axprev, 'Previous',color='black', hovercolor='LightSkyBlue')
-bprev.on_clicked(callback.prev)
+bprev.on_clicked(callback.prev0)
 
 keep_plotting = True
 plt.ion() 
 
-def time_to_close(event):
-    prRed("time_to_close called")
-    prRed(f"you pressed: {event} {event.key} {event.button}")
-    global keep_plotting
-    keep_plotting = False
-    plt.close()  # Close the plot window
-    quit()
+# def time_to_close(event):
+#     prRed("time_to_close called")
+#     prRed(f"you pressed: {event} {event.button}")
+#     global keep_plotting
+#     keep_plotting = False
+#     plt.close()  # Close the plot window
+#     quit()
     
 def on_click(event):
-    prRed(f"you pressed: {event} {event.key} {event.button}")
+    prRed(f"(OC) you pressed: {event} {event.key} {event.button}")
     global keep_plotting
     if event.button is MouseButton.RIGHT:
         keep_plotting = False
@@ -312,31 +315,31 @@ def on_click(event):
         quit()
 
 def on_keypress(event):
-    prRed(f"you pressed: {event.key}")
+    prRed(f"(OK) you pressed: {event.key}")
     global keep_plotting
     if event.key == "q":
         keep_plotting = False
         # plt.close()  # Close the plot window
         quit()
     if event.key == ".":
-        callback.next()
+        callback.next1()
     if event.key == ",":
-        callback.prev()
+        callback.prev1()
 
 def on_scroll(event):
-    prRed(f"you pressed: {event} {event.key} {event.button}")
-    global keep_plotting
+    prRed(f"(OS) you pressed: {event} {event.key} {event.button}")
+    # global keep_plotting
 
     if event.button == 'up':
-        callback.prev()
+        callback.prev1()
     elif event.button == 'down':
-        callback.next()
+        callback.next1()
 
 
 if live_update:
     while keep_plotting:
         My_quotes = myRedis.return_details("My_quotes")
-        plt.connect('close_event', time_to_close)
+        # plt.connect('close_event', time_to_close)
         plt.connect('button_press_event', on_click)
         plt.connect('key_press_event', on_keypress)
         plt.connect('scroll_event', on_scroll)
