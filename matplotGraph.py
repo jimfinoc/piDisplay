@@ -312,12 +312,16 @@ def on_click(event):
         quit()
 
 def on_keypress(event):
-    prRed(f"you pressed: {event} {event.key} {event.button}")
+    prRed(f"you pressed: {event.key}")
     global keep_plotting
-    if event.button is MouseButton.RIGHT:
+    if event.key is "q":
         keep_plotting = False
         # plt.close()  # Close the plot window
         quit()
+    if event.key is ".":
+        callback.next()
+    if event.key == ",":
+        callback.prev()
 
 def on_scroll(event):
     prRed(f"you pressed: {event} {event.key} {event.button}")
