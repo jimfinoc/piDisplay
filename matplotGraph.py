@@ -314,7 +314,7 @@ def on_click(event):
 def on_keypress(event):
     prRed(f"you pressed: {event.key}")
     global keep_plotting
-    if event.key is "q":
+    if event.key == "q":
         keep_plotting = False
         # plt.close()  # Close the plot window
         quit()
