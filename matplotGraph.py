@@ -28,6 +28,21 @@ def prCyan(skk): print("\033[96m {}\033[00m" .format(skk))
 def prBlue(skk): print("\033[94m {}\033[00m" .format(skk))
 def prBlack(skk): print("\033[98m {}\033[00m" .format(skk))
 
+from pubsub.functions import RedisConnection
+# myRedis = RedisConnection(debug=False)
+# myRedis = RedisConnection(debug=True)
+
+myRedis = RedisConnection()
+myRedis.connect()
+
+equities = myRedis.return_positions(type = "all")
+equity_set = set(equities)
+equities = list(equity_set)
+equities.sort()
+# equities = ['AAPL']
+print(f'equities {equities}')
+for each in equities:
+    myRedis.subscribe(each)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--equity", type=str, default="", help = "This should be a stock (equity) symbol, if an equity is entered, the auto function will be overridden 'No'")
@@ -37,14 +52,13 @@ current_time = datetime.now()
 start_time = current_time
 prYellow(f"starttime: {start_time}")
 
-myRedis = RedisConnection()
-myRedis.connect()
 current_time = datetime.now()
 prYellow(f"redis connected: {current_time}")
 
 class Index:
     def __init__(self):
-        self.ind = 0
+        global displayStock
+        self.ind = equities.index(displayStock)
         self.refresh()
 
     def refresh(self):
@@ -97,8 +111,21 @@ class Index:
         highPrice = stock_52_week_high
         lowPrice = stock_52_week_low
 
-        currentPrice = My_quotes[displayStock]['price']
+        prices_dictionary = myRedis.return_dictionary()
+        # print('prices_dictionary')
+        # print(prices_dictionary)
         position_details = myRedis.return_details("My_position_details")
+
+        try:
+            currentPrice = prices_dictionary[displayStock]['price']
+            change = prices_dictionary[displayStock]['change']
+        except:
+            currentPrice = My_quotes[displayStock]['price']
+            change = My_quotes[displayStock]['change']
+
+        price_str = f"${currentPrice:.2f}"
+        change_str = f"{change:+.2f}%"
+
 
         prYellow(f"time_hack 4: {datetime.now()}")
 
@@ -185,13 +212,13 @@ class Index:
 
         if all_options_dates_for_specific_stock.index(todays_date) == 0:
             index = list(range(0, len(all_options_dates_for_specific_stock)))
-            print("all ticks")
+            # print("all ticks")
             axd['R'].set_xlim(left=0) # Use 'left' argument
             axd['R'].set_xticks(index, all_options__noyear_dates_for_specific_stock[0:],rotation=80) # Rotate labels to prevent overlap
             # plt.xticks(index, all_options__noyear_dates_for_specific_stock)
         elif all_options_dates_for_specific_stock.index(todays_date) == 1:
             index = list(range(1, len(all_options_dates_for_specific_stock)))
-            print("all but first tick")
+            # print("all but first tick")
             axd['R'].set_xlim(left=1) # Use 'left' argument
             axd['R'].set_xticks(index, all_options__noyear_dates_for_specific_stock[1:],rotation=80) # Rotate labels to prevent overlap
             
@@ -208,8 +235,8 @@ class Index:
         axd['L'].set_ylim(axd['R'].get_ylim())
         # multi2 = MultiCursor(None, (axd['L'], axd['V']), color='r', lw=1, horizOn=True, vertOn=True)
         multi1 = MultiCursor(None, (axd['L'], axd['R']), color='r', lw=1, horizOn=True, vertOn=False)
-        cursorR = Cursor(axd['R'], useblit=True, color='red', linewidth=1)
-        cursorL = Cursor(axd['L'], useblit=True, color='red', linewidth=1)
+        # cursorR = Cursor(axd['R'], useblit=True, color='red', linewidth=1)
+        # cursorL = Cursor(axd['L'], useblit=True, color='red', linewidth=1)
 
         # first_term = 'A'
             # multi2 = MultiCursor(None, (axd['R'], axd['B'], axd['C']), color='w', lw=1, horizOn=True, vertOn=True)
@@ -217,12 +244,13 @@ class Index:
 
         # Add a title for the entire figure
         # fig.suptitle('Basic Mosaic Layout Example')
-
-        change = My_quotes[displayStock]['change']
-        price_str = f"${currentPrice:.2f}"
-        change_str = f"{change:+.2f}"
-
-        fig.supxlabel(price_str + " " + change_str, color='white', fontsize=14)
+        if change >= 0:
+            change_color = 'green'
+        elif change < 0:
+            change_color = 'red'
+        elif change == 0:
+            change_color = 'white'
+        fig.supxlabel(price_str + " " + change_str, color=change_color, fontsize=14)
         fig.suptitle(displayStock, color='yellow',fontsize=20)
 
         plt.subplots_adjust(top=0.85)
@@ -262,19 +290,18 @@ plt.style.use('dark_background')
 fig, axd = plt.subplot_mosaic(mosaic, layout="constrained", figsize=(10, 6))
 
 
-equities = myRedis.return_positions(type = "all")
-equity_set = set(equities)
-equities = list(equity_set)
-equities.sort()
 
-if args.equity == "":
-    args.equity = [random.choice(equities)]
-elif args.equity[0] not in equities:
-    args.equity = [random.choice(equities)]
 
-displayStock = args.equity[0]
+# if args.equity == "":
+#     args.equity = [random.choice(equities)]
+# elif args.equity[0] not in equities:
+#     args.equity = [random.choice(equities)]
+
+displayStock = random.choice(equities)
 prGreen(f"displayStock: {displayStock}")
 stock_history = myRedis.return_details("My_stock_history")
+# print('stock_history')
+# print(stock_history)
 stock_history_candles = stock_history[displayStock]['candles']
 
 up_color = 'green'
@@ -307,20 +334,20 @@ plt.ion()
 #     quit()
     
 def on_click(event):
-    prRed(f"(OC) you pressed: {event} {event.key} {event.button}")
+    prRed(f"(OC) you pressed: {event.button}")
     global keep_plotting
-    if event.button is MouseButton.RIGHT:
-        keep_plotting = False
-        # plt.close()  # Close the plot window
-        quit()
+    # if event.button is MouseButton.RIGHT:
+    #     keep_plotting = False
+    #     plt.close('all')  # Close the plot window
+    #     quit()
 
 def on_keypress(event):
     prRed(f"(OK) you pressed: {event.key}")
     global keep_plotting
     if event.key == "q":
         keep_plotting = False
-        # plt.close()  # Close the plot window
-        quit()
+        plt.close('all')  # Close the plot window
+        # quit()
     if event.key == ".":
         callback.next1()
     if event.key == ",":
@@ -331,37 +358,65 @@ def on_scroll(event):
     # global keep_plotting
 
     if event.button == 'up':
-        callback.prev1()
-    elif event.button == 'down':
         callback.next1()
+    elif event.button == 'down':
+        callback.prev1()
 
 
 if live_update:
-    while keep_plotting:
-        My_quotes = myRedis.return_details("My_quotes")
-        # plt.connect('close_event', time_to_close)
-        plt.connect('button_press_event', on_click)
-        plt.connect('key_press_event', on_keypress)
-        plt.connect('scroll_event', on_scroll)
+    try:
+        while keep_plotting:
+            # plt.connect('close_event', time_to_close)
+            plt.connect('button_press_event', on_click)
+            plt.connect('key_press_event', on_keypress)
+            plt.connect('scroll_event', on_scroll)
 
-        currentPrice = My_quotes[displayStock]['price']
-        change = My_quotes[displayStock]['change']
-        
-        price_str = f"${currentPrice:.2f}"
-        change_str = f"{change:+.2f}"
+            # print('prices_dictionary')
+            # print(prices_dictionary)
+            # try:
+            try:
+                prices_dictionary = myRedis.return_dictionary()
+                currentPrice = prices_dictionary[displayStock]['price']
+                change = prices_dictionary[displayStock]['change']
+                # print("Current prices from prices_dictionary")
+            except:
+                My_quotes = myRedis.return_details("My_quotes")
+                currentPrice = My_quotes[displayStock]['price']
+                change = My_quotes[displayStock]['change']
+                # print("cannot process prices_dictionary")
+                # print("Current prices from My_quotes")
 
-        change_str = f"{change:+.2f}"
-        if change >= 0:
-            change_color = 'green'
-        elif change < 0:
-            change_color = 'red'
-        elif change == 0:
-            change_color = 'white'
+            # currentPrice = prices_dictionary[displayStock]['price']
+            # change = prices_dictionary[displayStock]['change']
+            price_str = f"${currentPrice:.2f}"
+            change_str = f"{change:+.2f}%"
 
-        fig.supxlabel(price_str + " " + change_str, color=change_color, fontsize=14)
+            for line in axd['L'].lines:
+                if line.get_label() == 'Current Price':
+                    line.remove()
+            for line in axd['R'].lines:
+                if line.get_label() == 'Current Price':
+                    line.remove()
+            axd['L'].axhline(y=currentPrice, color='yellow', label='Current Price', linestyle=':')
+            axd['R'].axhline(y=currentPrice, color='yellow', label='Current Price', linestyle=':')
+            if change >= 0:
+                change_color = 'green'
+            elif change < 0:
+                change_color = 'red'
+            elif change == 0:
+                change_color = 'white'
+            fig.supxlabel(price_str + " " + change_str, color=change_color, fontsize=14)
+            # except:
+            price_str = f"$"
+            change_str = f"%"
 
-        plt.draw()
-        plt.pause(1)
+            if keep_plotting:
+                plt.draw()
+                plt.pause(5)
+            # else:
+            #     myRedis.quit()
 
-else:
-    plt.show()
+    except KeyboardInterrupt:
+        pass
+# else:
+#     plt.show()
