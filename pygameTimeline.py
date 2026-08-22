@@ -8,9 +8,16 @@ import math
 from multiprocessing import Process, Value, Manager, Lock
 from ctypes import c_char_p
 import json
-from stockDataFunctions import return_details
-from stockDataFunctions import return_positions
-from stockDataFunctions import return_orders
+# from stockDataFunctions import return_details
+# from stockDataFunctions import return_positions
+# from stockDataFunctions import return_orders
+from stockDataFunctions import RedisConnection
+import sys
+
+myRedis = RedisConnection()
+myRedis.connect()
+
+
 import copy
 import argparse
 import os
@@ -34,7 +41,7 @@ args = parser.parse_args()
 
 if not os.path.isfile(".env"): 
     print("No .env file found, please create one with your API keys")
-    quit()
+    sys.exit(0) 
 
 if args.equity != "":
     args.auto = ['No']
@@ -60,7 +67,7 @@ def redisPullDataFunction(lock, shared_dict,stop_threads):
                 local_stop = stop_threads.value
                 start = time.time()
                 temp = shared_dict.copy()
-                temp = return_details("My_quotes")
+                temp = myRedis.return_details("My_quotes")
                 shared_dict.clear()
                 shared_dict.update(temp)
     prRed('Stop printing')
@@ -230,7 +237,15 @@ if __name__ == '__main__':
             redisAllDataPull = copy.deepcopy(temp_dict)
 
             list_of_symbol_open_orders = []
-            My_open_orders = return_orders("open")
+            # try:
+            My_open_orders = myRedis.return_orders("open")
+            # except:
+            #     print()
+            #     print('Cannot find: myRedis.return_orders("open")')
+            #     print("please run XXXXX.")
+            #     print()
+            #     sys.exit(0) 
+
             for each in My_open_orders:
                 # print ('each')
                 # print (each)
@@ -246,31 +261,31 @@ if __name__ == '__main__':
                     redisFilterData[each] = redisAllDataPull[each]
                     equities.append(each)
             elif 'Stocks' in args.portfolio:
-                for each in return_positions("stock"):
+                for each in myRedis.return_positions("stock"):
                     if each in redisAllDataPull:
                         redisFilterData[each] = redisAllDataPull[each]
                         equities.append(each)
             elif 'Options' in args.portfolio:
-                for each in return_positions("option"):
+                for each in myRedis.return_positions("option"):
                     if each in redisAllDataPull:
                         redisFilterData[each] = redisAllDataPull[each]
                         equities.append(each)
             elif 'Both' in args.portfolio:
-                for each in return_positions("stock"):
+                for each in myRedis.return_positions("stock"):
                     if each in redisAllDataPull:
                         redisFilterData[each] = redisAllDataPull[each]
                         equities.append(each)
-                for each in return_positions("option"):
+                for each in myRedis.return_positions("option"):
                     if each in redisAllDataPull:
                         redisFilterData[each] = redisAllDataPull[each]
                         equities.append(each)
             elif 'Speculation' in args.portfolio:
-                for each in return_details("My_speculation_stocks"):
+                for each in myRedis.return_details("My_speculation_stocks"):
                     if each in redisAllDataPull:
                         redisFilterData[each] = redisAllDataPull[each]
                         equities.append(each)
             elif 'Others' in args.portfolio:
-                for each in return_details("My_other_stocks"):
+                for each in myRedis.return_details("My_other_stocks"):
                     if each in redisAllDataPull:
                         redisFilterData[each] = redisAllDataPull[each]
                         equities.append(each)
@@ -315,9 +330,15 @@ if __name__ == '__main__':
                 elif UDPacketModuleEnabled:
                     if lastDisplayStock != displayStock:
                         try:
-                            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                             data_to_send = f'{args.equity[0]}\n'.encode()
+                            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                             sock.sendto(data_to_send, (destination_ip, destination_port))
+                            sock.close()
+                            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                            sock.sendto(data_to_send, (destination_ip, destination_port+1))
+                            sock.close()
+                            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                            sock.sendto(data_to_send, (destination_ip, destination_port+2))
                             sock.close()
                             lastDisplayStock = displayStock
                         except socket.error as e:
@@ -337,7 +358,7 @@ if __name__ == '__main__':
 
                 # order_details
 
-                position_details = return_details("My_position_details")
+                position_details = myRedis.return_details("My:position_details")
                 # print('position_details', position_details)
                 for each in position_details["securitiesAccount"]["positions"]:
                     if each["instrument"]["assetType"] == "OPTION":
@@ -359,7 +380,7 @@ if __name__ == '__main__':
                             years.append(int(f'20{expirationDate[0:2]}'))
                             temp = list(set(years))
                             years = sorted(temp)
-                all_option_dates = return_details("All_stock_option_dates")[displayStock]
+                all_option_dates = myRedis.return_details("All:stock_option_dates")[displayStock]
 
                 # print('all_option_dates',all_option_dates)
                 # for each in all_option_dates[displayStock]:
