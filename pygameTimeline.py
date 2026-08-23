@@ -67,7 +67,7 @@ def redisPullDataFunction(lock, shared_dict,stop_threads):
                 local_stop = stop_threads.value
                 start = time.time()
                 temp = shared_dict.copy()
-                temp = myRedis.return_details("My_quotes")
+                temp = myRedis.return_details("My:quotes")
                 shared_dict.clear()
                 shared_dict.update(temp)
     prRed('Stop printing')
@@ -110,6 +110,7 @@ if __name__ == '__main__':
         stop_threads = Value('b', False)
         p1 = Process(target=redisPullDataFunction, args=(lock, temp_dict, stop_threads))
         p1.start()
+        time.sleep(0.001)
 
         # print()
         size = pygame.display.get_desktop_sizes()
