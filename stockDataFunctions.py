@@ -2,49 +2,59 @@ import redis
 from dotenv import load_dotenv
 import os
 import json
+import sys
 
 class RedisConnection:
+    stock_prices = {}
+
     def __init__(self):
         load_dotenv(".env")
         self.redis_host = os.getenv("redis_database_name")
         self.redis_port = os.getenv("redis_database_port")
         self.redis_password = os.getenv("redis_database_password")
-        self.connection = None
+        self._connection = None
 
     def connect(self):
         try:
-            self.connection = redis.Redis(
+            self._connection = redis.Redis(
                 db=0,
                 host=self.redis_host,
                 port=self.redis_port,
                 password=self.redis_password
             )
             # Test the connection
-            if self.connection.ping():
+            if self._connection.ping():
                 print(f"Connected to Redis at {self.redis_host}:{self.redis_port}")
-                return self.connection
+                return self._connection
         except redis.RedisError as e:
             print(f"Redis connection error: {e}")
             return None
         
 
     def return_details(self,key):
-        # try:
-        load_dotenv(".env")
-        # r = redis.Redis(db=0,host=os.getenv("redis_database_name"),port=os.getenv("redis_database_port"),password=os.getenv("redis_database_password"))
-        My_details_string = self.connection.get(key)
-        # My_details_string = r.get(key)
+        if self._connection.exists(key):
+            My_details_string = self._connection.get(key)
+        else:
+            print()
+            print(f'key: {key}')
+            print(f'does not exist')
+            print()
+            if key == "My:orders_details":
+                print('In the dirctory: stocks')
+                print('execute: python functionDatabaseItem.py')
+            if key == "My_quotes":
+                print('In the dirctory: stocks')
+                print('execute: python functionSchwabDataStreamer.py')
+            sys.exit(0) 
+
         My_details = json.loads(My_details_string)
         with open("."+str(key)+".json", "w") as file:
             json.dump(My_details, file, indent=4)
-
-        # except:
-            # pass
         return My_details
 
-    def return_orders(status = "open"):
+    def return_orders(self, status = "open"):
         returnData = []
-        orders_details = return_details("My_orders_details")
+        orders_details = self.return_details("My:orders_details")
         for each in orders_details:
             # print()
             # print(each)
@@ -63,7 +73,7 @@ class RedisConnection:
     def return_positions(self, type = "all"):
         # returnData = []
         return_data = set()
-        position_details = self.return_details("My_position_details")
+        position_details = self.return_details("My:position_details")
         for each in position_details["securitiesAccount"]["positions"]:
             if type == "all" or type == "option":
                 if each["instrument"]["assetType"] == "OPTION":
@@ -107,3 +117,28 @@ class RedisConnection:
                     else:
                         total_puts[special_date] = quantity
         return total_calls, total_puts
+    
+    def subscriber(self,subscribed_stock):
+        pubsub = self._connection.pubsub()
+        pubsub.subscribe(subscribed_stock)
+        print(f"Subscribed to {subscribed_stock}. Waiting for messages...")
+
+        for message in pubsub.listen():
+            if message['type'] == 'message':
+                print(f'Received message on: "{subscribed_stock}"')
+                message_string = message['data']
+                message_json = json.loads(message_string)
+
+                print(message_json)
+                # print(f"Received: {message['data']}")
+                print(json.dumps(message_json, indent=4))
+                print()
+        self.stock_prices[subscribed_stock] = message_json
+            # if message['data'] == 'quit':
+            #     print("Unsubscribing and exiting...")
+            #     pubsub.unsubscribe()
+            #     break
+    
+    def get_sub_data(self):
+        return self.stock_prices
+
