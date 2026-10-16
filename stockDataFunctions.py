@@ -35,17 +35,18 @@ class RedisConnection:
         if self._connection.exists(key):
             My_details_string = self._connection.get(key)
         else:
-            print()
-            print(f'key: {key}')
-            print(f'does not exist')
-            print()
-            if key == "My:orders_details":
-                print('In the dirctory: stocks')
-                print('execute: python functionDatabaseItem.py')
-            if key == "My_quotes":
-                print('In the dirctory: stocks')
-                print('execute: python functionSchwabDataStreamer.py')
-            sys.exit(0) 
+            # print()
+            # print(f'key: {key}')
+            # print(f'does not exist')
+            # print()
+            # if key == "My:orders_details":
+            #     print('In the dirctory: stocks')
+            #     print('execute: python functionDatabaseItem.py')
+            # if key == "My:quotes":
+            #     print('In the dirctory: stocks')
+            #     print('execute: python redisSet_MyQuotes_Streaming.py')
+            # sys.exit(0) 
+            return None
 
         My_details = json.loads(My_details_string)
         with open("."+str(key)+".json", "w") as file:
@@ -78,7 +79,10 @@ class RedisConnection:
             if type == "all" or type == "option":
                 if each["instrument"]["assetType"] == "OPTION":
                     # print(each["instrument"]["underlyingSymbol"])
-                    return_data.add(each["instrument"]["underlyingSymbol"])
+                    try:
+                        return_data.add(each["instrument"]["underlyingSymbol"])
+                    except:
+                        pass
             if type == "all" or type == "stock":
                 if each["instrument"]["assetType"] == "EQUITY":
                     # print(each["instrument"]["symbol"])
