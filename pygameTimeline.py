@@ -70,7 +70,7 @@ def redisPullDataFunction(lock, shared_dict,stop_threads):
                     prRed("  redisSet_MyQuotes_Streaming.py")
                     shared_dict.clear()
                 else:
-                    prPurple("My:quotes loaded")
+                    # prPurple("My:quotes loaded")
                     shared_dict.clear()
                     shared_dict.update(temp)
     prRed('Stop printing')
@@ -245,7 +245,7 @@ if __name__ == '__main__':
             try:
                 My_open_orders = myRedis.return_orders("open")
             except:
-                pass
+                My_open_orders = []
             #     print()
                 # print('Cannot find: myRedis.return_orders("open")')
             #     print("please run XXXXX.")
@@ -399,7 +399,7 @@ if __name__ == '__main__':
                 all_option_dates = myRedis.return_details("All:stock_option_dates")[displayStock]
 
             except:
-                prRed("Skipped Drawing")
+                # prRed("Skipped Drawing")
                 pass
             # I need to break apart the try between 309 and line 397
             ################################################################
@@ -630,7 +630,8 @@ if __name__ == '__main__':
                                     textLongRect.center = (circlex + 10, circley - 12)
                                     display_surface.blit(textLong, textLongRect)
                         except:
-                            print("No underlyingSymbol")
+                            pass
+                            # print("No underlyingSymbol")
 
 
             except Exception as e:
