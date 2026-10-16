@@ -242,11 +242,12 @@ if __name__ == '__main__':
             redisMyQuotes = copy.deepcopy(temp_dict)
 
             list_of_symbol_open_orders = []
-            # try:
-            My_open_orders = myRedis.return_orders("open")
-            # except:
+            try:
+                My_open_orders = myRedis.return_orders("open")
+            except:
+                pass
             #     print()
-            #     print('Cannot find: myRedis.return_orders("open")')
+                # print('Cannot find: myRedis.return_orders("open")')
             #     print("please run XXXXX.")
             #     print()
             #     sys.exit(0) 
