@@ -53,6 +53,41 @@ def prCyan(skk): print("\033[96m {}\033[00m" .format(skk))
 def prBlue(skk): print("\033[94m {}\033[00m" .format(skk))
 def prBlack(skk): print("\033[98m {}\033[00m" .format(skk))
 
+def set_stock_color():
+    stock_color = {}
+    stock_color[0] = (255*10/10,0,0)
+    stock_color[1] = (255*9/10,0,0)
+    stock_color[2] = (255*8/10,0,0)
+    stock_color[3] = (255*7/10,0,0)
+    stock_color[4] = (255*6/10,0,0)
+    stock_color[5] = (255*5/10,0,0)
+    stock_color[6] = (255*4/10,0,0)
+    stock_color[7] = (255*3/10,0,0)
+    stock_color[8] = (255*2/10,0,0)
+    stock_color[9] = (255*1/10,0,0)
+    stock_color[10] = black
+    stock_color[11] = (0,255*1/10,0)
+    stock_color[12] = (0,255*2/10,0)
+    stock_color[13] = (0,255*3/10,0)
+    stock_color[14] = (0,255*4/10,0)
+    stock_color[15] = (0,255*5/10,0)
+    stock_color[16] = (0,255*6/10,0)
+    stock_color[17] = (0,255*7/10,0)
+    stock_color[18] = (0,255*8/10,0)
+    stock_color[19] = (0,255*9/10,0)
+    stock_color[20] = (0,255*10/10,0)
+    return stock_color
+
+def set_color():
+    color = {}
+    color[0]=black
+    color[1]=white
+    color[2]=red
+    color[3]=green
+    color[4]=blue
+    return color
+
+
 def redisPullDataFunction(lock, shared_dict,stop_threads):
     pullcount = 0
     local_stop = False
@@ -156,12 +191,9 @@ if __name__ == '__main__':
 
         display_surface = pygame.display.set_mode([screen_width, screen_height],flags)
 
-        # display_surface = pygame.display.set_mode((800, 480), pygame.FULLSCREEN)
         print(pygame.display.Info())
-        # print()
         surface_x, surface_y = display_surface.get_size()
-        # surface_x = surface_x - 1
-        # surface_y = surface_y - 1
+
         print('surface_x')
         print(surface_x)
         print('surface_y')
@@ -173,42 +205,8 @@ if __name__ == '__main__':
         blue = (0, 0, 128)
         cyan = (0, 255, 255)
         black = (0, 0, 0)
-        color = {}
-        color[0]=black
-        color[1]=white
-        color[2]=red
-        color[3]=green
-        color[4]=blue
-        stock_color = {}
-        stock_color[0] = (255*10/10,0,0)
-        stock_color[1] = (255*9/10,0,0)
-        stock_color[2] = (255*8/10,0,0)
-        stock_color[3] = (255*7/10,0,0)
-        stock_color[4] = (255*6/10,0,0)
-        stock_color[5] = (255*5/10,0,0)
-        stock_color[6] = (255*4/10,0,0)
-        stock_color[7] = (255*3/10,0,0)
-        stock_color[8] = (255*2/10,0,0)
-        stock_color[9] = (255*1/10,0,0)
-
-        stock_color[10] = black
-
-        stock_color[11] = (0,255*1/10,0)
-        stock_color[12] = (0,255*2/10,0)
-        stock_color[13] = (0,255*3/10,0)
-        stock_color[14] = (0,255*4/10,0)
-        stock_color[15] = (0,255*5/10,0)
-        stock_color[16] = (0,255*6/10,0)
-        stock_color[17] = (0,255*7/10,0)
-        stock_color[18] = (0,255*8/10,0)
-        stock_color[19] = (0,255*9/10,0)
-        stock_color[20] = (0,255*10/10,0)
-
-        # font = pygame.font.Font('freesansbold.ttf', 32)
-
-        # quit()
-
-        # squares = 50
+        color = set_color #returns a list of colors
+        stock_color = set_stock_color #returns a list of gradient colors of red to black to green
         done = False
         clock = pygame.time.Clock()
         moving_x = 0
@@ -246,11 +244,6 @@ if __name__ == '__main__':
                 My_open_orders = myRedis.return_orders("open")
             except:
                 My_open_orders = []
-            #     print()
-                # print('Cannot find: myRedis.return_orders("open")')
-            #     print("please run XXXXX.")
-            #     print()
-            #     sys.exit(0) 
 
             for each in My_open_orders:
                 # print ('each')
