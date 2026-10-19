@@ -53,6 +53,17 @@ def prCyan(skk): print("\033[96m {}\033[00m" .format(skk))
 def prBlue(skk): print("\033[94m {}\033[00m" .format(skk))
 def prBlack(skk): print("\033[98m {}\033[00m" .format(skk))
 
+white = (255, 255, 255)
+yellow = (255, 255, 0)
+red = (128, 0, 0)
+green = (0, 128, 0)
+blue = (0, 0, 128)
+cyan = (0, 255, 255)
+black = (0, 0, 0)
+gray = (128, 128, 128)
+
+background = black
+
 def set_stock_color():
     stock_color = {}
     stock_color[0] = (255*10/10,0,0)
@@ -98,14 +109,12 @@ def redisPullDataFunction(lock, shared_dict,stop_threads):
                 local_stop = stop_threads.value
                 start = time.time()
                 temp = shared_dict.copy()
-                # prPurple("Getting My:quotes")
                 temp = myRedis.return_details("My:quotes")
                 if temp == None:
-                    prPurple("My:quotes not in redis, run the following:")
-                    prRed("  redisSet_MyQuotes_Streaming.py")
+                    # prPurple("My:quotes not in redis, run the following:")
+                    # prRed("  redisSet_MyQuotes_Streaming.py")
                     shared_dict.clear()
                 else:
-                    # prPurple("My:quotes loaded")
                     shared_dict.clear()
                     shared_dict.update(temp)
     prRed('Stop printing')
@@ -198,15 +207,9 @@ if __name__ == '__main__':
         print(surface_x)
         print('surface_y')
         print(surface_y)
-        white = (255, 255, 255)
-        yellow = (255, 255, 0)
-        red = (128, 0, 0)
-        green = (0, 128, 0)
-        blue = (0, 0, 128)
-        cyan = (0, 255, 255)
-        black = (0, 0, 0)
-        color = set_color #returns a list of colors
-        stock_color = set_stock_color #returns a list of gradient colors of red to black to green
+
+        color = set_color() #returns a list of colors
+        stock_color = set_stock_color() #returns a list of gradient colors of red to black to green
         done = False
         clock = pygame.time.Clock()
         moving_x = 0
@@ -244,13 +247,8 @@ if __name__ == '__main__':
                 My_open_orders = myRedis.return_orders("open")
             except:
                 My_open_orders = []
-
             for each in My_open_orders:
-                # print ('each')
-                # print (each)
                 for each_leg in each["orderLegCollection"]:
-                    # print ('each_leg')
-                    # print (each_leg)
                     if each_leg["orderLegType"] == "OPTION":
                         list_of_symbol_open_orders.append(each_leg["instrument"]["symbol"])
 
@@ -271,7 +269,8 @@ if __name__ == '__main__':
                             redisFilterData[each] = redisMyQuotes[each]
                             equities.append(each)
                 except:
-                    prRed("Cannot load options from My:position_details")
+                    pass
+                    # prRed("Cannot load options from My:position_details")
             elif 'Both' in args.portfolio:
                 for each in myRedis.return_positions("stock"):
                     if each in redisMyQuotes:
@@ -294,7 +293,10 @@ if __name__ == '__main__':
                 
             temp = sorted(set(equities))
             if redisMyQuotes == None:
-                equities = None
+                equities = list()
+                # prLightPurple("My:quotes not in redis, run the following:")
+                # prRed("  redisSet_MyQuotes_Streaming.py")
+
             else:
                 equities = list(temp)
 
@@ -302,100 +304,98 @@ if __name__ == '__main__':
             # THIS IS WHERE WE CALCULATE THE DATA TO BE DISPLAYED
             ################################################################
 
-            ################################################################
-            # I need to break apart the try between 309 and line 397
-            try:
-                if args.equity == "":
-                    args.equity = [equities[0]]
-                    SelectingEquity = True
-                if args.equity[0] not in equities:
-                    args.equity = [equities[0]]
-                    SelectingEquity = True
-                else:
-                    SelectingEquity = True
+            if equities and not args.equity:
+                args.equity = [equities[0]]
+            elif not equities:
+                args.equity = []
+
+            if equities and args.equity:
                 displayStock = args.equity[0]
-
-                ##### Data sending via serial port 
-                if SerialModuleEnabled:
-                    if lastDisplayStock != displayStock:
-                        try:
-                            ser = serial.Serial('/dev/ttyS0', 9600, timeout=1)
-                            ser.write(f'{args.equity[0]}\n'.encode())
-                            ser.close()
-                            lastDisplayStock = displayStock
-                        except serial.SerialException as e:
-                            prRed(f"Serial communication error: {e}")
-                elif UDPacketModuleEnabled:
-                    if lastDisplayStock != displayStock:
-                        try:
-                            data_to_send = f'{args.equity[0]}\n'.encode()
-                            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                            sock.sendto(data_to_send, (destination_ip, destination_port))
-                            sock.close()
-                            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                            sock.sendto(data_to_send, (destination_ip, destination_port+1))
-                            sock.close()
-                            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                            sock.sendto(data_to_send, (destination_ip, destination_port+2))
-                            sock.close()
-                            lastDisplayStock = displayStock
-                        except socket.error as e:
-                            prRed(f"UDP communication error: {e}")
+            else:
+                displayStock = ""
 
 
-                ##### Data sending complete
+            # prCyan(f'displayStock: {displayStock}, lastDisplayStock {lastDisplayStock}, equities: {equities}, args.equity: {args.equity}')
+            if SerialModuleEnabled:
+                if lastDisplayStock != displayStock:
+                    try:
+                        ser = serial.Serial('/dev/ttyS0', 9600, timeout=1)
+                        ser.write(f'{args.equity[0]}\n'.encode())
+                        ser.close()
+                        lastDisplayStock = displayStock
+                    except serial.SerialException as e:
+                        prRed(f"Serial communication error: {e}")
+            elif UDPacketModuleEnabled:
+                if lastDisplayStock != displayStock:
+                    try:
+                        data_to_send = f'{displayStock}\n'.encode()
+                        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                        sock.sendto(data_to_send, (destination_ip, destination_port))
+                        sock.close()
+                        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                        sock.sendto(data_to_send, (destination_ip, destination_port+1))
+                        sock.close()
+                        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                        sock.sendto(data_to_send, (destination_ip, destination_port+2))
+                        sock.close()
+                        lastDisplayStock = displayStock
+                    except socket.error as e:
+                        prRed(f"UDP communication error: {e}")
 
-                # print('displayStock',displayStock)
-                # print(redisMyQuotes[displayStock])
-                if redisMyQuotes == None:
-                    highPrice = 0
-                    lowPrice = 0
-                    stock_52_week_high = 0
-                    stock_52_week_low = 0
-                    currentPrice = 0
-                    largestDate = 0
-                else:
+
+            # print (f'redisMyQuotes: {redisMyQuotes}')
+            if redisMyQuotes == None:
+                highPrice = 0
+                lowPrice = 0
+                stock_52_week_high = 0
+                stock_52_week_low = 0
+                currentPrice = 0
+                largestDate = 0
+            else:
+                if displayStock in redisMyQuotes:
                     highPrice = redisMyQuotes[displayStock]['52_week_high']
                     lowPrice = redisMyQuotes[displayStock]['52_week_low']
                     stock_52_week_high = redisMyQuotes[displayStock]['52_week_high']
                     stock_52_week_low = redisMyQuotes[displayStock]['52_week_low']
                     currentPrice = redisMyQuotes[displayStock]['price']
+                    change = redisMyQuotes[displayStock]['change']
+                    change_percent = redisMyQuotes[displayStock]['change_percent']
                     largestDate = 0
+                # except:
+                #     pass
 
                 # order_details
 
-                position_details = myRedis.return_details("My:position_details")
-                # print('position_details', position_details)
+            position_details = myRedis.return_details("My:position_details")
+            # prGreen(f'position_details: {position_details}')
+
+            if position_details:
                 for each in position_details["securitiesAccount"]["positions"]:
                     if each["instrument"]["assetType"] == "OPTION":
-                        try:
-                            if each["instrument"]["underlyingSymbol"] == displayStock:
-                                optionSymbol = each["instrument"]["symbol"]
-                                # print()
-                                # print('optionSymbol',optionSymbol)
-                                # print('len(optionSymbol)',len(optionSymbol))
-                                strike = float(optionSymbol[13:21])/1000
-                                # print('strike',strike)
-                                highPrice = max(highPrice,strike)
-                                lowPrice = min(lowPrice,strike)
-                                # print('highPrice', highPrice)  
-                                # print('lowPrice', lowPrice)
-                                expirationDate = optionSymbol[6:12]
-                                largestDate = str(max(int(largestDate),int(expirationDate)))
-                                # print ('largestDate',largestDate)
-                                last_year = max(last_year,int(f'20{expirationDate[0:2]}'))
-                                years.append(int(f'20{expirationDate[0:2]}'))
-                                temp = list(set(years))
-                                years = sorted(temp)
-                        except:
-                            ("Not drawing because missing underlyingSymbol")
-                all_option_dates = myRedis.return_details("All:stock_option_dates")[displayStock]
+                        if each["instrument"]["underlyingSymbol"] == displayStock:
+                            optionSymbol = each["instrument"]["symbol"]
+                            # print()
+                            # print('optionSymbol',optionSymbol)
+                            # print('len(optionSymbol)',len(optionSymbol))
+                            strike = float(optionSymbol[13:21])/1000
+                            # print('strike',strike)
+                            highPrice = max(highPrice,strike)
+                            lowPrice = min(lowPrice,strike)
+                            # print('highPrice', highPrice)  
+                            # print('lowPrice', lowPrice)
+                            expirationDate = optionSymbol[6:12]
+                            largestDate = str(max(int(largestDate),int(expirationDate)))
+                            # print ('largestDate',largestDate)
+                            last_year = max(last_year,int(f'20{expirationDate[0:2]}'))
+                            years.append(int(f'20{expirationDate[0:2]}'))
+                            temp = list(set(years))
+                            years = sorted(temp)
 
+            all_stock_option_dates = myRedis.return_details("All:stock_option_dates")
+            try:
+                all_option_dates = all_stock_option_dates[displayStock]
             except:
-                # prRed("Skipped Drawing")
                 pass
-            # I need to break apart the try between 309 and line 397
-            ################################################################
 
             my_rect={}
             count = 0
@@ -403,20 +403,14 @@ if __name__ == '__main__':
             for each in redisFilterData:
                 stockList.append(redisFilterData[each])
 
-            if 'Name' in args.sort:
-                stocksSorted = sorted(stockList, key=lambda item: item["symbol"])
-            elif 'Percent' in args.sort:
-                stocksSorted = sorted(stockList, key=lambda item: item["change_percent"])
-
-            background = (0,0,0)
 
 
             ################################################################
             # THIS IS WHERE WE VISUALIZE THE DATA ON THE SCREEN
             ################################################################
 
-            try:
-
+            # try:
+            if True:
                 pygame.draw.rect(display_surface, background, (0,0,surface_x,surface_y),width=0)
                 pygame.draw.rect(display_surface, (100,100,0), (50,20,surface_x-50-20,surface_y-20-40),width=2)
                 
@@ -427,6 +421,7 @@ if __name__ == '__main__':
                 # Stock and other data on the left show up looking good!
                 ################################################################
 
+                # Title, top center
                 font = pygame.font.Font('freesansbold.ttf', 15)
                 textProgram = font.render("Option Timeline", True, white, background)
                 textProgramRect = textProgram.get_rect()
@@ -434,15 +429,6 @@ if __name__ == '__main__':
                 textProgramRect.centerx = 400 / 800 * surface_x
 
                 display_surface.blit(textProgram, textProgramRect)
-
-
-                # Stock, top left
-                font = pygame.font.Font('freesansbold.ttf', smallFont)
-                textStock = font.render(f"{displayStock}", True, yellow, background)
-                textStockRect = textStock.get_rect()
-                textStockRect.centery = 10 / 480 * surface_y
-                textStockRect.left = 5
-                display_surface.blit(textStock, textStockRect)
 
                 # Time. top right
                 now = datetime.datetime.now()
@@ -453,187 +439,245 @@ if __name__ == '__main__':
                 textTimeRect.right = surface_x - 5
                 display_surface.blit(textTime, textTimeRect)
 
-                # high price, on the top
-                textPriceHigh = font.render(f"{highPrice:.2f}", True, white, background)
-                textPriceHighRect = textPriceHigh.get_rect()
-                textPriceHighRect.centery = 35 / 480 * surface_y
-                textPriceHighRect.left = 5
-                display_surface.blit(textPriceHigh, textPriceHighRect)
+                # if not displayStock:
+                    # prCyan(f'displayStock: {displayStock}, lastDisplayStock {lastDisplayStock}, equities: {equities}, args.equity: {args.equity}')
+                    # prRed("  redisSet_MyQuotes_Streaming.py")
 
-                # low price, on the bottom
-                textPriceLow = font.render(f"{lowPrice:.2f}", True, white, background)
-                textPriceLowRect = textPriceLow.get_rect()
-                textPriceLowRect.centery = 425 / 480 * surface_y
-                textPriceLowRect.left = 5
-                display_surface.blit(textPriceLow, textPriceLowRect)
+                if displayStock:
+                    # Stock, top left
+                    font = pygame.font.Font('freesansbold.ttf', smallFont)
+                    textStock = font.render(f"{displayStock}", True, yellow, background)
+                    textStockRect = textStock.get_rect()
+                    textStockRect.centery = 10 / 480 * surface_y
+                    textStockRect.left = 5
+                    display_surface.blit(textStock, textStockRect)
 
-                # if highPrice > stock_52_week_high:
-                textPrice52High = font.render(f"{stock_52_week_high:.2f}", True, cyan, background)
-                textPrice52HighRect = textPrice52High.get_rect()
-                # print('highPrice', highPrice)
-                # print('lowPrice', lowPrice)
-                textPrice52HighRect.centery = textPriceLowRect.centery + (stock_52_week_high - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
-                textPrice52HighRect.left = 5
-                display_surface.blit(textPrice52High, textPrice52HighRect)
-                leftside = int (50 * surface_x / 800)
-                rightside = int (778 * surface_x / 800)
-                for xskip in range(leftside, rightside, rightside//80):
-                    pygame.draw.line(display_surface, cyan, (xskip, textPrice52HighRect.centery), (xskip+5, textPrice52HighRect.centery), 1)
-                # pygame.draw.line(display_surface, cyan, (50, textPrice52HighRect.centery), (778, textPrice52HighRect.centery), 1)
-                
+                    if change > 0:
+                        textPriceCur = font.render(f"{currentPrice:.2f}", True, green, background)
+                    if change < 0:
+                        textPriceCur = font.render(f"{currentPrice:.2f}", True, red, background)
+                    if change == 0:
+                        textPriceCur = font.render(f"{currentPrice:.2f}", True, gray, background)
+                    textPriceCurRect = textPriceCur.get_rect()
+                    textPriceCurRect.centery = textStockRect.centery
+                    textPriceCurRect.left = textStockRect.right + 5
+                    display_surface.blit(textPriceCur, textPriceCurRect)
 
-                # if lowPrice > stock_52_week_low:
-                # font = pygame.font.Font('freesansbold.ttf', smallFont)
-                textPrice52Low = font.render(f"{stock_52_week_low:.2f}", True, cyan, background)
-                textPrice52LowRect = textPrice52Low.get_rect()
-                textPrice52LowRect.centery = textPriceLowRect.centery + (stock_52_week_low - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
-                textPrice52LowRect.left = 5
-                display_surface.blit(textPrice52Low, textPrice52LowRect)
-                leftside = int (50 * surface_x / 800)
-                rightside = int (778 * surface_x / 800)
-                for xskip in range(leftside, rightside, rightside//80):
-                    pygame.draw.line(display_surface, cyan, (xskip, textPrice52LowRect.centery), (xskip+5, textPrice52LowRect.centery), 1)
-                # pygame.draw.line(display_surface, cyan, (50, textPrice52LowRect.centery), (778, textPrice52LowRect.centery), 1)
-                
-                # current price, proportional to the high and low price
-                # font = pygame.font.Font('freesansbold.ttf', smallFont)
-                textPriceCur = font.render(f"{currentPrice:.2f}", True, yellow, background)
-                textPriceCurRect = textPriceCur.get_rect()
-                textPriceCurRect.centery = textPriceLowRect.centery + (currentPrice - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
-                textPriceCurRect.left = 5
-                display_surface.blit(textPriceCur, textPriceCurRect)
-                leftside = 50
-                rightside = int (778 * surface_x / 800)
-                for xskip in range(leftside, rightside, rightside//30):
-                    pygame.draw.line(display_surface, yellow, (xskip, textPriceCurRect.centery), (xskip+10, textPriceCurRect.centery), 1)
-                # pygame.draw.line(display_surface, yellow, (45, textPriceCurRect.centery), (778, textPriceCurRect.centery), 1)
-                circleSize = 5
-                circleColor = yellow
-                circlex = 51
-                pygame.draw.circle(display_surface, circleColor, (circlex,textPriceCurRect.centery), circleSize)
+                    # percent change top left
+                    if change > 0:
+                        textChangePercent = font.render(f"{change_percent}%", True, green, background)
+                    if change < 0:
+                        textChangePercent = font.render(f"{change_percent}%", True, red, background)
+                    if change == 0:
+                        textChangePercent = font.render(f"{change_percent}%", True, gray, background)
 
-                ################################################################
-                # Lets alighn the dates with the dots!
-                # plus if today's date is in the list, 
-                # it needs to be on the far left
-                ################################################################
+                    textChangePercentRect = textChangePercent.get_rect()
+                    textChangePercentRect.centery = textStockRect.centery
+                    textChangePercentRect.left = textPriceCurRect.right + 5
+                    display_surface.blit(textChangePercent, textChangePercentRect)
 
-                dictionary_for_dates_and_x_coordinates = {}
-                # First date, on the left
-                # font = pygame.font.Font('freesansbold.ttf', smallFont)
-                today = datetime.date.today()
-                current_month = today.month
-                current_day = today.day
-                current_year = today.year
-                textDate1 = font.render(f"{current_month}/{current_day}", True, white, background)
-                textDateRect1 = textDate1.get_rect()
-                textDateRect1.center = (50 / 800 * surface_x , 450 / 480 * surface_y)
-                display_surface.blit(textDate1, textDateRect1)
-
-                dictionary_for_dates_and_x_coordinates[f'{today.year}-{today.month:02d}-{today.day:02d}'] = textDateRect1.centerx
-                
-                last_year_to_check = current_year
-                current_year_x_coordinate = textDateRect1.centerx
-                
-                # last date. on the right
-                lastdateString = str(f'20{largestDate}')
-                # last_date = datetime.datetime.strptime(str(f'20{largestDate}'), '%Y%m%d')
-                
-                today = datetime.datetime.today()
-                last_date = today
-                for each in all_option_dates:
-                    each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
-                    if each_datetime >= last_date:
-                        last_date = each_datetime
-                    years.append(each_datetime.year)
-                # print(last_date,'last_date')
-                last_month = last_date.month
-                last_day = last_date.day
-                last_year = last_date.year
-                textDateN = font.render(f"{last_month}/{last_day}", True, white, background)
-                textDateRectN = textDateN.get_rect()
-                textDateRectN.center = (780 / 800 * surface_x , 450 / 480 * surface_y)
-                display_surface.blit(textDateN, textDateRectN)
-                
-                dictionary_for_dates_and_x_coordinates[f'{last_year}-{last_month:02d}-{last_day:02d}'] = textDateRectN.centerx
-
-                all_dates = copy.deepcopy(all_option_dates)
-                all_dates.insert(0,f'{today.year}-{today.month:02d}-{today.day:02d}')
-
-                temp_set = set(all_dates)
-                all_dates = sorted(list(temp_set))
-                
-                for each in all_dates:
-                    each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
-                    each_month = each_datetime.month
-                    each_day = each_datetime.day
-                    each_year = each_datetime.year
-                    if f'{each_year}-{each_month:02d}-{each_day:02d}' not in dictionary_for_dates_and_x_coordinates:
-                        dictionary_for_dates_and_x_coordinates[f'{each_year}-{each_month:02d}-{each_day:02d}'] = 0
-
-                for each in all_dates[1:-1]:
-                    each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
-                    each_month = each_datetime.month
-                    each_day = each_datetime.day
-                    each_year = each_datetime.year
+                    #  change top left
+                    if change > 0:
+                        textChange = font.render(f"{change}", True, green, background)
+                    if change < 0:
+                        textChange = font.render(f"{change}", True, red, background)
+                    if change == 0:
+                        textChange = font.render(f"{change}", True, gray, background)
+                    textChangeRect = textChange.get_rect()
+                    textChangeRect.centery = textStockRect.centery
+                    textChangeRect.left = textChangePercentRect.right + 5
+                    display_surface.blit(textChange, textChangeRect)
 
 
-                    text1 = font.render(f"{each_month}/{each_day}", True, white, background)
-                    textRect1 = text1.get_rect()
-                    textRect1.centery = textDateRect1.centery
+                if displayStock:
+                    # high price, on the top
+                    textPriceHigh = font.render(f"{highPrice:.2f}", True, white, background)
+                    textPriceHighRect = textPriceHigh.get_rect()
+                    textPriceHighRect.centery = 35 / 480 * surface_y
+                    textPriceHighRect.left = 5
+                    display_surface.blit(textPriceHigh, textPriceHighRect)
 
-                    textRect1.centerx = 50 / 800 * surface_x + (all_dates.index(each)) * (textDateRectN.centerx - textDateRect1.centerx) / (len(dictionary_for_dates_and_x_coordinates)-1)
-                    display_surface.blit(text1, textRect1)
+                    # low price, on the bottom
+                    textPriceLow = font.render(f"{lowPrice:.2f}", True, white, background)
+                    textPriceLowRect = textPriceLow.get_rect()
+                    textPriceLowRect.centery = 425 / 480 * surface_y
+                    textPriceLowRect.left = 5
+                    display_surface.blit(textPriceLow, textPriceLowRect)
 
-                    if each_year != last_year_to_check:
-                        last_year_to_check = each_year
-                        averagex = (current_year_x_coordinate + textRect1.centerx) / 2
-                        pygame.draw.line(display_surface, (64,64,64), (averagex, 20), (averagex, surface_y-20), 1)
-                    else:
-                        current_year_x_coordinate = textRect1.centerx
+                    # if highPrice > stock_52_week_high:
+                    textPrice52High = font.render(f"{stock_52_week_high:.2f}", True, cyan, background)
+                    textPrice52HighRect = textPrice52High.get_rect()
+                    # print('highPrice', highPrice)
+                    # print('lowPrice', lowPrice)
+                    textPrice52HighRect.centery = textPriceLowRect.centery + (stock_52_week_high - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                    textPrice52HighRect.left = 5
+                    display_surface.blit(textPrice52High, textPrice52HighRect)
+                    leftside = int (50 * surface_x / 800)
+                    rightside = int (778 * surface_x / 800)
+                    for xskip in range(leftside, rightside, rightside//80):
+                        pygame.draw.line(display_surface, cyan, (xskip, textPrice52HighRect.centery), (xskip+5, textPrice52HighRect.centery), 1)
+                    # pygame.draw.line(display_surface, cyan, (50, textPrice52HighRect.centery), (778, textPrice52HighRect.centery), 1)
+                    
 
-                for each in position_details["securitiesAccount"]["positions"]:
-                    if each["instrument"]["assetType"] == "OPTION":
-                        try:
-                            if each["instrument"]["underlyingSymbol"] == displayStock:
-                                optionSymbol = each["instrument"]["symbol"]
-                                typeOption = optionSymbol[12:13]
-                                strike = float(optionSymbol[13:21])/1000
-                                tempDate = optionSymbol[6:12]
-                                expirationDateTime = datetime.datetime.strptime(f'20{tempDate}', '%Y%m%d')
-                                expirationDate = expirationDateTime.strftime('%Y-%m-%d')
+                    # if lowPrice > stock_52_week_low:
+                    # font = pygame.font.Font('freesansbold.ttf', smallFont)
+                    textPrice52Low = font.render(f"{stock_52_week_low:.2f}", True, cyan, background)
+                    textPrice52LowRect = textPrice52Low.get_rect()
+                    textPrice52LowRect.centery = textPriceLowRect.centery + (stock_52_week_low - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                    textPrice52LowRect.left = 5
+                    display_surface.blit(textPrice52Low, textPrice52LowRect)
+                    leftside = int (50 * surface_x / 800)
+                    rightside = int (778 * surface_x / 800)
+                    for xskip in range(leftside, rightside, rightside//80):
+                        pygame.draw.line(display_surface, cyan, (xskip, textPrice52LowRect.centery), (xskip+5, textPrice52LowRect.centery), 1)
+                    # pygame.draw.line(display_surface, cyan, (50, textPrice52LowRect.centery), (778, textPrice52LowRect.centery), 1)
+                    
+                    # current price, proportional to the high and low price
+                    # font = pygame.font.Font('freesansbold.ttf', smallFont)
+                    if change > 0:
+                        textPriceCur = font.render(f"{currentPrice:.2f}", True, green, background)
+                    if change < 0:
+                        textPriceCur = font.render(f"{currentPrice:.2f}", True, red, background)
+                    if change == 0:
+                        textPriceCur = font.render(f"{currentPrice:.2f}", True, gray, background)
+                    textPriceCurRect = textPriceCur.get_rect()
+                    textPriceCurRect.centery = textPriceLowRect.centery + (currentPrice - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                    textPriceCurRect.left = 5
+                    display_surface.blit(textPriceCur, textPriceCurRect)
+                    leftside = 50
+                    rightside = int (778 * surface_x / 800)
+                    for xskip in range(leftside, rightside, rightside//30):
+                        pygame.draw.line(display_surface, yellow, (xskip, textPriceCurRect.centery), (xskip+10, textPriceCurRect.centery), 1)
+                    # pygame.draw.line(display_surface, yellow, (45, textPriceCurRect.centery), (778, textPriceCurRect.centery), 1)
+                    circleSize = 5
+                    circleColor = yellow
+                    circlex = 51
+                    pygame.draw.circle(display_surface, circleColor, (circlex,textPriceCurRect.centery), circleSize)
 
-                                circlex = 50 / 800 * surface_x + (all_dates.index(expirationDate)) * (textDateRectN.centerx - textDateRect1.centerx) / (len(all_dates)-1)
-                                circley = textPriceLowRect.centery + (strike - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
-                                if optionSymbol in list_of_symbol_open_orders:
-                                    circleColor = yellow
-                                    pygame.draw.circle(display_surface, circleColor, (circlex,circley), 6)
-                                    circleSize = 4
-                                else:
-                                    circleSize = 5
-                                if typeOption == 'C':
-                                    circleColor = (0,255,0)
-                                elif typeOption == 'P':
-                                    circleColor = (255,0,0)
-                                pygame.draw.circle(display_surface, circleColor, (circlex,circley), circleSize)
-                                if each["shortQuantity"] > 1:
-                                    font = pygame.font.Font('freesansbold.ttf', 12)
-                                    textLong = font.render(f"x{int(each['shortQuantity'])}", True, circleColor, background)
-                                    textLongRect = textLong.get_rect()
-                                    textLongRect.center = (circlex + 10, circley - 12)
-                                    display_surface.blit(textLong, textLongRect)
-                        except:
-                            pass
-                            # print("No underlyingSymbol")
+                    ################################################################
+                    # Lets alighn the dates with the dots!
+                    # plus if today's date is in the list, 
+                    # it needs to be on the far left
+                    ################################################################
+
+                    dictionary_for_dates_and_x_coordinates = {}
+                    # First date, on the left
+                    # font = pygame.font.Font('freesansbold.ttf', smallFont)
+                    today = datetime.date.today()
+                    current_month = today.month
+                    current_day = today.day
+                    current_year = today.year
+                    textDate1 = font.render(f"{current_month}/{current_day}", True, white, background)
+                    textDateRect1 = textDate1.get_rect()
+                    textDateRect1.center = (50 / 800 * surface_x , 450 / 480 * surface_y)
+                    display_surface.blit(textDate1, textDateRect1)
+
+                    dictionary_for_dates_and_x_coordinates[f'{today.year}-{today.month:02d}-{today.day:02d}'] = textDateRect1.centerx
+                    
+                    last_year_to_check = current_year
+                    current_year_x_coordinate = textDateRect1.centerx
+                    
+                    # last date. on the right
+                    lastdateString = str(f'20{largestDate}')
+                    # last_date = datetime.datetime.strptime(str(f'20{largestDate}'), '%Y%m%d')
+                    
+                    today = datetime.datetime.today()
+                    last_date = today
+                    for each in all_option_dates:
+                        each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
+                        if each_datetime >= last_date:
+                            last_date = each_datetime
+                        years.append(each_datetime.year)
+                    # print(last_date,'last_date')
+                    last_month = last_date.month
+                    last_day = last_date.day
+                    last_year = last_date.year
+                    textDateN = font.render(f"{last_month}/{last_day}", True, white, background)
+                    textDateRectN = textDateN.get_rect()
+                    textDateRectN.center = (780 / 800 * surface_x , 450 / 480 * surface_y)
+                    display_surface.blit(textDateN, textDateRectN)
+                    
+                    dictionary_for_dates_and_x_coordinates[f'{last_year}-{last_month:02d}-{last_day:02d}'] = textDateRectN.centerx
+
+                    all_dates = copy.deepcopy(all_option_dates)
+                    all_dates.insert(0,f'{today.year}-{today.month:02d}-{today.day:02d}')
+
+                    temp_set = set(all_dates)
+                    all_dates = sorted(list(temp_set))
+                    
+                    for each in all_dates:
+                        each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
+                        each_month = each_datetime.month
+                        each_day = each_datetime.day
+                        each_year = each_datetime.year
+                        if f'{each_year}-{each_month:02d}-{each_day:02d}' not in dictionary_for_dates_and_x_coordinates:
+                            dictionary_for_dates_and_x_coordinates[f'{each_year}-{each_month:02d}-{each_day:02d}'] = 0
+
+                    for each in all_dates[1:-1]:
+                        each_datetime = datetime.datetime.strptime(each, '%Y-%m-%d')
+                        each_month = each_datetime.month
+                        each_day = each_datetime.day
+                        each_year = each_datetime.year
 
 
-            except Exception as e:
-                # prRed("Error displaying data")
-                # prRed(e)
-                pass
+                        text1 = font.render(f"{each_month}/{each_day}", True, white, background)
+                        textRect1 = text1.get_rect()
+                        textRect1.centery = textDateRect1.centery
+
+                        textRect1.centerx = 50 / 800 * surface_x + (all_dates.index(each)) * (textDateRectN.centerx - textDateRect1.centerx) / (len(dictionary_for_dates_and_x_coordinates)-1)
+                        display_surface.blit(text1, textRect1)
+
+                        if each_year != last_year_to_check:
+                            last_year_to_check = each_year
+                            averagex = (current_year_x_coordinate + textRect1.centerx) / 2
+                            pygame.draw.line(display_surface, (64,64,64), (averagex, 20), (averagex, surface_y-20), 1)
+                        else:
+                            current_year_x_coordinate = textRect1.centerx
+
+                    for each in position_details["securitiesAccount"]["positions"]:
+                        if each["instrument"]["assetType"] == "OPTION":
+                            try:
+                                if each["instrument"]["underlyingSymbol"] == displayStock:
+                                    optionSymbol = each["instrument"]["symbol"]
+                                    typeOption = optionSymbol[12:13]
+                                    strike = float(optionSymbol[13:21])/1000
+                                    tempDate = optionSymbol[6:12]
+                                    expirationDateTime = datetime.datetime.strptime(f'20{tempDate}', '%Y%m%d')
+                                    expirationDate = expirationDateTime.strftime('%Y-%m-%d')
+
+                                    circlex = 50 / 800 * surface_x + (all_dates.index(expirationDate)) * (textDateRectN.centerx - textDateRect1.centerx) / (len(all_dates)-1)
+                                    circley = textPriceLowRect.centery + (strike - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                                    if optionSymbol in list_of_symbol_open_orders:
+                                        circleColor = yellow
+                                        pygame.draw.circle(display_surface, circleColor, (circlex,circley), 6)
+                                        circleSize = 4
+                                    else:
+                                        circleSize = 5
+                                    if typeOption == 'C':
+                                        circleColor = (0,255,0)
+                                    elif typeOption == 'P':
+                                        circleColor = (255,0,0)
+                                    pygame.draw.circle(display_surface, circleColor, (circlex,circley), circleSize)
+                                    if each["shortQuantity"] > 1:
+                                        font = pygame.font.Font('freesansbold.ttf', 12)
+                                        textLong = font.render(f"x{int(each['shortQuantity'])}", True, circleColor, background)
+                                        textLongRect = textLong.get_rect()
+                                        textLongRect.center = (circlex + 10, circley - 12)
+                                        display_surface.blit(textLong, textLongRect)
+                            except:
+                                pass
+                                # print("No underlyingSymbol")
 
 
-            try:
+            # except Exception as e:
+            #     # prRed("Error drawing data")
+            #     # prRed(e)
+            #     # print("")
+            #     pass
+
+
+
+            if True:
                 font2 = pygame.font.Font('freesansbold.ttf', 30)
                 if time.time() - textPortfolioSetTime  < time_to_show_text:
                     textPortfolio = font2.render(f'Portfolio shown is {args.portfolio[0]}', True, yellow, background)
@@ -666,21 +710,68 @@ if __name__ == '__main__':
                     display_surface.blit(textSort, textSortRect)
 
                 if time.time() - textStockSetTime  < time_to_show_text:
-                    textSort = font2.render(f'Now showing {args.equity[0]}', True, yellow, background)
+                    textSort = font2.render(f'Now showing {displayStock}', True, yellow, background)
                     textSortRect = textSort.get_rect()
                     surface_x, surface_y = display_surface.get_size()
                     cx = surface_x * 1/2
-                    # cy = surface_y / 2
-                    cy = surface_y * (equities.index(args.equity[0])+1)/(len(equities)+1)
+                    if len(equities) != 0:
+                        cy = surface_y * (equities.index(displayStock)+1)/(len(equities)+1)
+                    else:
+                        cy = surface_y / 2
                     textSortRect.center = (cx, cy)
                     if not SerialModuleEnabled:
-                        pygame.image.save(display_surface, f".stock_{args.equity[0]}.png")
-                    display_surface.blit(textSort, textSortRect)
-            except:
-                # prRed("Error checking text against time")
-                time.sleep(1)
-                pass
+                        pygame.image.save(display_surface, f".stock_{displayStock}.png")
+                    if len(equities) != 0:
+                        display_surface.blit(textSort, textSortRect)
+            # except:
+            #     # prRed("Error checking text against time")
+            #     time.sleep(1)
+            #     pass
 
+                Error = False
+
+                if not myRedis.exists("My:quotes"):
+                    Error = True
+                    prRed("My:quotes not in redis, run the following:  python redisSet_MyQuotes_Streaming.py")
+                    font2 = pygame.font.Font('freesansbold.ttf', 30)
+                    textError1 = font2.render("Please load My:quotes into Redis.", True, red, background)
+                    textError1Rect = textError1.get_rect()
+                    textError1Rect.centery = surface_y / 5
+                    textError1Rect.centerx = surface_x / 2
+                    display_surface.blit(textError1, textError1Rect)
+
+                if not myRedis.exists("My:orders_details"):
+                    Error = True
+                    prRed("My:orders_details not in redis, run the following:  redisSet")
+                    font2 = pygame.font.Font('freesansbold.ttf', 30)
+                    textError1 = font2.render("Please load My:orders_details into Redis.", True, red, background)
+                    textError1Rect = textError1.get_rect()
+                    textError1Rect.centery = surface_y * 2 / 5
+                    textError1Rect.centerx = surface_x / 2
+                    display_surface.blit(textError1, textError1Rect)
+
+                if not myRedis.exists("My:position_details"):
+                    Error = True
+                    prRed("My:position_details not in redis, run the following:  redisSet")
+                    font2 = pygame.font.Font('freesansbold.ttf', 30)
+                    textError1 = font2.render("Please load My:position_details into Redis.", True, red, background)
+                    textError1Rect = textError1.get_rect()
+                    textError1Rect.centery = surface_y * 3 / 5
+                    textError1Rect.centerx = surface_x / 2
+                    display_surface.blit(textError1, textError1Rect)
+
+                if not myRedis.exists("All:stock_option_dates"):
+                    Error = True
+                    prRed("All:stock_option_dates not in redis, run the following:  py redisSet_AllStockOptionDates.py")
+                    font2 = pygame.font.Font('freesansbold.ttf', 30)
+                    textError1 = font2.render("Please load All:stock_option_dates into Redis.", True, red, background)
+                    textError1Rect = textError1.get_rect()
+                    textError1Rect.centery = surface_y * 4 / 5
+                    textError1Rect.centerx = surface_x / 2
+                    display_surface.blit(textError1, textError1Rect)
+
+                if Error:
+                    print()
                 
             # elif DataShown == 1: #'Stocks'
 
@@ -796,10 +887,6 @@ if __name__ == '__main__':
             else:
                 pass
                 # print('args.auto (N)', args.auto)
-
-
-
-                    
 
             try:
             # if True:
