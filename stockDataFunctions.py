@@ -29,11 +29,21 @@ class RedisConnection:
         except redis.RedisError as e:
             print(f"Redis connection error: {e}")
             return None
-        
+
+    def exists(self,key):
+        if self._connection.exists(key):
+            return True
+        else: 
+            return False
+           
 
     def return_details(self,key):
         if self._connection.exists(key):
             My_details_string = self._connection.get(key)
+            My_details = json.loads(My_details_string)
+            with open("."+str(key)+".json", "w") as file:
+                json.dump(My_details, file, indent=4)
+            return My_details
         else:
             # print()
             # print(f'key: {key}')
@@ -48,27 +58,24 @@ class RedisConnection:
             # sys.exit(0) 
             return None
 
-        My_details = json.loads(My_details_string)
-        with open("."+str(key)+".json", "w") as file:
-            json.dump(My_details, file, indent=4)
-        return My_details
 
     def return_orders(self, status = "open"):
         returnData = []
         orders_details = self.return_details("My:orders_details")
-        for each in orders_details:
-            # print()
-            # print(each)
-            if status == "all":
-                pass
-            elif status == "open":
-                if each['status'] == 'PENDING_ACTIVATION':
-                    returnData.append(each)
-                if each['status'] == 'WORKING':
-                    returnData.append(each)
-            elif status == "filled":
-                if each['status'] == 'FILLED':
-                    returnData.append(each)
+        if orders_details != None:
+            for each in orders_details:
+                # print()
+                # print(each)
+                if status == "all":
+                    pass
+                elif status == "open":
+                    if each['status'] == 'PENDING_ACTIVATION':
+                        returnData.append(each)
+                    if each['status'] == 'WORKING':
+                        returnData.append(each)
+                elif status == "filled":
+                    if each['status'] == 'FILLED':
+                        returnData.append(each)
         return returnData
 
     def return_positions(self, type = "all"):
