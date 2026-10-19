@@ -320,7 +320,7 @@ if __name__ == '__main__':
                 if lastDisplayStock != displayStock:
                     try:
                         ser = serial.Serial('/dev/ttyS0', 9600, timeout=1)
-                        ser.write(f'{args.equity[0]}\n'.encode())
+                        ser.write(f'{displayStock}\n'.encode())
                         ser.close()
                         lastDisplayStock = displayStock
                     except serial.SerialException as e:
