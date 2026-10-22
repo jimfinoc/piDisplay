@@ -55,8 +55,8 @@ def prBlack(skk): print("\033[98m {}\033[00m" .format(skk))
 
 white = (255, 255, 255)
 yellow = (255, 255, 0)
-red = (128, 0, 0)
-green = (0, 128, 0)
+red = (255, 0, 0)
+green = (0, 255, 0)
 blue = (0, 0, 128)
 cyan = (0, 255, 255)
 black = (0, 0, 0)
@@ -464,12 +464,13 @@ if __name__ == '__main__':
                     display_surface.blit(textPriceCur, textPriceCurRect)
 
                     # percent change top left
+                    change_percent_string = f"{change_percent:.2f}%"
                     if change > 0:
-                        textChangePercent = font.render(f"{change_percent}%", True, green, background)
+                        textChangePercent = font.render(change_percent_string, True, green, background)
                     if change < 0:
-                        textChangePercent = font.render(f"{change_percent}%", True, red, background)
+                        textChangePercent = font.render(change_percent_string, True, red, background)
                     if change == 0:
-                        textChangePercent = font.render(f"{change_percent}%", True, gray, background)
+                        textChangePercent = font.render(change_percent_string, True, gray, background)
 
                     textChangePercentRect = textChangePercent.get_rect()
                     textChangePercentRect.centery = textStockRect.centery
