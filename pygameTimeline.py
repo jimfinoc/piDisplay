@@ -806,7 +806,7 @@ if __name__ == '__main__':
                 if not myRedis.exists("My:quotes"):
                     Error = True
                     quotes_button.load_font(font2)
-                    if myRedis.exists("My:quotes_loading"):
+                    if myRedis.exists("Requested:quotes"):
                         quotes_button.load_text("Requested My:quotes.",yellow)
                     else:
                         quotes_button.load_text("Please load My:quotes into Redis.")
@@ -817,7 +817,7 @@ if __name__ == '__main__':
                     Error = True
                     # prRed("My:orders_details not in redis, run the following:  redisSet")
                     orders_details_button.load_font(font2)
-                    if myRedis.exists("My:orders_details_loading"):
+                    if myRedis.exists("Requested:orders_details"):
                         orders_details_button.load_text("Requested My:orders_details.",yellow)
                     else:
                         orders_details_button.load_text("Please load My:orders_details into Redis.")
@@ -827,7 +827,7 @@ if __name__ == '__main__':
                     Error = True
                     # prRed("My:positions_details not in redis, run the following:  redisSet")
                     positions_details_button.load_font(font2)
-                    if myRedis.exists("My:positions_details_loading"):
+                    if myRedis.exists("Requested:positions_details"):
                         positions_details_button.load_text("Requested My:positions_details.",yellow)
                     else:
                         positions_details_button.load_text("Please load My:positions_details into Redis.")
@@ -837,7 +837,7 @@ if __name__ == '__main__':
                     Error = True
                     # prRed("All:stock_option_dates not in redis, run the following:  py redisSet_AllStockOptionDates.py")
                     stock_option_dates_button.load_font(font2)
-                    if myRedis.exists("All:stock_option_dates_loading"):
+                    if myRedis.exists("Requested:stock_option_dates"):
                         stock_option_dates_button.load_text("Requested All:stock_option_dates.",yellow)
                     else:
                         stock_option_dates_button.load_text("Please load All:stock_option_dates into Redis.")
@@ -864,22 +864,22 @@ if __name__ == '__main__':
                     if quotes_button.is_clicked(event):
                         pass
                         print ("quotes_button clicked")
-                        myRedis.set("My:quotes_loading","True")
+                        myRedis.set("Requested:quotes","True")
 
                     elif orders_details_button.is_clicked(event):
                         pass
                         print ("orders_details_button clicked")
-                        myRedis.set("My:orders_details_loading","True")
+                        myRedis.set("Requested:orders_details","True")
 
                     elif positions_details_button.is_clicked(event):
                         pass
                         print ("positions_details_button clicked")
-                        myRedis.set("My:positions_details_loading","True")
+                        myRedis.set("Requested:positions_details","True")
 
                     elif stock_option_dates_button.is_clicked(event):
                         pass
                         print ("stock_option_dates_button clicked")
-                        myRedis.set("All:stock_option_dates_loading","True")
+                        myRedis.set("Requested:stock_option_dates","True")
                     else:
                         if pygame.mouse.get_pressed()[0]:
                             action = 5
