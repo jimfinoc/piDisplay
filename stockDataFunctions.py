@@ -36,6 +36,8 @@ class RedisConnection:
         else: 
             return False
            
+    def set(self,key,value,seconds=60):
+        self._connection.set(key,value,seconds)
 
     def return_details(self,key):
         if self._connection.exists(key):
@@ -81,8 +83,8 @@ class RedisConnection:
     def return_positions(self, type = "all"):
         # returnData = []
         return_data = set()
-        position_details = self.return_details("My:position_details")
-        for each in position_details["securitiesAccount"]["positions"]:
+        positions_details = self.return_details("My:positions_details")
+        for each in positions_details["securitiesAccount"]["positions"]:
             if type == "all" or type == "option":
                 if each["instrument"]["assetType"] == "OPTION":
                     # print(each["instrument"]["underlyingSymbol"])
