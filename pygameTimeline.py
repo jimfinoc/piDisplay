@@ -57,7 +57,7 @@ white = (255, 255, 255)
 yellow = (255, 255, 0)
 red = (255, 0, 0)
 green = (0, 255, 0)
-blue = (0, 0, 128)
+blue = (0, 0, 255)
 cyan = (0, 255, 255)
 black = (0, 0, 0)
 gray = (128, 128, 128)
@@ -119,6 +119,48 @@ def redisPullDataFunction(lock, shared_dict,stop_threads):
                     shared_dict.update(temp)
     prRed('Stop printing')
 
+class Button:
+    _button_id_counter = 0
+    _max_buttons = 5
+
+    def __init__(self):
+        Button._button_id_counter += 1
+        self.button_id = Button._button_id_counter
+        self.loading = False
+        self.rect = pygame.Rect(0, 0, 0, 0)
+
+    def load_font(self,pygame_font):
+        self.font = pygame_font
+
+    def load_text(self,pygame_text, color = red):
+        # if self.loading:
+        #     self.text =  self.font.render("loading", True, red, None)
+        # else:
+        self.text =  self.font.render(pygame_text, True, color, None)
+        self.rect = self.text.get_rect()
+        self.rect.centery = surface_y * self.button_id / Button._max_buttons + 2 # this places buttons neatly and automatically in 1 of 4 positions
+        self.rect.centerx = surface_x / 2
+
+    def draw(self,surface):
+        mouse_pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(mouse_pos) and not self.loading:
+            pygame.draw.rect(surface, white, self.rect)
+        else:
+            pass
+            pygame.draw.rect(surface, black, self.rect)
+        surface.blit(self.text, self.rect)
+
+    def is_clicked(self,event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: # Left click
+            if self.rect.collidepoint(event.pos):
+                return True
+        return False
+ 
+
+quotes_button = Button()
+orders_details_button = Button()
+positions_details_button = Button()
+stock_option_dates_button = Button()
 
 if __name__ == '__main__':
     SerialModuleEnabled = False
@@ -235,6 +277,7 @@ if __name__ == '__main__':
         
         while not done:
             clock.tick(30)
+            mouse_pos = pygame.mouse.get_pos()
             today = datetime.date.today()
             current_year = today.year
             years = [current_year]
@@ -270,7 +313,7 @@ if __name__ == '__main__':
                             equities.append(each)
                 except:
                     pass
-                    # prRed("Cannot load options from My:position_details")
+                    # prRed("Cannot load options from My:positions_details")
             elif 'Both' in args.portfolio:
                 for each in myRedis.return_positions("stock"):
                     if each in redisMyQuotes:
@@ -366,7 +409,7 @@ if __name__ == '__main__':
 
                 # order_details
 
-            position_details = myRedis.return_details("My:position_details")
+            position_details = myRedis.return_details("My:positions_details")
             # prGreen(f'position_details: {position_details}')
 
             if position_details:
@@ -411,8 +454,15 @@ if __name__ == '__main__':
 
             # try:
             if True:
+
+                leftside = int (50 * surface_x / 800)
+                rightside = int (730 * surface_x / 800)
+                topside = 20
+                bottomside = surface_y - 40
+
                 pygame.draw.rect(display_surface, background, (0,0,surface_x,surface_y),width=0)
-                pygame.draw.rect(display_surface, (100,100,0), (50,20,surface_x-50-20,surface_y-20-40),width=2)
+                # pygame.draw.rect(display_surface, (100,100,0), (50,20,surface_x-50-20,surface_y-20-40),width=2)
+                pygame.draw.rect(display_surface, (100,100,0), (leftside,20,rightside,surface_y-20-40),width=2)
                 
                 test_x += moving_x
                 test_y += moving_y
@@ -451,13 +501,13 @@ if __name__ == '__main__':
                     textStockRect.centery = 10 / 480 * surface_y
                     textStockRect.left = 5
                     display_surface.blit(textStock, textStockRect)
-
+                    current_price_string = f"{currentPrice:.2f}"
                     if change > 0:
-                        textPriceCur = font.render(f"{currentPrice:.2f}", True, green, background)
+                        textPriceCur = font.render(current_price_string, True, green, background)
                     if change < 0:
-                        textPriceCur = font.render(f"{currentPrice:.2f}", True, red, background)
+                        textPriceCur = font.render(current_price_string, True, red, background)
                     if change == 0:
-                        textPriceCur = font.render(f"{currentPrice:.2f}", True, gray, background)
+                        textPriceCur = font.render(current_price_string, True, gray, background)
                     textPriceCurRect = textPriceCur.get_rect()
                     textPriceCurRect.centery = textStockRect.centery
                     textPriceCurRect.left = textStockRect.right + 5
@@ -515,9 +565,10 @@ if __name__ == '__main__':
                     display_surface.blit(textPrice52High, textPrice52HighRect)
                     leftside = int (50 * surface_x / 800)
                     rightside = int (778 * surface_x / 800)
-                    for xskip in range(leftside, rightside, rightside//80):
-                        pygame.draw.line(display_surface, cyan, (xskip, textPrice52HighRect.centery), (xskip+5, textPrice52HighRect.centery), 1)
-                    # pygame.draw.line(display_surface, cyan, (50, textPrice52HighRect.centery), (778, textPrice52HighRect.centery), 1)
+                    dash_length, space_length = 5, 5
+                    for xskip in range(leftside+1, rightside-1, dash_length + space_length):
+                        dash_end_x = min(xskip + dash_length, rightside-1)
+                        pygame.draw.line(display_surface, cyan, (xskip, textPrice52HighRect.centery), (dash_end_x, textPrice52HighRect.centery), 1)
                     
 
                     # if lowPrice > stock_52_week_low:
@@ -527,10 +578,10 @@ if __name__ == '__main__':
                     textPrice52LowRect.centery = textPriceLowRect.centery + (stock_52_week_low - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
                     textPrice52LowRect.left = 5
                     display_surface.blit(textPrice52Low, textPrice52LowRect)
-                    leftside = int (50 * surface_x / 800)
-                    rightside = int (778 * surface_x / 800)
-                    for xskip in range(leftside, rightside, rightside//80):
-                        pygame.draw.line(display_surface, cyan, (xskip, textPrice52LowRect.centery), (xskip+5, textPrice52LowRect.centery), 1)
+                    dash_length, space_length = 5, 5
+                    for xskip in range(leftside+1, rightside-1, dash_length + space_length):
+                        dash_end_x = min(xskip + dash_length, rightside-1)
+                        pygame.draw.line(display_surface, cyan, (xskip, textPrice52LowRect.centery), (dash_end_x, textPrice52LowRect.centery), 1)
                     # pygame.draw.line(display_surface, cyan, (50, textPrice52LowRect.centery), (778, textPrice52LowRect.centery), 1)
                     
                     # current price, proportional to the high and low price
@@ -545,10 +596,12 @@ if __name__ == '__main__':
                     textPriceCurRect.centery = textPriceLowRect.centery + (currentPrice - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
                     textPriceCurRect.left = 5
                     display_surface.blit(textPriceCur, textPriceCurRect)
-                    leftside = 50
-                    rightside = int (778 * surface_x / 800)
-                    for xskip in range(leftside, rightside, rightside//30):
-                        pygame.draw.line(display_surface, yellow, (xskip, textPriceCurRect.centery), (xskip+10, textPriceCurRect.centery), 1)
+                    # leftside = 50
+                    # rightside = int (778 * surface_x / 800)
+                    dash_length, space_length = 10, 10
+                    for xskip in range(leftside+1, rightside-1, dash_length + space_length):
+                        dash_end_x = min(xskip + dash_length, rightside-1)
+                        pygame.draw.line(display_surface, yellow, (xskip, textPriceCurRect.centery), (dash_end_x, textPriceCurRect.centery), 1)
                     # pygame.draw.line(display_surface, yellow, (45, textPriceCurRect.centery), (778, textPriceCurRect.centery), 1)
                     circleSize = 5
                     circleColor = yellow
@@ -568,7 +621,7 @@ if __name__ == '__main__':
                     current_month = today.month
                     current_day = today.day
                     current_year = today.year
-                    textDate1 = font.render(f"{current_month}/{current_day}", True, white, background)
+                    textDate1 = font.render(f"{current_month}/{current_day}", True, yellow, background)
                     textDateRect1 = textDate1.get_rect()
                     textDateRect1.center = (50 / 800 * surface_x , 450 / 480 * surface_y)
                     display_surface.blit(textDate1, textDateRect1)
@@ -655,27 +708,45 @@ if __name__ == '__main__':
                                     else:
                                         circleSize = 5
                                     if typeOption == 'C':
-                                        circleColor = (0,255,0)
+                                        circleColor = green
                                     elif typeOption == 'P':
-                                        circleColor = (255,0,0)
+                                        circleColor = red
+                                    circle_rect = pygame.draw.circle(display_surface, circleColor, (circlex,circley), circleSize)
+                                    if circle_rect.collidepoint(mouse_pos):
+                                        pass
+                                        # draw horizontal line
+                                        pygame.draw.line(display_surface, blue, (leftside+1,circley), (circlex,circley), 1)
+
+                                        # draw price in blue
+                                        blue_price_text = font.render(f"{strike:.2f}", True, blue, white)
+                                        blue_price_textRect = blue_price_text.get_rect()
+                                        blue_price_textRect.centery = circley
+                                        blue_price_textRect.left = textPriceHighRect.left
+                                        display_surface.blit(blue_price_text, blue_price_textRect)
+
+                                        # draw verticle line
+                                        pygame.draw.line(display_surface, blue, (circlex,bottomside-1), (circlex,circley), 1)
+
+                                        # draw date in blue
+                                        blue_date_text = font.render(f"{expirationDateTime.month}/{expirationDateTime.day}", True, blue, white)
+                                        blue_date_textRect = blue_date_text.get_rect()
+                                        blue_date_textRect.centerx = circlex 
+                                        blue_date_textRect.centery = textDateRect1.centery
+
+                                        display_surface.blit(blue_date_text, blue_date_textRect)
                                     pygame.draw.circle(display_surface, circleColor, (circlex,circley), circleSize)
+
+
                                     if each["shortQuantity"] > 1:
                                         font = pygame.font.Font('freesansbold.ttf', 12)
                                         textLong = font.render(f"x{int(each['shortQuantity'])}", True, circleColor, background)
                                         textLongRect = textLong.get_rect()
                                         textLongRect.center = (circlex + 10, circley - 12)
                                         display_surface.blit(textLong, textLongRect)
+                                    #test for cursor over circle
                             except:
                                 pass
                                 # print("No underlyingSymbol")
-
-
-            # except Exception as e:
-            #     # prRed("Error drawing data")
-            #     # prRed(e)
-            #     # print("")
-            #     pass
-
 
 
             if True:
@@ -730,49 +801,51 @@ if __name__ == '__main__':
             #     pass
 
                 Error = False
+                font2 = pygame.font.Font('freesansbold.ttf', 30)
 
                 if not myRedis.exists("My:quotes"):
                     Error = True
-                    prRed("My:quotes not in redis, run the following:  python redisSet_MyQuotes_Streaming.py")
-                    font2 = pygame.font.Font('freesansbold.ttf', 30)
-                    textError1 = font2.render("Please load My:quotes into Redis.", True, red, background)
-                    textError1Rect = textError1.get_rect()
-                    textError1Rect.centery = surface_y / 5
-                    textError1Rect.centerx = surface_x / 2
-                    display_surface.blit(textError1, textError1Rect)
+                    quotes_button.load_font(font2)
+                    if myRedis.exists("My:quotes_loading"):
+                        quotes_button.load_text("Requested My:quotes.",yellow)
+                    else:
+                        quotes_button.load_text("Please load My:quotes into Redis.")
+                    # prRed("My:quotes not in redis, run the following:  python redisSet_MyQuotes_Streaming.py")
+                    quotes_button.draw(display_surface)
 
                 if not myRedis.exists("My:orders_details"):
                     Error = True
-                    prRed("My:orders_details not in redis, run the following:  redisSet")
-                    font2 = pygame.font.Font('freesansbold.ttf', 30)
-                    textError1 = font2.render("Please load My:orders_details into Redis.", True, red, background)
-                    textError1Rect = textError1.get_rect()
-                    textError1Rect.centery = surface_y * 2 / 5
-                    textError1Rect.centerx = surface_x / 2
-                    display_surface.blit(textError1, textError1Rect)
+                    # prRed("My:orders_details not in redis, run the following:  redisSet")
+                    orders_details_button.load_font(font2)
+                    if myRedis.exists("My:orders_details_loading"):
+                        orders_details_button.load_text("Requested My:orders_details.",yellow)
+                    else:
+                        orders_details_button.load_text("Please load My:orders_details into Redis.")
+                    orders_details_button.draw(display_surface)
 
-                if not myRedis.exists("My:position_details"):
+                if not myRedis.exists("My:positions_details"):
                     Error = True
-                    prRed("My:position_details not in redis, run the following:  redisSet")
-                    font2 = pygame.font.Font('freesansbold.ttf', 30)
-                    textError1 = font2.render("Please load My:position_details into Redis.", True, red, background)
-                    textError1Rect = textError1.get_rect()
-                    textError1Rect.centery = surface_y * 3 / 5
-                    textError1Rect.centerx = surface_x / 2
-                    display_surface.blit(textError1, textError1Rect)
+                    # prRed("My:positions_details not in redis, run the following:  redisSet")
+                    positions_details_button.load_font(font2)
+                    if myRedis.exists("My:positions_details_loading"):
+                        positions_details_button.load_text("Requested My:positions_details.",yellow)
+                    else:
+                        positions_details_button.load_text("Please load My:positions_details into Redis.")
+                    positions_details_button.draw(display_surface)
 
                 if not myRedis.exists("All:stock_option_dates"):
                     Error = True
-                    prRed("All:stock_option_dates not in redis, run the following:  py redisSet_AllStockOptionDates.py")
-                    font2 = pygame.font.Font('freesansbold.ttf', 30)
-                    textError1 = font2.render("Please load All:stock_option_dates into Redis.", True, red, background)
-                    textError1Rect = textError1.get_rect()
-                    textError1Rect.centery = surface_y * 4 / 5
-                    textError1Rect.centerx = surface_x / 2
-                    display_surface.blit(textError1, textError1Rect)
+                    # prRed("All:stock_option_dates not in redis, run the following:  py redisSet_AllStockOptionDates.py")
+                    stock_option_dates_button.load_font(font2)
+                    if myRedis.exists("All:stock_option_dates_loading"):
+                        stock_option_dates_button.load_text("Requested All:stock_option_dates.",yellow)
+                    else:
+                        stock_option_dates_button.load_text("Please load All:stock_option_dates into Redis.")
+                    stock_option_dates_button.draw(display_surface)
 
                 if Error:
-                    print()
+                    pass
+                    # print()
                 
             # elif DataShown == 1: #'Stocks'
 
@@ -788,19 +861,39 @@ if __name__ == '__main__':
                     display_surface = pygame.display.set_mode((surface_x, surface_y), pygame.RESIZABLE)
                     print('Resized to', surface_x, surface_y)
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if pygame.mouse.get_pressed()[0]:
-                        action = 5
-                        prYellow("Left mouse button clicked")
-                    if pygame.mouse.get_pressed()[1]:
-                        # if event.mod & pygame.KMOD_LSHIFT or event.mod & pygame.KMOD_RSHIFT:
-                        action = 21
-                        prYellow("Middle mouse button clicked")
-                        # else:
-                            # action = 20
-                        # prYellow("Shift Middle mouse button clicked")
-                    if pygame.mouse.get_pressed()[2]:
-                        action = -1
-                        prYellow("Right mouse button clicked")
+                    if quotes_button.is_clicked(event):
+                        pass
+                        print ("quotes_button clicked")
+                        myRedis.set("My:quotes_loading","True")
+
+                    elif orders_details_button.is_clicked(event):
+                        pass
+                        print ("orders_details_button clicked")
+                        myRedis.set("My:orders_details_loading","True")
+
+                    elif positions_details_button.is_clicked(event):
+                        pass
+                        print ("positions_details_button clicked")
+                        myRedis.set("My:positions_details_loading","True")
+
+                    elif stock_option_dates_button.is_clicked(event):
+                        pass
+                        print ("stock_option_dates_button clicked")
+                        myRedis.set("All:stock_option_dates_loading","True")
+                    else:
+                        if pygame.mouse.get_pressed()[0]:
+                            action = 5
+                            prYellow("Left mouse button clicked")
+                        if pygame.mouse.get_pressed()[1]:
+                            # if event.mod & pygame.KMOD_LSHIFT or event.mod & pygame.KMOD_RSHIFT:
+                            action = 21
+                            prYellow("Middle mouse button clicked")
+                            # else:
+                                # action = 20
+                            # prYellow("Shift Middle mouse button clicked")
+                        if pygame.mouse.get_pressed()[2]:
+                            action = -1
+                            prYellow("Right mouse button clicked")
                 if event.type == pygame.MOUSEWHEEL:
                     # print('event.x')
                     # print(event.x)
