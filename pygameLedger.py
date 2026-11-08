@@ -5,9 +5,9 @@ import sys
 pygame.init()
 
 # Display settings
-WIDTH, HEIGHT = 820, 520
+WIDTH, HEIGHT = 800, 480
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Multi-Filter & Sortable Dictionary Viewer")
+pygame.display.set_caption("Ledger Viewer")
 
 # Colors
 BG_COLOR = (35, 38, 46)
