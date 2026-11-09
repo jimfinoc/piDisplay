@@ -7,9 +7,13 @@ import math
 from multiprocessing import Process, Value, Manager, Lock
 from ctypes import c_char_p
 import json
-from stockDataFunctions import return_details
-from stockDataFunctions import return_positions
-from stockDataFunctions import return_orders
+# from stockDataFunctions import return_details
+# from stockDataFunctions import return_positions
+# from stockDataFunctions import return_orders
+from stockDataFunctions import RedisConnection
+myRedis = RedisConnection()
+myRedis.connect()
+
 import copy
 import argparse
 import os
@@ -60,9 +64,12 @@ def redisPullDataFunction(lock, shared_dict,stop_threads):
                 local_stop = stop_threads.value
                 start = time.time()
                 temp = shared_dict.copy()
-                temp = return_details("My_quotes")
-                shared_dict.clear()
-                shared_dict.update(temp)
+                temp = myRedis.return_details("My:quotes")
+                if temp is None:
+                    pass
+                else:
+                    shared_dict.clear()
+                    shared_dict.update(temp)
     prRed('Stop printing')
 
 if __name__ == '__main__':
@@ -91,24 +98,26 @@ if __name__ == '__main__':
             return None
     except ImportError:
         print("Serial module not found. Not communicating via serial.")
-        try:
-            import socket
-            print("UDP Socket module enabled.")
-            UDPacketModuleEnabled = True
+    try:
+        import socket
+        print("UDP Socket module enabled.")
+        UDPacketModuleEnabled = True
 
-            # Create a UDP socket
-            sock = socket.socket(socket.AF_INET,  # Internet
-                                socket.SOCK_DGRAM) # UDP
+        # Create a UDP socket
+        sock = socket.socket(socket.AF_INET,  # Internet
+                            socket.SOCK_DGRAM) # UDP
 
-            # Bind the socket to the address and port
-            sock.bind((UDP_ip, UDP_port))
-            sock.settimeout(0)
+        # Bind the socket to the address and port
+        sock.bind((UDP_ip, UDP_port))
+        sock.settimeout(0)
 
-            print(f"Listening for UDP packets on {UDP_ip}:{UDP_port}")
+        print(f"Listening for UDP packets on {UDP_ip}:{UDP_port}")
 
+    except OSError:
+        print("UDP Socket error. Not communicating via UDP.")
 
-        except ImportError:
-            print("Socket module not found. Not communicating via UDP.")
+    except ImportError:
+        print("Socket module not found. Not communicating via UDP.")
     print()
 
     pygame.init()
@@ -237,12 +246,12 @@ if __name__ == '__main__':
         # print('Initial timecheck', timecheck)
         # print('datetime.datetime.now()',datetime.datetime.now())
         # print('datetime.datetime.now().timestamp())*1000',datetime.datetime.now().timestamp()*1000)
-        stock_history = return_details("My_stock_history")
-        # stock_history_candles = return_details("My_stock_history")[displayStock]['candles']
+        stock_history = myRedis.return_details("My:stock_history")
+        # stock_history_candles = myRedis.return_details("My:stock_history")[displayStock]['candles']
         random_key = random.choice(list(stock_history.keys()))
         # print('random_key', random_key)
         # random_value = stock_history[random_key]
-        stock_history_candles = return_details("My_stock_history")[random_key]['candles']
+        stock_history_candles = myRedis.return_details("My:stock_history")[random_key]['candles']
         # print('len(stock_history_candles)', len(stock_history_candles))
         # print('stock_history_candles[0]', stock_history_candles[0])
         for each in stock_history_candles:
@@ -254,7 +263,7 @@ if __name__ == '__main__':
         # print()
 
 
-
+        last_received_message = None
         while not done:
             clock.tick(30)
             today = datetime.date.today()
@@ -281,7 +290,7 @@ if __name__ == '__main__':
                     # print(f"Socket error: {e}")
 
             list_of_symbol_open_orders = []
-            My_open_orders = return_orders("open")
+            My_open_orders = myRedis.return_orders("open")
             for each in My_open_orders:
                 # print ('each')
                 # print (each)
@@ -297,31 +306,31 @@ if __name__ == '__main__':
                     redisFilterData[each] = redisAllDataPull[each]
                     equities.append(each)
             elif 'Stocks' in args.portfolio:
-                for each in return_positions("stock"):
+                for each in myRedis.return_positions("stock"):
                     if each in redisAllDataPull:
                         redisFilterData[each] = redisAllDataPull[each]
                         equities.append(each)
             elif 'Options' in args.portfolio:
-                for each in return_positions("option"):
+                for each in myRedis.return_positions("option"):
                     if each in redisAllDataPull:
                         redisFilterData[each] = redisAllDataPull[each]
                         equities.append(each)
             elif 'Both' in args.portfolio:
-                for each in return_positions("stock"):
+                for each in myRedis.return_positions("stock"):
                     if each in redisAllDataPull:
                         redisFilterData[each] = redisAllDataPull[each]
                         equities.append(each)
-                for each in return_positions("option"):
+                for each in myRedis.return_positions("option"):
                     if each in redisAllDataPull:
                         redisFilterData[each] = redisAllDataPull[each]
                         equities.append(each)
             elif 'Speculation' in args.portfolio:
-                for each in return_details("My_speculation_stocks"):
+                for each in myRedis.return_details("My:speculation_stocks"):
                     if each in redisAllDataPull:
                         redisFilterData[each] = redisAllDataPull[each]
                         equities.append(each)
             elif 'Others' in args.portfolio:
-                for each in return_details("My_other_stocks"):
+                for each in myRedis.return_details("My:other_stocks"):
                     if each in redisAllDataPull:
                         redisFilterData[each] = redisAllDataPull[each]
                         equities.append(each)
@@ -342,29 +351,39 @@ if __name__ == '__main__':
             ################################################################
 
 
-            try:
+            # try:
+            if True:
                 if SerialModuleEnabled or UDPacketModuleEnabled:
                     if args.auto == ['Sync'] or args.auto == 'Sync':
                         args.equity = [last_received_message]
-                if args.equity == "":
-                    args.equity = [equities[0]]
-                if args.equity[0] not in equities:
-                    args.equity = [equities[0]]
-                displayStock = args.equity[0]
+                if equities:
+                    if args.equity == "":
+                        args.equity = [equities[0]]
+                    if args.equity[0] not in equities:
+                        args.equity = [equities[0]]
+                    displayStock = args.equity[0]
+                else:
+                    displayStock = None
                 # print('displayStock',displayStock)
                 # print(redisAllDataPull[displayStock])
-                highPrice = redisAllDataPull[displayStock]['52_week_high']
-                lowPrice = redisAllDataPull[displayStock]['52_week_low']
-                stock_52_week_high = redisAllDataPull[displayStock]['52_week_high']
-                stock_52_week_low = redisAllDataPull[displayStock]['52_week_low']
-                currentPrice = redisAllDataPull[displayStock]['price']
+                if displayStock is None:
+                    highPrice = 0
+                    lowPrice = 0
+                    stock_52_week_high = 0
+                    stock_52_week_low = 0
+                else:
+                    highPrice = redisAllDataPull[displayStock]['52_week_high']
+                    lowPrice = redisAllDataPull[displayStock]['52_week_low']
+                    stock_52_week_high = redisAllDataPull[displayStock]['52_week_high']
+                    stock_52_week_low = redisAllDataPull[displayStock]['52_week_low']
+                    currentPrice = redisAllDataPull[displayStock]['price']
                 largestDate = 0
 
                 # order_details
-                # history_details = return_details("My_stock_history")
+                # history_details = myRedis.return_details("My:stock_history")
 
-                position_details = return_details("My_position_details")
-                for each in position_details["securitiesAccount"]["positions"]:
+                positions_details = myRedis.return_details("My:positions_details")
+                for each in positions_details["securitiesAccount"]["positions"]:
                     if each["instrument"]["assetType"] == "OPTION":
                         if each["instrument"]["underlyingSymbol"] == displayStock:
                             optionSymbol = each["instrument"]["symbol"]
@@ -382,9 +401,12 @@ if __name__ == '__main__':
                             years.append(int(f'20{expirationDate[0:2]}'))
                             temp = list(set(years))
                             years = sorted(temp)
-                all_option_dates = return_details("All_stock_option_dates")[displayStock]
-
-                stock_history_candles = stock_history[displayStock]['candles']
+                if displayStock is None:
+                    all_option_dates = {}
+                    stock_history_candles = {}
+                else:
+                    all_option_dates = myRedis.return_details("All:stock_option_dates")[displayStock]
+                    stock_history_candles = stock_history[displayStock]['candles']
 
 
 
@@ -403,8 +425,8 @@ if __name__ == '__main__':
 
                 ##### FOR EACH IN THE LIST, GET THE DATA
 
-            except:
-                prRed("Error selecting equity")
+            # except:
+            #     prRed("Error selecting equity")
 
             my_rect={}
             count = 0
@@ -432,7 +454,8 @@ if __name__ == '__main__':
             ################################################################
             ################################################################
 
-            try:
+            # try:
+            if True:
                 oldest_date = {}             
                 pygame.draw.rect(display_surface, background, (0,0,surface_x,surface_y),width=0)
                 pygame.draw.rect(display_surface, (100,100,0), (50,20,surface_x-50-20,surface_y-20-40),width=2)
@@ -476,7 +499,12 @@ if __name__ == '__main__':
                 font = pygame.font.Font('freesansbold.ttf', 15)
                 textPrice52High = font.render(f"{stock_52_week_high:.2f}", True, cyan, background)
                 textPrice52HighRect = textPrice52High.get_rect()
-                textPrice52HighRect.centery = textPriceLowRect.centery + (stock_52_week_high - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                if highPrice - lowPrice != 0:
+                    textPrice52HighRect.centery = textPriceLowRect.centery + (stock_52_week_high - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                else:
+                    pass
+                    # textPrice52HighRect.centery = textPriceLowRect.centery + (stock_52_week_high - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+
                 textPrice52HighRect.left = 5 * surface_x / 800 
                 display_surface.blit(textPrice52High, textPrice52HighRect)
                 leftside = int (50 * surface_x / 800)
@@ -490,7 +518,10 @@ if __name__ == '__main__':
                 font = pygame.font.Font('freesansbold.ttf', 15)
                 textPrice52Low = font.render(f"{stock_52_week_low:.2f}", True, cyan, background)
                 textPrice52LowRect = textPrice52Low.get_rect()
-                textPrice52LowRect.centery = textPriceLowRect.centery + (stock_52_week_low - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                if highPrice - lowPrice != 0:
+                    textPrice52LowRect.centery = textPriceLowRect.centery + (stock_52_week_low - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                else:
+                    pass
                 textPrice52LowRect.left = 5
                 display_surface.blit(textPrice52Low, textPrice52LowRect)
                 leftside = int (50 * surface_x / 800)
@@ -504,7 +535,10 @@ if __name__ == '__main__':
                 font = pygame.font.Font('freesansbold.ttf', 15)
                 textPriceCur = font.render(f"{currentPrice:.2f}", True, yellow, background)
                 textPriceCurRect = textPriceCur.get_rect()
-                textPriceCurRect.centery = textPriceLowRect.centery + (currentPrice - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                if highPrice - lowPrice != 0:
+                    textPriceCurRect.centery = textPriceLowRect.centery + (currentPrice - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                else:
+                    pass
                 textPriceCurRect.left = 5
                 display_surface.blit(textPriceCur, textPriceCurRect)
                 leftside = int (50 * surface_x / 800)
@@ -600,10 +634,18 @@ if __name__ == '__main__':
                     # circlex = 50 * surface_x / 800 + (stock_history_candles.index(each_candle)) * (textDateRect0.centerx - textDateRectN.centerx) / (len(stock_history_candles))
                     circlex = 50 * surface_x / 800 + (each_candle['datetime']-oldest_date['timestamp']) * (current_date['x'] - oldest_date['x']) / (current_date['timestamp'] - oldest_date['timestamp'])
                     # print("each_candle['datetime']", each_candle['datetime'],"circlex", circlex)
-                    circley_close = textPriceLowRect.centery + (each_candle['close'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
-                    circley_open = textPriceLowRect.centery + (each_candle['open'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
-                    circley_high = textPriceLowRect.centery + (each_candle['high'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
-                    circley_low = textPriceLowRect.centery + (each_candle['low'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+    
+                    if highPrice - lowPrice != 0:
+                        circley_close = textPriceLowRect.centery + (each_candle['close'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                        circley_open = textPriceLowRect.centery + (each_candle['open'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                        circley_high = textPriceLowRect.centery + (each_candle['high'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                        circley_low = textPriceLowRect.centery + (each_candle['low'] - lowPrice) * (textPriceHighRect.centery - textPriceLowRect.centery) / (highPrice - lowPrice)
+                    else:
+                        circley_close = textPriceLowRect.centery 
+                        circley_open = textPriceLowRect.centery 
+                        circley_high = textPriceLowRect.centery 
+                        circley_low = textPriceLowRect.centery 
+
                     circleSize = 3
                     circleColor = (128,128,128)
                     pygame.draw.circle(display_surface, circleColor, (circlex,circley_high), circleSize, draw_top_left=0, draw_top_right=0, draw_bottom_left=1, draw_bottom_right=1)
@@ -616,12 +658,12 @@ if __name__ == '__main__':
                     pygame.draw.circle(display_surface, circleColor, (circlex,circley_close), circleSize, draw_top_left=0, draw_top_right=1, draw_bottom_left=0, draw_bottom_right=1)
                     pygame.draw.circle(display_surface, circleColor, (circlex,circley_open), circleSize, draw_top_left=1, draw_top_right=0, draw_bottom_left=1, draw_bottom_right=0)
 
-            except Exception as e:
-                prRed("Error displaying data")
-                prRed(e)
+            # except Exception as e:
+            #     prRed("Error displaying data")
+            #     prRed(e)
                 # time.sleep(1)
                 # pass
-            # for each in position_details["securitiesAccount"]["positions"]:
+            # for each in positions_details["securitiesAccount"]["positions"]:
             #     if each["instrument"]["assetType"] == "OPTION":
             #         if each["instrument"]["underlyingSymbol"] == displayStock:
             #             optionSymbol = each["instrument"]["symbol"]
@@ -652,53 +694,59 @@ if __name__ == '__main__':
 
 
 
-            try:
-                if time.time() - textPortfolioSetTime  < time_to_show_text:
-                    font2 = pygame.font.Font('freesansbold.ttf', 30)
-                    textPortfolio = font2.render(f'Portfolio shown is {args.portfolio[0]}', True, yellow, background)
-                    textPortfolioRect = textPortfolio.get_rect()
-                    x, y = display_surface.get_size()
-                    cx = x * 2/3
-                    PortfolioOption = {'All':1,'Stocks':2,'Options':3,'Both':4,'Speculation':5,'Others':6}
-                    cy = y * PortfolioOption[args.portfolio[0]]/7
-                    textPortfolioRect.center = (cx, cy)
-                    display_surface.blit(textPortfolio, textPortfolioRect)
+            if True:
+                if args.equity is None:
+                    pass
+                else:
+                    if args.equity[0] is None:
+                        pass
+                    else:
+                        if time.time() - textPortfolioSetTime  < time_to_show_text:
+                            font2 = pygame.font.Font('freesansbold.ttf', 30)
+                            textPortfolio = font2.render(f'Portfolio shown is {args.portfolio[0]}', True, yellow, background)
+                            textPortfolioRect = textPortfolio.get_rect()
+                            x, y = display_surface.get_size()
+                            cx = x * 2/3
+                            PortfolioOption = {'All':1,'Stocks':2,'Options':3,'Both':4,'Speculation':5,'Others':6}
+                            cy = y * PortfolioOption[args.portfolio[0]]/7
+                            textPortfolioRect.center = (cx, cy)
+                            display_surface.blit(textPortfolio, textPortfolioRect)
 
-                if time.time() - textSortSetTime  < time_to_show_text:
-                    font2 = pygame.font.Font('freesansbold.ttf', 30)
-                    textSort = font2.render(f'Sort by {args.sort[0]}', True, yellow, background)
-                    textSortRect = textSort.get_rect()
-                    x, y = display_surface.get_size()
-                    cx = x * 1/3
-                    SortOption = {'Name':3,'Percent':4}
-                    cy = y * SortOption[args.sort[0]]/7
-                    textSortRect.center = (cx, cy)
-                    display_surface.blit(textSort, textSortRect)
+                        if time.time() - textSortSetTime  < time_to_show_text:
+                            font2 = pygame.font.Font('freesansbold.ttf', 30)
+                            textSort = font2.render(f'Sort by {args.sort[0]}', True, yellow, background)
+                            textSortRect = textSort.get_rect()
+                            x, y = display_surface.get_size()
+                            cx = x * 1/3
+                            SortOption = {'Name':3,'Percent':4}
+                            cy = y * SortOption[args.sort[0]]/7
+                            textSortRect.center = (cx, cy)
+                            display_surface.blit(textSort, textSortRect)
 
-                if time.time() - textAutoCheckTime  < time_to_show_text:
-                    font2 = pygame.font.Font('freesansbold.ttf', 30)
-                    textSort = font2.render(f'Auto scrolling: {args.auto[0]}', True, yellow, background)
-                    textSortRect = textSort.get_rect()
-                    x, y = display_surface.get_size()
-                    cx = x * 1/3
-                    SortOption = {'Yes':3,'No':4,'Sync':5}
-                    cy = y * SortOption[args.auto[0]]/7
-                    textSortRect.center = (cx, cy)
-                    display_surface.blit(textSort, textSortRect)
+                        if time.time() - textAutoCheckTime  < time_to_show_text:
+                            font2 = pygame.font.Font('freesansbold.ttf', 30)
+                            textSort = font2.render(f'Auto scrolling: {args.auto[0]}', True, yellow, background)
+                            textSortRect = textSort.get_rect()
+                            x, y = display_surface.get_size()
+                            cx = x * 1/3
+                            SortOption = {'Yes':3,'No':4,'Sync':5}
+                            cy = y * SortOption[args.auto[0]]/7
+                            textSortRect.center = (cx, cy)
+                            display_surface.blit(textSort, textSortRect)
 
 
-                if time.time() - textStockSetTime  < time_to_show_text:
-                    font2 = pygame.font.Font('freesansbold.ttf', 30)
-                    textSort = font2.render(f'Now showing {args.equity[0]}', True, yellow, background)
-                    textSortRect = textSort.get_rect()
-                    x, y = display_surface.get_size()
-                    cx = x * 1/2
-                    # cy = y / 2
-                    cy = y * (equities.index(args.equity[0])+1)/(len(equities)+1)
-                    textSortRect.center = (cx, cy)
-                    display_surface.blit(textSort, textSortRect)
-            except:
-                prRed("Error checking text against time")
+                        if time.time() - textStockSetTime  < time_to_show_text:
+                            font2 = pygame.font.Font('freesansbold.ttf', 30)
+                            textSort = font2.render(f'Now showing {args.equity[0]}', True, yellow, background)
+                            textSortRect = textSort.get_rect()
+                            x, y = display_surface.get_size()
+                            cx = x * 1/2
+                            # cy = y / 2
+                            cy = y * (equities.index(args.equity[0])+1)/(len(equities)+1)
+                            textSortRect.center = (cx, cy)
+                            display_surface.blit(textSort, textSortRect)
+            # except:
+            #     prRed("Error checking text against time")
                 # time.sleep(1)
                 # pass
 
@@ -841,23 +889,37 @@ if __name__ == '__main__':
 
             if action == 21:
                 textStockSetTime = time.time()
-                index = equities.index(args.equity[0])
-                if index == len(equities) - 1:
-                    index = 0
+                if args.equity is None:
+                    pass
                 else:
-                    index = index + 1
-                args.equity = [equities[index]]
-                prGreen(f"Now showing {args.equity[0]}")
+                    if args.equity[0] is None:
+                        pass
+                    else:
+                        # print ("args.equity[0]")
+                        # print (args.equity[0])
+                        index = equities.index(args.equity[0])
+                        if index == len(equities) - 1:
+                            index = 0
+                        else:
+                            index = index + 1
+                        args.equity = [equities[index]]
+                        prGreen(f"Now showing {args.equity[0]}")
 
             if action == 22:
                 textStockSetTime = time.time()
-                index = equities.index(args.equity[0])
-                if index == 0:
-                    index = len(equities) -1
+                if args.equity is None:
+                    pass
                 else:
-                    index = index - 1
-                args.equity = [equities[index]]
-                prGreen(f"Now showing {args.equity[0]}")
+                    if args.equity[0] is None:
+                        pass
+                    else:
+                        index = equities.index(args.equity[0])
+                        if index == 0:
+                            index = len(equities) -1
+                        else:
+                            index = index - 1
+                        args.equity = [equities[index]]
+                        prGreen(f"Now showing {args.equity[0]}")
 
             if action == -1:
                 prGreen("Exiting program")
