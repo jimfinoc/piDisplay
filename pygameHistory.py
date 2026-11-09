@@ -98,27 +98,27 @@ if __name__ == '__main__':
             return None
     except ImportError:
         print("Serial module not found. Not communicating via serial.")
-    try:
-        import socket
-        print("UDP Socket module enabled.")
-        UDPacketModuleEnabled = True
+        try:
+            import socket
+            print("UDP Socket module enabled.")
+            UDPacketModuleEnabled = True
 
-        # Create a UDP socket
-        sock = socket.socket(socket.AF_INET,  # Internet
-                            socket.SOCK_DGRAM) # UDP
+            # Create a UDP socket
+            sock = socket.socket(socket.AF_INET,  # Internet
+                                socket.SOCK_DGRAM) # UDP
 
-        # Bind the socket to the address and port
-        sock.bind((UDP_ip, UDP_port))
-        sock.settimeout(0)
+            # Bind the socket to the address and port
+            sock.bind((UDP_ip, UDP_port))
+            sock.settimeout(0)
 
-        print(f"Listening for UDP packets on {UDP_ip}:{UDP_port}")
+            print(f"Listening for UDP packets on {UDP_ip}:{UDP_port}")
 
-    except OSError:
-        print("UDP Socket error. Not communicating via UDP.")
+        except OSError:
+            print("UDP Socket error. Not communicating via UDP.")
 
-    except ImportError:
-        print("Socket module not found. Not communicating via UDP.")
-    print()
+        except ImportError:
+            print("Socket module not found. Not communicating via UDP.")
+        print()
 
     pygame.init()
     pygame.display.set_caption("Stock History Viewer")
